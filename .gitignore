@@ -1,4 +1,6 @@
 *.xlxs
 *.png
+out
 a.out
+*swp
 
