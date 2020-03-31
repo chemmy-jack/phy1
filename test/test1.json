@@ -1,0 +1,43 @@
+{
+    "errno": "0",
+    "data": {
+        "hi_info": {
+            "login_ip": "127.0.0.1",
+            "license": {
+                "id": "123456",
+                "name": "hello",
+                "sex": "",
+                "status": "1"
+            },
+            "hello_info": {
+                "model": "3",
+                "license": {
+                    "id": "123456",
+                    "license_no": ""
+                },
+                "upgrade": 1
+            }
+        }
+    }
+}{
+  "errno": "0",
+  "data": {
+    "hi_info": {
+      "login_ip": "127.0.0.1",
+      "license": {
+        "id": "123456",
+        "name": "hello",
+        "sex": "",
+        "status": "1"
+      },
+      "hello_info": {
+        "model": "3",
+        "license": {
+          "id": "123456",
+          "license_no": ""
+        },
+        "upgrade": 1
+      }
+    }
+  }
+}
