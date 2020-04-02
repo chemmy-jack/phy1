@@ -3,4 +3,5 @@
 out
 a.out
 *swp
-
+__pycache__
+*swo

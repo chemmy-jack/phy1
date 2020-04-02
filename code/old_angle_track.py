@@ -33,8 +33,12 @@ for i in range(nrows):
     o_wb.append([-(side_wb[i][0] + top_wb[i][0]) / 2, side_wb[i][1], -top_wb[i][1]])
     o_wt.append([-(side_wt[i][0] + top_wt[i][0]) / 2, side_wt[i][1], -top_wt[i][1]])
     o_te.append([-(side_te[i][0] + top_te[i][0]) / 2, side_te[i][1], -top_te[i][1]])
-    o_ta.append([-(side_te[i][0] + top_te[i][0]) / 2, side_ta[i][1], -top_ta[i][1]])
-print("finnish calculate origin coordinate")
+    o_ta.append([-(side_ta[i][0] + top_ta[i][0]) / 2, side_ta[i][1], -top_ta[i][1]])
+print("finnish calculate origin coordinao_wb = []
+o_wt = []
+o_te = []
+o_ta = []
+e")
 
 
 # analysing track from outer cordinate
