@@ -37,7 +37,6 @@ def update(file_name) :
 		"side":side_dic, 
 		"top":top_dic
 	}
-	print("this is the new json: ")
 	# pp.pprint(data)
 	with open ("../db/rawtopside.json", "w") as database:
 		# database.write(js.dumps(data, indent=4))
