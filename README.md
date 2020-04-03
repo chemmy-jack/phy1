@@ -5,3 +5,4 @@
 	* json
 	* xlwings
 	* vpython
+	* matplotlib
