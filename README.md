@@ -6,3 +6,11 @@
 	* xlwings
 	* vpython
 	* matplotlib
+	* tkinter
+## to do list 
+	* raw_data to json 
+	* raw_data show vython path
+	* optimize json to angle and track
+	* jack function
+		* get datafrom excel raw data (use tkinter "filedialoge")
+		* 

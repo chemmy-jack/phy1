@@ -4,6 +4,7 @@ import jack_functions as func
 import sys
 
 print("getting data from ../db/rawtopside.json")
+print("reminder: run this scipt in code directory, and check if rawtopside.json is in ../db")
 with open ("../db/rawtopside.json", "r") as database:
     data = js.loads(database.read())
 print("finnish reading data")
@@ -16,7 +17,9 @@ for x in data :
 	nrows = len(data[x][key1_1][key1_1_1])
 	print("{:2} {:3} ".format(n,nrows),x)
 	n += 1
+
 n -= 1
+
 # choose specfic
 N = input("type number of file to see track: ")
 try :
@@ -52,20 +55,30 @@ yaxis = arrow(canvas = scene, pos = cenvec, axis = vector(0,1,0),shaftwidth = 0.
 zaxis = arrow(canvas = scene, pos = cenvec, axis = vector(0,0,1),shaftwidth = 0.05 ,color=color.red)
 cen = sphere(canvas = scene, pos = cenvec, radius = 0.05)
 wbball = sphere(canvas = scene, radius = scale, color = color.black)
-wb_trail = attach_trail(wbball, type = "points", radius = scale)
-wtball = sphere(canvas = scene, radius = scale, color = color.black)
+wb_trail = attach_trail(wbball, type = "points", radius = scale/2)
+wtball = sphere(canvas = scene, radius = scale, color = color.green)
 # wt_trail = attach_trail(wtball, type = "points", radius = scale)
-teball = sphere(canvas = scene, radius = scale, color = color.black)
+teball = sphere(canvas = scene, radius = scale, color = color.red)
 # te_trail = attach_trail(teball, type = "points", radius = scale)
 taball = sphere(canvas = scene, radius = scale, color = color.black)
 # ta_trail = attach_trail(taball, type = "points", radius = scale)
 scene.center=vector((o_wb[-1][0]+o_wb[0][0])/2,(o_wb[-1][1]+o_wb[0][1])/2,(o_wb[-1][2]+o_wb[0][2])/2)
 print(cenvec)
+abdomen_cyl = cylinder(radius=scale/2, color = color.yellow)
+wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow)
+wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow)
+print(scene.center)
 while True :
 	for i in range(T):
 		wbball.pos = vector(o_wb[i][0], -o_wb[i][1], o_wb[i][2])
 		wtball.pos = vector(o_wt[i][0], -o_wt[i][1], o_wt[i][2])
 		teball.pos = vector(o_te[i][0], -o_te[i][1], o_te[i][2])
 		taball.pos = vector(o_ta[i][0], -o_ta[i][1], o_ta[i][2])
+		abdomen_cyl.pos = wbball.pos
+		abdomen_cyl.axis = taball.pos - wbball.pos
+		wb_wt_cyl.pos = wbball.pos
+		wb_wt_cyl.axis = wtball.pos - wbball.pos
+		wb_te_cyl.pos = wbball.pos
+		wb_te_cyl.axis = teball.pos - wbball.pos
 		sleep(0.1)
 	
