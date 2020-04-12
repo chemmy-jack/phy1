@@ -3,10 +3,12 @@ import xlwings as xw
 # import matplotlib.pyplot as plt
 import pprint
 import json as js
+import tkinter as tk
+import jack_functions as func
 
 # read data from excel file
-file_name = input("witch excel file(files will be find in /Volumes/JACK4/filename.xlsx, and use the 'data' sheet which contains 16rows): ")
-database = xw.Book("/Volumes/JACK4/"+file_name+".xlsx")
+file_name = func.tk_GetFileName()
+database = xw.Book(file_name)
 nrows = database.sheets[2]["a1"].expand("table").rows.count 
 print(nrows-2)
 data = database.sheets["data"]
@@ -20,8 +22,7 @@ top_wt = (data[f"k3:l"+str(nrows)].value)  # wingtip
 top_te = (data[f"m3:n"+str(nrows)].value)  # hindwing trailing edge
 top_ta = (data[f"o3:p"+str(nrows)].value)  # tail
 print("finnish colecting data")
-with open ("../db/rawtopside.json", "r") as database:
-	data = js.loads(database.read())
+data = get_Jsondb()
 print(type(data))
 pp = pprint.PrettyPrinter(indent=2)
 side_dic = {
@@ -40,11 +41,8 @@ data[file_name] = {
 	"side":side_dic, 
 	"top":top_dic
 }
-print("this is the new json: ")
-# pp.pprint(data)
 
-with open ("../db/rawtopside.json", "w") as database:
-	database.write(js.dumps(data, indent=4))
+write_Jsondb(data)
 print(type(data))
 
 

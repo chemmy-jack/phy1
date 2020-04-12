@@ -3,22 +3,11 @@ import json as js
 import jack_functions as func
 import sys
 
-print("getting data from ../db/rawtopside.json")
-print("reminder: run this scipt in code directory, and check if rawtopside.json is in ../db")
-with open ("../db/rawtopside.json", "r") as database:
-    data = js.loads(database.read())
-print("finnish reading data")
+# get data 
+data = func.get_Jsondb()
 
-n = 1
 # print possibles
-for x in data :
-	key1_1 = list(data[x].keys())[0]
-	key1_1_1 = list(data[x][key1_1].keys())[0]
-	nrows = len(data[x][key1_1][key1_1_1])
-	print("{:2} {:3} ".format(n,nrows),x)
-	n += 1
-
-n -= 1
+n = func.PrintKeysWithNum(data)
 
 # choose specfic
 N = input("type number of file to see track: ")
@@ -36,8 +25,9 @@ for x in data :
 		spec_data = data[x]
 		print(x)
 		break
-o_co = func.cal_origin_coordinate(spec_data)
 
+# path showing
+o_co = func.cal_origin_coordinate(spec_data)
 o_wb = o_co["wb"]
 o_wt = o_co["wt"]
 o_te = o_co["te"]

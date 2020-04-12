@@ -6,6 +6,7 @@ import json as js
 # read data from excel file
 # file_name = input("witch excel file(files will be find in /Volumes/JACK4/filename.xlsx, and use the 'data' sheet which contains 16rows): ")
 import sys
+import jack_functions as func
 
 def update(file_name) :
 	database = xw.Book("/Volumes/JACK4/"+file_name+".xlsx")
@@ -42,8 +43,7 @@ def update(file_name) :
 		# database.write(js.dumps(data, indent=4))
 		database.write(js.dumps(data))
 
-with open ("../db/rawtopside.json", "r") as database:
-	data = js.loads(database.read())
+data = get_Jsondb()
 print(type(data))
 # pp = pprint.PrettyPrinter(indent=2)
 i = 0

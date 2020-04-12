@@ -7,6 +7,7 @@
 	* vpython
 	* matplotlib
 	* tkinter
+	* gitpython
 ## to do list 
 	* raw_data to json 
 	* raw_data show vython path
