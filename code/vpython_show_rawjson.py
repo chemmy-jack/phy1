@@ -4,7 +4,7 @@ import jack_functions as func
 import sys
 
 # get data 
-data = func.get_Jsondb()
+data = func.get_Jsonrawdb()
 
 # print possibles
 n = func.PrintKeysWithNum(data)

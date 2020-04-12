@@ -52,14 +52,14 @@ def tk_GetFileName() :
 	FileName = filedialog.askopenfilename()
 	return FileName
 
-def get_Jsondb() :
+def get_Jsonrawdb() :
 	with open (database, "r") as databasetmp:
 		data = js.loads(databasetmp.read())
 	return data
 
 def write_Jsondb(data) :
-	with open ("../db/rawtopside.json", "w") as database:
-		database.write(js.dumps(data, indent=4))
+	with open ("../db/rawtopside.json", "w") as databasetmp:
+		databasetmp.write(js.dumps(data, indent=4))
 
 def PrintKeyWithsNum(data) :
 	n = 1

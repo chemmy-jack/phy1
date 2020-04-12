@@ -43,7 +43,7 @@ def update(file_name) :
 		# database.write(js.dumps(data, indent=4))
 		database.write(js.dumps(data))
 
-data = get_Jsondb()
+data = get_Jsonrawdb()
 print(type(data))
 # pp = pprint.PrettyPrinter(indent=2)
 i = 0

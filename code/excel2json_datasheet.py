@@ -22,7 +22,7 @@ top_wt = (data[f"k3:l"+str(nrows)].value)  # wingtip
 top_te = (data[f"m3:n"+str(nrows)].value)  # hindwing trailing edge
 top_ta = (data[f"o3:p"+str(nrows)].value)  # tail
 print("finnish colecting data")
-data = get_Jsondb()
+data = get_Jsonrawdb()
 print(type(data))
 pp = pprint.PrettyPrinter(indent=2)
 side_dic = {
