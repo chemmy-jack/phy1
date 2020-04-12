@@ -61,7 +61,7 @@ def write_Jsondb(data) :
 	with open ("../db/rawtopside.json", "w") as databasetmp:
 		databasetmp.write(js.dumps(data, indent=4))
 
-def PrintKeyWithsNum(data) :
+def PrintKeysWithNum(data) :
 	n = 1
 	for x in data :
 		key1_1 = list(data[x].keys())[0]
@@ -70,3 +70,23 @@ def PrintKeyWithsNum(data) :
 		print("{:2} {:3} ".format(n,nrows),x)
 		n += 1
 	return n-1
+
+def GetSpecKeyByNum(data) :
+	# print possibles
+	n = PrintKeysWithNum(data)
+	# choose specfic
+	N = input("type number to choose: ")
+	try :
+		N = int(N)
+	except ValueError :
+		print("not integer")
+		sys.exit()
+	if N <= 0 or N > n :
+		print("error: no such file")
+		sys.exit()
+	for x in data :
+		N -= 1
+		if N == 0 :
+			spec_data_name = x
+			return spec_data_name
+	
