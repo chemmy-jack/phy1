@@ -6,6 +6,18 @@ from tkinter import filedialog
 import git
 import sys
 import os
+from math import cos, sin, asin, acos, tan, atan, radians, degrees
+import numpy as np
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 if __name__ != "__main__" :
 	importedby_path = sys._getframe(1).f_globals.get('__name__')
@@ -64,9 +76,12 @@ def write_Jsondb(data) :
 def PrintKeysWithNum(data) :
 	n = 1
 	for x in data :
-		key1_1 = list(data[x].keys())[0]
-		key1_1_1 = list(data[x][key1_1].keys())[0]
-		nrows = len(data[x][key1_1][key1_1_1])
+		try :
+			key1_1 = list(data[x].keys())[0]
+			key1_1_1 = list(data[x][key1_1].keys())[0]
+			nrows = len(data[x][key1_1][key1_1_1])
+		except :
+			nrows = 0
 		print("{:2} {:3} ".format(n,nrows),x)
 		n += 1
 	return n-1
@@ -90,3 +105,127 @@ def GetSpecKeyByNum(data) :
 			spec_data_name = x
 			return spec_data_name
 	
+def GetMtrackRawDataSheet(sheet) : # assume a:Nr, b:TID, c:PID, d:x, e:c
+	nrows = sheet["a1"].expand("table").rows.count 
+	Nr = sheet[f"a2:a"+str(nrows)].value
+	TID = sheet[f"b2:b"+str(nrows)].value
+	PID = sheet[f"c2:c"+str(nrows)].value
+	x = sheet[f"d2:d"+str(nrows)].value
+	y = sheet[f"e2:e"+str(nrows)].value
+	data = {
+		"nr":Nr,
+		"tid":TID,
+		"pid":PID,
+		"x":x,
+		"y":y }
+	return data
+
+def FindArrayInclude(array) :
+	include = {}
+	for i in array :
+		if i in include :
+			include[int(i)] += 1
+		else : include[int(i)] = 1
+	return include
+
+def GetExcelRawTopSide(exel_file) :
+	sheettop = exel_file.sheets["raw_data_top"]
+	sheetside = exel_file.sheets["raw_data_side"]
+	datatop = GetMtrackRawDataSheet(sheettop)
+	dataside = GetMtrackRawDataSheet(sheetside)
+	TIDtop = FindArrayInclude(datatop["tid"])
+	TIDside = FindArrayInclude(dataside["tid"])
+	print("\nfind top TID: ", end = "\n")
+	for i in TIDtop :	
+		print(i , ": ", TIDtop[i], end = "\n")
+	print("\nfind side TID: ", end = "\n")
+	for i in TIDside :	
+		print(i, ": ", TIDside[i], end = "\n")
+	
+	# get top 
+	while True :
+		try : 
+			temp = int(input("top wb: "))
+			top_wb = TIDtop.pop(temp)
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top wt: "))
+			top_wt =TIDtop.pop(temp)
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top te: "))
+			top_te =TIDtop.pop(temp)
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top ta: "))
+			top_ta =TIDtop.pop(temp)
+			break
+		except : print("error: try again")
+
+	# get side 
+	while True :
+		try : 
+			temp = int(input("side wb: "))
+			side_wb = TIDside.pop(temp)
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side wt: "))
+			side_wt =TIDside.pop(temp)
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side te: "))
+			side_te =TIDside.pop(temp)
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side ta: "))
+			side_ta =TIDside.pop(temp)
+			break
+		except : print("error: try again")
+
+	side_dic = {
+		"wing_base":side_wb,
+		"wing_tip" :side_wt,
+		"trailing_edge" :side_te,
+		"tail" :side_ta
+	}
+	top_dic = {
+		"wing_base":top_wb,
+		"wing_tip" :top_wt,
+		"trailing_edge" :top_te,
+		"tail" :top_ta
+	}
+	data = {
+		"side":side_dic, 
+		"top":top_dic
+	}
+	return data
+
+
+def SimulateFlapMechFlapAng(a,b,c,d,h,i,g) : #theta,AB,AC,DG,IH,IJ,GJ
+#	BC2 = b**2 + c**2 - 2*b*c*math.cos(math.radians(a))
+	C = [c,0]
+	ans = []
+	for x in a :
+		B = [b*cos(x),b*sin(x)]
+		BC = np.subtract(C, B)
+		CG = BC*d/np.linalg.norm(BC)
+		G = np.add(C, CG)
+		I = [c+d, h]
+		GI = np.linalg.norm(np.subtract(I, G))
+		try : 
+			ans.append(degrees(acos((i**2 + GI**2 - g**2)/(2*i*g)))-90)
+#			ans.append(((i**2 + GI**2 - g**2)/(2*i*g)))
+		except : ans.append(None)
+	return ans

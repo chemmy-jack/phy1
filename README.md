@@ -9,12 +9,9 @@
 	* tkinter
 	* gitpython
 ## to do list 
-	* raw_data to json 
+	* raw_data to json  
 	* raw_data show vython path
 	* optimize json to angle and track
 	* jack function
 		* get datafrom excel raw data (use tkinter "filedialoge")
 		* 
-
-## type "python -i file_name.py" to run python console after script ran
-## type " exec(open("filename").read())" to execute script in python consel
