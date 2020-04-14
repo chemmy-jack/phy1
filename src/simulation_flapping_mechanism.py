@@ -21,12 +21,14 @@ HIi = 24
 IJi = 15
 GJi = 30
 omega = ma.radians(360*2) #radian/sec
-change = func.SimulateFlapMechFlapAng(t*omega, ABi, ACi, DGi, HIi, IJi, GJi)
+mechflapang , mechpitchang= func.SimulateFlapMechFlapAng(t*omega, ABi, ACi, DGi, HIi, IJi, GJi)
 print("degrees per sec: ", ma.degrees(omega))
 print("dt: ", dt)
 
 
-line, = plt.plot(t, change, **{ 'marker':',' }, label='fapping')
+linemechflapang, = plt.plot(t, mechflapang, **{ 'marker':',' }, label='mechenism fapping angle')
+linemechpitchang, = plt.plot(t, mechpitchang, **{ 'marker':',' }, label='mechenism pitching angle')
+
 
 ABax = plt.axes([0.25, 0.0, 0.65, 0.03], facecolor=axcolor)
 ABs = Slider(ABax, 'AB lenth', 0, 15, valinit=ABi, valstep=0.01)
@@ -35,7 +37,7 @@ ACs = Slider(ACax, 'AC lenth', 0, 20, valinit=ACi, valstep=0.01)
 DGax = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor=axcolor)
 DGs = Slider(DGax, 'DG lenth', 0, 40, valinit=DGi, valstep=0.01)
 HIax = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
-HIs = Slider(HIax, 'HI lenth', 0, 30, valinit=HIi, valstep=0.01)
+HIs = Slider(HIax, 'HI lenth', 0, 30, valinit=HIi, valstep=0.01) 
 IJax = plt.axes([0.25, 0.20, 0.65, 0.03], facecolor=axcolor)
 IJs = Slider(IJax, 'IJ lenth', 0, 20 ,valinit=IJi, valstep=0.01)
 GJax = plt.axes([0.25, 0.25, 0.65, 0.03], facecolor=axcolor)
@@ -48,8 +50,9 @@ def update(val):
 	HI = HIs.val
 	IJ = IJs.val
 	GJ = GJs.val
-	change = func.SimulateFlapMechFlapAng(t*omega, AB, AC, DG, HI, IJ, GJ)
-	line.set_ydata(change)
+	mechflapang, mechpitch = func.SimulateFlapMechFlapAng(t*omega, AB, AC, DG, HI, IJ, GJ)
+	linemechflapang.set_ydata(mechflapang)
+	linemechpitchang.set_ydata(mechpitchang)
 	fig.canvas.draw_idle()
 
 ABs.on_changed(update)

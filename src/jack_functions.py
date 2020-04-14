@@ -216,16 +216,23 @@ def GetExcelRawTopSide(exel_file) :
 def SimulateFlapMechFlapAng(a,b,c,d,h,i,g) : #theta,AB,AC,DG,IH,IJ,GJ
 #	BC2 = b**2 + c**2 - 2*b*c*math.cos(math.radians(a))
 	C = [c,0]
-	ans = []
+	flapang = []
+	pitchang = []
 	for x in a :
 		B = [b*cos(x),b*sin(x)]
 		BC = np.subtract(C, B)
+		try :
+			if x == 0 : pitchang.append(None)
+			else : pitchang.append(degrees(atan(BC[1]/ BC[0])))
+#			pitchang.append(atan(BC[0]/ BC[1]))
+		except :
+			pitchang.append(None)
 		CG = BC*d/np.linalg.norm(BC)
 		G = np.add(C, CG)
 		I = [c+d, h]
 		GI = np.linalg.norm(np.subtract(I, G))
 		try : 
-			ans.append(degrees(acos((i**2 + GI**2 - g**2)/(2*i*g)))-90)
-#			ans.append(((i**2 + GI**2 - g**2)/(2*i*g)))
-		except : ans.append(None)
-	return ans
+			flapang.append(degrees(acos((i**2 + GI**2 - g**2)/(2*i*g)))-90)
+#			flapang.append(((i**2 + GI**2 - g**2)/(2*i*g)))
+		except : flapang.append(None)
+	return flapang, pitchang
