@@ -9,9 +9,15 @@
 	* tkinter
 	* gitpython
 ## to do list 
-	* raw_data to json  
-	* raw_data show vython path
+	* raw_data show vython path + export raw to json + show analyse info ( + save analyse info)
 	* optimize json to angle and track
+	* optimize vpython show
 	* jack function
-		* get datafrom excel raw data (use tkinter "filedialoge")
 		* 
+	* write discription to readme
+		* progress
+			* film
+			* mark feature points
+			* analyse
+				* definition of angles
+		* time table(schedule) of contests
