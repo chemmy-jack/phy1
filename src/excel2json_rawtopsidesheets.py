@@ -13,3 +13,6 @@ data = func.GetExcelRawTopSide(database)
 
 for i in data :
 	print(i)
+
+data = get_Jsonrawdb()
+write_Jsondb(data)
