@@ -6,7 +6,7 @@ import math as ma
 
 fig, ax = plt.subplots(1, 1, figsize=(14,8))
 plt.subplots_adjust(left=0.05, bottom=0.33, right=0.96, top=0.96)
-ax.set_ylim(-90,90)
+ax.set_ylim(-100,100)
 ax.set_title("mathematical simulation of flapping mechanism()")
 ax.set_xlabel("time(sec)")
 ax.set_ylabel("flapping degree")
@@ -15,11 +15,11 @@ axcolor = 'lightgoldenrodyellow'
 dt = 0.01
 t = np.arange(0.0, 1.0, dt)
 ABi = 7
-ACi = 16
-DGi = 32
-HIi = 24
-IJi = 15
-GJi = 30
+ACi = 16.1
+DGi = 25
+HIi = 22.5
+IJi = 8
+GJi = 25
 omega = ma.radians(360*2) #radian/sec
 mechflapang , mechpitchang= func.SimulateFlapMechFlapAng(t*omega, ABi, ACi, DGi, HIi, IJi, GJi)
 print("degrees per sec: ", ma.degrees(omega))

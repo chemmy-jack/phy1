@@ -5,6 +5,7 @@ import jack_functions as func
 import sys
 import numpy as np
 
+global keepon = False
 def VpythonShow(o_co, spec_data_name) :
 	# path showing
 	o_wb = o_co["wb"]
@@ -67,6 +68,7 @@ def VpythonShow(o_co, spec_data_name) :
 	while keepon :
 		print(keepon)
 		for i in range(T):
+			if keepon == False : break
 			wbball.pos = vector(o_wb[i][0], -o_wb[i][1], o_wb[i][2])
 			wtball.pos = vector(o_wt[i][0], -o_wt[i][1], o_wt[i][2])
 			teball.pos = vector(o_te[i][0], -o_te[i][1], o_te[i][2])
@@ -81,4 +83,6 @@ def VpythonShow(o_co, spec_data_name) :
 			wingtri.v1 = vertex(pos = wtball.pos)
 			wingtri.v2 = vertex(pos = teball.pos)
 			sleep(dt)
-	sys.exit()	
+	print("finnish")
+	sys.exit()
+	print("finally")

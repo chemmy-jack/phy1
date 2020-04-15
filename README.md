@@ -9,9 +9,19 @@
 	* tkinter
 	* gitpython
 ## to do list 
-	* raw_data show vython path + export raw to json + show analyse info ( + save analyse info)
 	* optimize json to angle and track
 	* optimize vpython show
+	* analysed json
+		* name ( same as file )
+			* origin coordinate
+			* date 
+			* number of butterfly
+			* number of filming
+		* number of butterfly
+			* span
+			* wing area
+			* weight
+			* breed
 	* jack function
 		* 
 	* write discription to readme

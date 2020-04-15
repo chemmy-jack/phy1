@@ -27,7 +27,6 @@ def get_git_root(path):
 	git_root = git_repo.git.rev_parse("--show-toplevel")
 	print(git_root)
 	return(git_root)
-
 def GetDatabasePath() :
 	mypath = os.path.dirname(os.path.realpath(__file__))
 	toreturn = str(get_git_root(mypath))+ "/db/rawtopside.json" # this is asuming this scipt is under git repo and databasejson is under gitroot/db/rawtopside.json
@@ -89,7 +88,7 @@ def GetSpecKeyByNum(data) :
 	# print possibles
 	n = PrintKeysWithNum(data)
 	# choose specfic
-	N = input("type number to choose: ")
+	N = input("type number to choose: ") 
 	try :
 		N = int(N)
 	except ValueError :
@@ -104,6 +103,25 @@ def GetSpecKeyByNum(data) :
 			spec_data_name = x
 			return spec_data_name
 	
+def ChooseOneWithNum(*a) : # give me an array of options
+	dic = {}
+	n = 0
+	for x in a :
+		n += 1
+		dic[n] = x
+		print(n, x)
+	print(n+1 , "escape")
+	while True :
+		try :
+			m = input("choose one : ")
+			m = int(m)
+			if m > 0 and m <= n :
+				print("confirm : you chose ", bcolors.FAIL, str(dic[m]), bcolors.ENDC)
+				return dic[m]
+			if m == n+1 :
+				return None
+		except : continue
+
 def GetMtrackRawDataSheet(sheet) : # assume a:Nr, b:TID, c:PID, d:x, e:c
 	nrows = sheet["a1"].expand("table").rows.count 
 	Nr = sheet[f"a2:a"+str(nrows)].value
@@ -236,7 +254,7 @@ def SimulateFlapMechFlapAng(a,b,c,d,h,i,g) : #theta,AB,AC,DG,IH,IJ,GJ
 		except : flapang.append(None)
 	return flapang, pitchang
 
-def GetExcelDataSheet(database) : # assumes each row have same lenth
+def GetExcelDataSheet(database) : # assumes each row have same lenth, input is the excel file
 	nrows = database.sheets[2]["a1"].expand("table").rows.count 
 	print(nrows-2)
 	data = database.sheets["data"]
