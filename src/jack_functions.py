@@ -8,6 +8,11 @@ import os
 from math import cos, sin, asin, acos, tan, atan, radians, degrees
 import numpy as np
 
+# for analyse
+import matplotlib.pyplot as plt
+from numpy import linalg as LA
+from scipy.ndimage.interpolation import rotate
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -27,6 +32,7 @@ def get_git_root(path):
 	git_root = git_repo.git.rev_parse("--show-toplevel")
 	print(git_root)
 	return(git_root)
+
 def GetDatabasePath() :
 	mypath = os.path.dirname(os.path.realpath(__file__))
 	toreturn = str(get_git_root(mypath))+ "/db/rawtopside.json" # this is asuming this scipt is under git repo and databasejson is under gitroot/db/rawtopside.json
@@ -229,7 +235,6 @@ def GetExcelRawTopSide(exel_file) :
 	}
 	return data
 
-
 def SimulateFlapMechFlapAng(a,b,c,d,h,i,g) : #theta,AB,AC,DG,IH,IJ,GJ
 #	BC2 = b**2 + c**2 - 2*b*c*math.cos(math.radians(a))
 	C = [c,0]
@@ -286,3 +291,131 @@ def GetExcelDataSheet(database) : # assumes each row have same lenth, input is t
 	}
 	return data
 
+def analyse1(o_co) : # give origin coordinate, assume same wb,wt,te,ta lenth 
+	totalnum = len(o_co["wb"])
+	o_wb = o_co["wb"]
+	o_wt = o_co["wt"]
+	o_te = o_co["te"]
+	o_ta = o_co["ta"]
+
+	# calculate directon方向角 & mean direction
+	direct = []
+	for i in range(totalnum): # directon方向角 & mean direction
+		direct.append( np.arctan( o_wb[i][0]-o_ta[i][0] / o_wb[i][2]-o_ta[i][2] ) )
+	mean_direct = np.mean(direct) # 平均方向角 計算偏移角用 投影xy平面用
+	print("finnish calculate directon方向角 & mean direction")
+
+	# calculate inner coordinate
+	wt = []
+	te = []
+	ta = []
+	for i in range(totalnum): # calculate inner coordinate
+		wt.append(np.subtract(o_wt[i], o_wb[i]))
+		te.append(np.subtract(o_te[i], o_wb[i]))
+		ta.append(np.subtract(o_ta[i], o_wb[i]))
+	print("finnish calculate inner coordinate")
+
+	# calculate shift_angle偏移角度
+	shift_angle = [] # 偏移角(print)
+	for i in range(totalnum): # calculate shift_angle偏移角度
+		shift_angle.append(mean_direct-direct[i] ) #print(shift_angle[i])
+	print("...calculate shift_angle偏移角度") 
+
+	# calculate abdomen angle
+	abdomen_angle = [] #腹部角(print)
+	for i in range(totalnum): # calculate abdomen angle
+		abdomen_angle.append(np.degrees(np.arctan(ta[i][1]/np.sqrt(ta[i][0]**2 + ta[i][2]**2))))
+	print("finnish calculating abdomen angle")
+	# calculate flapping angle (angle between LEvector unit wingbase z axis vector)
+	flapping_angle = [] #拍撲角(print)
+	for i in range(totalnum): # calculate flapping angle (angle between LEvector unit wingbase z axis vector)
+		temp = [ta[i][2],0,ta[i][0]]
+		flapping_angle.append(np.degrees(np.arccos(np.dot(temp/LA.norm(temp),wt[i]/LA.norm(wt[i])))))
+		if wt[i][1]>0 : flapping_angle[i] *= -1
+		# print(wt[i][1])
+	print("finnish caculate flapping angle")
+
+	# calculate wing rotate angle
+	wingrotate_angle = [] #翅膀旋轉(print) 
+	## calculate delta ta vector
+	delta_ta = []
+	for i in range(3): ta.append(ta[-1])
+	for i in range(totalnum): # calculate wing rotate angle
+		delta_ta.append(np.subtract(ta[i+2], ta[i-2])/2)
+	print("...finnish calculate delta ta vector")
+	## calcutate normal vector of wing
+	normal_wing = []
+	for i in range(totalnum): # calcutate normal vector of wing  
+		normal_wing.append(np.cross(wt[i],te[i]))
+	print("...finnish calcutate normal vector of wing")
+	## calculate wing rotate angle
+	for i in range(totalnum): ## calculate wing rotate angle
+		wingrotate_angle.append(90-np.degrees(np.arccos(np.dot(normal_wing[i]/LA.norm(normal_wing[i]),delta_ta[i]/LA.norm(delta_ta[i])))))
+	print("finnish caculate wing rotate angle")
+
+	# calculate pitching angle
+	pitching_angle = [] #仰角 flapping axis與horizon之angle (print)
+	for i in range(totalnum): # calculate pitching angle
+		temp = [ta[i][2],0,ta[i][0]]
+		#print(delta_ta[i])
+		unit_delta_ta = delta_ta[i]/LA.norm(delta_ta[i])
+		#print(unit_delta_ta)
+		unit_temp = temp/LA.norm(temp)
+		flapping_axis = np.cross(unit_delta_ta, unit_temp)
+		#print(flapping_axis)
+		temp =  flapping_axis[1]/np.sqrt(flapping_axis[0]**2 + flapping_axis[2]**2) 
+		#print(temp)
+		pitching_angle.append(np.degrees(np.arctan(temp)))
+	print("finnish calculate pitching angle")
+
+	retu = {
+		"abdomen_angle":abdomen_angle,
+		"flapping_angle":flapping_angle,
+		"pitching_angle":pitching_angle,
+		"wingrotate_angle":wingrotate_angle,
+		"mean_direct":mean_direct,
+		"direct":direct,
+		"shift_angle":shift_angle
+	}
+	return retu
+
+'''
+	#create analys sheet
+	try :
+		print(database.sheets["analys"])
+	except :
+		database.sheets.add(name="analys",after=-1)
+		print(database.sheets["analys"])
+	analys = database.sheets["analys"]
+
+	printanglelist = [
+		["abdomen_angle",abdomen_angle,"b"],
+		["flapping_angle",flapping_angle,"c"],
+		["wingrotate_angle",wingrotate_angle,"d"],
+		["pitching_angle",pitching_angle,"e"]
+	]
+
+	#create number (if no number)
+	if analys["a"+str(1+1)].value != str(1) :
+		for i in range(1,totalnum+1):
+			analys["a"+str(i+1)].value = str(i)
+		print("side bar number create finnish")
+
+	for n in printanglelist :
+		print(n)
+		analys[n[2]+"1"].value = n[0]
+		for i in range(1,totalnum+1):
+			analys[n[2]+str(i+1)].value = str(n[1][i-1])
+		print(n[0]+"finnished")
+
+	# for i in range(totalnum):
+	#    print(str(abdomen_angle[i])+"|"+str(flapping_angle[i])+"|"+str(pitching_angle[i])+"|"+str(wingrotate_angle[i]))
+
+	temp = np.arange(0, totalnum)
+	plt.plot(temp,abdomen_angle,label = "abdomen")
+	plt.plot(temp,flapping_angle,label = "flapping")
+	plt.plot(temp,pitching_angle,label = "pitching")
+	plt.plot(temp,wingrotate_angle,label = "wingrotate_angle")
+	plt.legend()
+	plt.show()
+'''

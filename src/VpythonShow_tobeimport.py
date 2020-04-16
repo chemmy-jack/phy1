@@ -5,13 +5,17 @@ import jack_functions as func
 import sys
 import numpy as np
 
-global keepon = False
+global keepon 
+keepon = False
 def VpythonShow(o_co, spec_data_name) :
 	# path showing
 	o_wb = o_co["wb"]
 	o_wt = o_co["wt"]
 	o_te = o_co["te"]
 	o_ta = o_co["ta"]
+
+	# get analyse1 data
+	analyse1 = func.analyse1(o_co)
 
 	scale = abs(o_wb[-1][0]-o_wb[0][0])/100
 	T = len(o_wb)
@@ -35,7 +39,7 @@ def VpythonShow(o_co, spec_data_name) :
 
 	# setup butterfly
 	wbball = sphere(canvas = scene, radius = scale, color = color.black)
-	wb_trail = attach_trail(wbball, type = "points", radius = scale/2)
+	wb_trail = attach_trail(wbball, type = "points", radius = scale/2) 
 	wtball = sphere(canvas = scene, radius = scale, color = color.green)
 	# wt_trail = attach_trail(wtball, type = "points", radius = scale)
 	teball = sphere(canvas = scene, radius = scale, color = color.red)
@@ -61,14 +65,43 @@ def VpythonShow(o_co, spec_data_name) :
 		print("stop")
 		print(keepon)
 	stop_but = button(bind=stop_func, text="stop all", pos=scene.caption_anchor)
+
+	# setup graph
+	oscillation = graph(title="test graph", xtitle='time', ytitle='value', fast=False, width=800)
+	'''
+	funct1 = gcurve(color=color.blue, width=4, markers=True, marker_color=color.orange, label='curve')
+	funct2 = gvbars(delta=0.4, color=color.green, label='bars')
+	funct3 = gdots(color=color.red, size=6, label='dots')
+	'''
+	funct1 = gcurve(color=color.blue, width=2, markers=True, marker_color=color.blue, label="abdomen")
+	funct2 = gcurve(color=color.red , width=2, markers=True, marker_color=color.red, label="flap")
+	funct3 = gcurve(color=color.yellow , width=2, markers=True, marker_color=color.yellow, label="wingrot")
 	print(scene.center)
+
+	# plot graph
+	abdomen_angle =	analyse1["abdomen_angle"]
+	flapping_angle = analyse1["flapping_angle"]
+	pitching_angle = analyse1["pitching_angle"]
+	wingrotate_angle = analyse1["wingrotate_angle"]
+	mean_direct = analyse1["mean_direct"]
+	direct = analyse1["direct"]
+	shift_angle = analyse1["shift_angle"]
+
+	for time in range(T) :
+		funct1.plot(time, abdomen_angle[time])
+		funct2.plot(time, flapping_angle[time])
+		funct3.plot(time, wingrotate_angle[time])
+
+	# plot graph
 	dt = 0.01
 	keepon = True
+	t = -30
 
 	while keepon :
 		print(keepon)
 		for i in range(T):
 			if keepon == False : break
+			# 3D vizualize
 			wbball.pos = vector(o_wb[i][0], -o_wb[i][1], o_wb[i][2])
 			wtball.pos = vector(o_wt[i][0], -o_wt[i][1], o_wt[i][2])
 			teball.pos = vector(o_te[i][0], -o_te[i][1], o_te[i][2])
@@ -83,6 +116,7 @@ def VpythonShow(o_co, spec_data_name) :
 			wingtri.v1 = vertex(pos = wtball.pos)
 			wingtri.v2 = vertex(pos = teball.pos)
 			sleep(dt)
+
 	print("finnish")
 	sys.exit()
 	print("finally")

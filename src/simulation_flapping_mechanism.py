@@ -3,6 +3,9 @@ import numpy as np
 from matplotlib.widgets import Slider, Button, RadioButtons
 import jack_functions as func
 import math as ma
+import matplotlib as mpl
+
+# mpl.use('WebAgg')
 
 fig, ax = plt.subplots(1, 1, figsize=(14,8))
 plt.subplots_adjust(left=0.05, bottom=0.33, right=0.96, top=0.96)

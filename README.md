@@ -10,6 +10,10 @@
 	* gitpython
 ## to do list 
 	* optimize json to angle and track
+	* optimize vpython show path
+		* pause and start
+		* degree on screen
+		* slider for time
 	* optimize vpython show
 	* analysed json
 		* name ( same as file )
