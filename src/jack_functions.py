@@ -457,37 +457,40 @@ def analyse_senior1(origin_co) :
 	abdomen_angle = []
 	flapping_angle = []
 
-	for i in range(totalnum):
-		#calculate sweeping angle
+	unit_sw_base_vector = []
+	for i in range(totalnum):	#calculate sweeping angle
 		wingplane_normal_vector = np.cross(le_vector[i], hind_te_vector[i]) #翅膀面法向量
 		sw_base_vector = np.cross(wingplane_normal_vector, body_vector[i]) #翅膀面法向量外積身體向量
 
-		unit_sw_base_vector = sw_base_vector/LA.norm(sw_base_vector) #unit vector of 翅膀面法向量外積身體向量
+		unit_sw_base_vector.append(sw_base_vector/LA.norm(sw_base_vector)) #unit vector of 翅膀面法向量外積身體向量
 		unit_le = le_vector[i]/LA.norm(le_vector[i])
-		sw_temp = acos(np.dot(unit_sw_base_vector, unit_le)) * 180 / np.pi #算角度
+		sw_temp = degrees(acos(np.dot(unit_sw_base_vector[i], unit_le)) )-90 #算角度
 		sweeping_angle.append(sw_temp)
-
 		
-		#calculate abdomen angle
-		abdomen_angle.append(atan(body_vector[i][1] / body_vector[i][0]) * 180 / np.pi)
+	for i in range(totalnum):	#calculate abdomen angle
+		abdomen_angle.append(degrees(atan(body_vector[i][1] / body_vector[i][0]) ))
 
+	unit_body_right_vec = []
+	reference_vector = []
+	for i in range(totalnum):	#calculate flapping angle
+		body_right_vec = [-body_vector[i][2], 0, -body_vector[i][0]]
+		unit_body_right_vec.append(body_right_vec/LA.norm(body_right_vec)) 
+		flap_referenece_vec = np.cross(unit_sw_base_vector[i], unit_body_right_vec[i])
+		flap_referenece2_vec = np.cross(flap_referenece_vec, unit_body_right_vec[i])
+		flap_referenece2_vec[1] = abs(flap_referenece2_vec[1])
+		unit_flap_reference2_vec =  flap_referenece2_vec/LA.norm(flap_referenece2_vec)
+		flap_cos = np.dot(unit_flap_reference2_vec, unit_sw_base_vector[i])
+#		flap_cos = np.dot(unit_sw_base_vector[i], unit_body_right_vec[i])
+		flap_temp = degrees(acos(flap_cos) ) 
+		print(LA.norm(unit_sw_base_vector[i]))
+		reference_vector.append(unit_flap_reference2_vec)
 
-		#calculate flapping angle
-			# calculate vector
-		body_right_vec = [body_vector[i][2], 0, body_vector[i][0]]
-		unit_body_right_vec = body_right_vec/LA.norm(body_right_vec) 
-		flap_cos = np.dot(unit_sw_base_vector, unit_body_right_vec)
-	#	print(flap_cos)
-		if sw_base_vector[1] > 0:
-			flap_temp = acos(flap_cos) * 180 / np.pi
-		else:
-			flap_temp = -1 * acos(flap_cos) * 180 / np.pi
-
-		flapping_angle.append(-flap_temp)
+		flapping_angle.append(flap_temp)
 	returndic = {
 		"abdomen_angle":abdomen_angle,
 		"flapping_angle":flapping_angle,
-		"sweeping_angle":sweeping_angle
+		"sweeping_angle":sweeping_angle,
+		"reference_vector":reference_vector
 #		"pitching_angle":pitching_angle,
 #		"wingrotate_angle":wingrotate_angle,
 #		"mean_direct":mean_direct,

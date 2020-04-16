@@ -103,6 +103,7 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	abdomen_angle =	analyse_senior1["abdomen_angle"]
 	flapping_angle = analyse_senior1["flapping_angle"]
 	sweeping_angle = analyse_senior1["sweeping_angle"]
+	reference_vector = analyse_senior1["reference_vector"]
 
 	for time in range(T) :
 		linesen1_abdomen.plot(time, abdomen_angle[time])
@@ -113,6 +114,9 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	keepon = True
 	t = -30
 
+	# an reference vector
+	reference_cyl =  cylinder(radius=scale/2, color = color.black)
+	
 	while keepon :
 		for i in range(T):
 			if keepon == False : break
@@ -130,6 +134,10 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 			wingtri.v0 = vertex(pos = wbball.pos)
 			wingtri.v1 = vertex(pos = wtball.pos)
 			wingtri.v2 = vertex(pos = teball.pos)
+
+			reference_cyl.pos = vector(o_wb[i][0], -o_wb[i][1], o_wb[i][2])
+			reference_cyl.axis = vector(reference_vector[i][0], -reference_vector[i][1], reference_vector[i][2])
+
 			sleep(dt)
 
 	print("finnish")
