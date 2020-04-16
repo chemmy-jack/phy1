@@ -7,15 +7,12 @@ import numpy as np
 
 global keepon 
 keepon = False
-def VpythonShow(o_co, spec_data_name) :
+def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
-	o_wb = o_co["wb"]
-	o_wt = o_co["wt"]
-	o_te = o_co["te"]
-	o_ta = o_co["ta"]
-
-	# get analyse1 data
-	analyse1 = func.analyse1(o_co)
+	o_wb = origin_coordinate["wb"]
+	o_wt = origin_coordinate["wt"]
+	o_te = origin_coordinate["te"]
+	o_ta = origin_coordinate["ta"]
 
 	scale = abs(o_wb[-1][0]-o_wb[0][0])/100
 	T = len(o_wb)
@@ -51,7 +48,8 @@ def VpythonShow(o_co, spec_data_name) :
 	wingtri = triangle(
 		v0 = vertex(pos = wbball.pos),
 		v1 = vertex(pos = wtball.pos),
-		v2 = vertex(pos = teball.pos)
+		v2 = vertex(pos = teball.pos),
+		opacity = 0.5
 	)
 	print(cenvec)
 	abdomen_cyl = cylinder(radius=scale/2, color = color.yellow)
@@ -65,20 +63,30 @@ def VpythonShow(o_co, spec_data_name) :
 		print("stop")
 		print(keepon)
 	stop_but = button(bind=stop_func, text="stop all", pos=scene.caption_anchor)
+#	def storerawdata_func() :
+		
+	# get analyse1 data
+	analyse1 = func.analyse1(origin_coordinate)
 
+	# get analyse_senior1 data
+	analyse_senior1 = func.analyse_senior1(origin_coordinate)
+
+	'''
 	# setup graph
-	oscillation = graph(title="test graph", xtitle='time', ytitle='value', fast=False, width=800)
-	'''
-	funct1 = gcurve(color=color.blue, width=4, markers=True, marker_color=color.orange, label='curve')
-	funct2 = gvbars(delta=0.4, color=color.green, label='bars')
-	funct3 = gdots(color=color.red, size=6, label='dots')
-	'''
-	funct1 = gcurve(color=color.blue, width=2, markers=True, marker_color=color.blue, label="abdomen")
-	funct2 = gcurve(color=color.red , width=2, markers=True, marker_color=color.red, label="flap")
-	funct3 = gcurve(color=color.yellow , width=2, markers=True, marker_color=color.yellow, label="wingrot")
-	print(scene.center)
+	## analyse1
+	graph_analyse1 = graph(title="analyse1", xtitle='time', ytitle='value', fast=False, width=800)
+	line1_abdomen = gcurve(graph=graph_analyse1, color=color.blue, width=2, markers=True, marker_color=color.blue, label="abdomen")
+	line1_flap = gcurve(graph=graph_analyse1, color=color.red , width=2, markers=True, marker_color=color.red, label="flap")
+	line1_wingrotate = gcurve(graph=graph_analyse1, color=color.yellow , width=2, markers=True, marker_color=color.yellow, label="wingrot")
+	line1_directshift = gcurve(graph=graph_analyse1, color=color.green , width=2, markers=True, marker_color=color.green, label="directshift")
+	## analyse_senior1
+	graph_analyse_senior1 = graph(title="analyse_senior1", xtitle='time', ytitle='value', fast=False, width=800)
+	linesen1_abdomen = gcurve(graph=graph_analyse_senior1, color=color.blue, width=2, markers=True, marker_color=color.blue, label="abdomen")
+	linesen1_flap = gcurve(graph=graph_analyse_senior1, color=color.red , width=2, markers=True, marker_color=color.red, label="flap")
+	linesen1_sweeping = gcurve(graph=graph_analyse_senior1, color=color.orange , width=2, markers=True, marker_color=color.orange, label="sweeping")
 
 	# plot graph
+	## analyse1
 	abdomen_angle =	analyse1["abdomen_angle"]
 	flapping_angle = analyse1["flapping_angle"]
 	pitching_angle = analyse1["pitching_angle"]
@@ -88,17 +96,26 @@ def VpythonShow(o_co, spec_data_name) :
 	shift_angle = analyse1["shift_angle"]
 
 	for time in range(T) :
-		funct1.plot(time, abdomen_angle[time])
-		funct2.plot(time, flapping_angle[time])
-		funct3.plot(time, wingrotate_angle[time])
+		line1_abdomen.plot(time, abdomen_angle[time])
+		line1_flap.plot(time, flapping_angle[time])
+		line1_wingrotate.plot(time, wingrotate_angle[time])
+		line1_directshift.plot(time, shift_angle[time])
+	## analyse_senior1
+	abdomen_angle =	analyse_senior1["abdomen_angle"]
+	flapping_angle = analyse_senior1["flapping_angle"]
+	sweeping_angle = analyse_senior1["sweeping_angle"]
 
+	for time in range(T) :
+		linesen1_abdomen.plot(time, abdomen_angle[time])
+		linesen1_flap.plot(time, flapping_angle[time])
+		linesen1_sweeping.plot(time, sweeping_angle[time])
+	'''
 	# plot graph
 	dt = 0.01
 	keepon = True
 	t = -30
 
 	while keepon :
-		print(keepon)
 		for i in range(T):
 			if keepon == False : break
 			# 3D vizualize

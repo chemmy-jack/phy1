@@ -16,25 +16,26 @@ if Choosedb == "json raw top side" :
 	databasejs = func.get_Jsonrawdb()
 	choosemotion = func.ChooseOneWithNum( "visualize and analyse")
 elif Choosedb == "excel raw top & side sheets" :
-	file_name = tk_GetFileName()
-	database = xw.Book(file_name)
-	spec_data = GetExcelDataSheet()
+	spec_data_name = func.tk_GetFileName()
+	database = xw.Book(spec_data_name)
+	spec_data = func.GetExcelRawTopSide(database)
 	choosemotion = func.ChooseOneWithNum("write to json", "visualize and analyse")
 elif Choosedb == "excel data sheet" : 
-	file_name = tk_GetFileName()
-	database = xw.Book(file_name)
-	spec_data = GetExcelDataSheet(database)
+	spec_data_name = func.tk_GetFileName()
+	database = xw.Book(spec_data_name)
+	spec_data = func.GetExcelDataSheet(database)
 	choosemotion = func.ChooseOneWithNum("write to json", "visualize and analyse")
 
 # operate with data
 if choosemotion == "write to json" :
-	databasejs = get_Jsonrawdb()
-	databasejs[file_name] = spec_data
-	write_Jsondb(databasejs)
+	databasejs = func.get_Jsonrawdb()
+	databasejs[spec_data_name] = spec_data
+	func.write_Jsondb(databasejs)
 if choosemotion == "visualize and analyse" :
 	if Choosedb == "json raw top side" : 
 		spec_data_name = func.GetSpecKeyByNum(databasejs)
 		spec_data = databasejs[spec_data_name]
+	func.PrintKeysWithNum(spec_data)
 	o_co = func.cal_origin_coordinate(spec_data)
 	vshowfunc.VpythonShow(o_co, spec_data_name)
 	

@@ -3,7 +3,7 @@ import json as js
 import tkinter as tk
 import jack_functions as func
 
-file_name = tk_GetFileName()
+file_name = func.tk_GetFileName()
 database = xw.Book(file_name)
 
 add_data = GetExcelDataSheet(database)

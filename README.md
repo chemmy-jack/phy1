@@ -9,23 +9,37 @@
 	* tkinter
 	* gitpython
 ## to do list 
-	* optimize json to angle and track
+	* optimize analyse 2
 	* optimize vpython show path
-		* pause and start
+		* pause and start button
+		* store data button
 		* degree on screen
 		* slider for time
+		* inner coordinate show 
+		* two wings
+		* 3 analysing methods
+			* seniors analyse1
+			* my analyse1
+			* my analyse2
 	* optimize vpython show
 	* analysed json
 		* name ( same as file )
 			* origin coordinate
-			* date 
-			* number of butterfly
-			* number of filming
-		* number of butterfly
-			* span
-			* wing area
-			* weight
-			* breed
+			* analyse1
+				* flapping
+				* pitching
+				* rotate
+				* abdomen
+			* analyse2
+			* information
+				* filming date 
+				* number of butterfly
+				* number of filming
+	* information number of butterfly json
+		* span
+		* wing area
+		* weight
+		* breed
 	* jack function
 		* 
 	* write discription to readme
