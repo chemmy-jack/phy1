@@ -71,7 +71,6 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	# get analyse_senior1 data
 	analyse_senior1 = func.analyse_senior1(origin_coordinate)
 
-	'''
 	# setup graph
 	## analyse1
 	graph_analyse1 = graph(title="analyse1", xtitle='time', ytitle='value', fast=False, width=800)
@@ -109,7 +108,6 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 		linesen1_abdomen.plot(time, abdomen_angle[time])
 		linesen1_flap.plot(time, flapping_angle[time])
 		linesen1_sweeping.plot(time, sweeping_angle[time])
-	'''
 	# plot graph
 	dt = 0.01
 	keepon = True
