@@ -432,7 +432,8 @@ def analyse_senior1(origin_co) :
 	totalnum = len(origin_co["wb"])
 	for i in origin_co :
 		for x in origin_co[i] :
-			x[1] = int(x[1]) * (-1)
+			x[1] = (x[1]) * (-1)
+	print(type(origin_co["wb"][1][1]))
 	origin_wb = origin_co["wb"]
 	origin_wt = origin_co["wt"]
 	origin_te = origin_co["te"]
@@ -456,10 +457,12 @@ def analyse_senior1(origin_co) :
 	abdomen_angle = []
 	flapping_angle = []
 
+	'''
 	for i in range(totalnum):
 		#calculate sweeping angle
 		wingplane_normal_vector = np.cross(le_vector[i], hind_te_vector[i]) #翅膀面法向量
 		sw_base_vector = np.cross(wingplane_normal_vector, body_vector[i]) #翅膀面法向量外積身體向量
+
 		unit_sw_base_vector = sw_base_vector/LA.norm(sw_base_vector) #unit vector of 翅膀面法向量外積身體向量
 		unit_le = le_vector[i]/LA.norm(le_vector[i])
 		sw_temp = acos(np.dot(unit_sw_base_vector, unit_le)) * 180 / np.pi #算角度
@@ -482,6 +485,7 @@ def analyse_senior1(origin_co) :
 			flap_temp = -1 * acos(flap_cos) * 180 / np.pi
 
 		flapping_angle.append(-flap_temp)
+		'''
 	returndic = {
 		"abdomen_angle":abdomen_angle,
 		"flapping_angle":flapping_angle,
