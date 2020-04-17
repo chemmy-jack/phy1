@@ -221,7 +221,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	cen = vector(0,0,0)
 
 	# get coordinate data
-	mid = (list2vpvec(oo_wb[0]) + list2vpvec(oo_wb[-1]))/2 # middel point, use ass offset
+	mid = (list2vpvec(oo_wb[0]) + list2vpvec(oo_wb[-1]))/2 # middle point, use ass offset
 	o_wb = []
 	o_wt = []
 	o_te = []
@@ -243,15 +243,12 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	o_wt_r = [] # mirrored wing tip
 	o_te_r = [] # mirrored trailing edge
 	uyax = vector(0,1,0) # unit vector of y axis
-	for x in range(T) :
-		ta_tv = ta[x]
-		ta_tv.y = 0
-		wt_tv = wt[x]
-		wt_tv.y = 0
-		te_tv = te[x]
-		te_tv.y = 0
-		o_wt_r.append(o_wt[x]-2*(wt_tv-wt_tv.proj(ta_tv)))
-		o_te_r.append(o_te[x]-2*(te_tv-te_tv.proj(ta_tv)))
+	for i in range(T) :
+		ta_tv = vector(ta[i].x, 0, ta[i].z)
+		wt_tv = vector(wt[i].x, 0, wt[i].z)
+		te_tv = vector(te[i].x, 0, te[i].z)
+		o_wt_r.append(o_wt[i]-2*(wt_tv-wt_tv.proj(ta_tv)))
+		o_te_r.append(o_te[i]-2*(te_tv-te_tv.proj(ta_tv)))
 		
 
 	# analyse with vpython
@@ -273,16 +270,16 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		sw_deg.append(degrees(diff_angle(sw_base2[i], wt[i])))
 
 	## flapping angle unit inner z axis
-	uizax = []  # unit inner z axis
+	izax = []  # unit inner z axis
 	flap_deg_1 = [] # flaping angle 1 (using wt vector)
 	flap_deg_senior1 = [] # flapping angle senior 1 (using sw base 1)
 	for i in range(T) :
-		uizax.append( norm(vector(wt[i].z,0,wt[i].x)))
+		izax.append( vector(ta[i].z,0,ta[i].x))
 		ref = wt[i]
-		flap_ref = ref - wt[i].proj(uizax[i])
+		flap_ref = ref - wt[i].proj(izax[i])
 		flap_deg_1.append(90 - degrees(diff_angle(flap_ref, ref)))
 		ref = sw_base1[i]
-		flap_ref = ref - wt[i].proj(uizax[i])
+		flap_ref = ref - wt[i].proj(izax[i])
 		flap_deg_senior1.append(90 - degrees(diff_angle(flap_ref, ref)))
 
 	## shift angle
@@ -323,13 +320,17 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		v2 = vertex(pos = te_rball.pos),
 		opacity = 0.5
 	)
+	abd_cyl = cylinder(radius=scale/2, color = color.yellow, opacity = 0.5)
 	'''
-	abd_cyl = cylinder(radius=scale/2, color = color.yellow)
-	wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow)
-	wb_wt_r_cyl =  cylinder(radius=scale/2, color = color.yellow)
-	wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow)
-	wb_te_r_cyl =  cylinder(radius=scale/2, color = color.yellow)
+	wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.5)
+	wb_wt_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.5)
+	wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.5)
+	wb_te_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.5)
 	'''
+	wing_norm_cyl =  cylinder(radius=scale/2, color = color.magenta, opacity = 0.5)
+	sw_base1_cyl =  cylinder(radius=scale/2, color = color.purple, opacity = 0.5)
+	sw_base2_cyl =  cylinder(radius=scale/2, color = color.orange, opacity = 0.5)
+	izax_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.5)
 
 	# setup widgits
 	def stop_func() :
@@ -341,40 +342,50 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	keepon = True
 	dt = 0.1
+	i = 0
 	# start running visualized graph
 	while keepon :
-		for i in range(T):
-			if keepon == False : break
-			# 3D vizualize
-			## points
-			wbball.pos = o_wb[i]
-			wtball.pos = o_wt[i]
-			teball.pos = o_te[i]
-			taball.pos = o_ta[i]
-			te_rball.pos = o_te_r[i]
-			wt_rball.pos = o_wt_r[i]
-			'''
-			## cylenders
-			abdomen_cyl.pos = wbball.pos
-			abdomen_cyl.axis = taball.pos - wbball.pos
-			wb_wt_cyl.pos = wbball.pos
-			wb_wt_cyl.axis = wtball.pos - wbball.pos
-			wb_wt_a_cyl.pos = wbball.pos
-			wb_wt_a_cyl.axis = wt_aball.pos - wbball.pos
-			wb_te_cyl.pos = wbball.pos
-			wb_te_cyl.axis = teball.pos - wbball.pos
-			wb_te_a_cyl.pos = wbball.pos
-			wb_te_a_cyl.axis = te_aball.pos - wbball.pos
-			'''
-			## wing plate
-			wingtri.v0 = vertex(pos = wbball.pos)
-			wingtri.v1 = vertex(pos = wtball.pos)
-			wingtri.v2 = vertex(pos = teball.pos)
-			wing_rtri.v0 = vertex(pos = wbball.pos)
-			wing_rtri.v1 = vertex(pos = wt_rball.pos)
-			wing_rtri.v2 = vertex(pos = te_rball.pos)
+		# 3D vizualize
+		## points
+		wbball.pos = o_wb[i]
+		wtball.pos = o_wt[i]
+		teball.pos = o_te[i]
+		taball.pos = o_ta[i]
+		te_rball.pos = o_te_r[i]
+		wt_rball.pos = o_wt_r[i]
+		## cylenders
+		abd_cyl.pos = wbball.pos
+		abd_cyl.axis = taball.pos - wbball.pos
+		'''
+		wb_wt_cyl.pos = wbball.pos
+		wb_wt_cyl.axis = wtball.pos - wbball.pos
+		wb_wt_a_cyl.pos = wbball.pos
+		wb_wt_a_cyl.axis = wt_aball.pos - wbball.pos
+		wb_te_cyl.pos = wbball.pos
+		wb_te_cyl.axis = teball.pos - wbball.pos
+		wb_te_a_cyl.pos = wbball.pos
+		wb_te_a_cyl.axis = te_aball.pos - wbball.pos
+		'''
+		wing_norm_cyl.pos = wtball.pos
+		sw_base1_cyl.pos = wbball.pos
+		sw_base2_cyl.pos = wbball.pos
+		izax_cyl.pos = wbball.pos
+		wing_norm_cyl.axis = wing_norm[i]
+		sw_base1_cyl.axis = sw_base1[i]
+		sw_base2_cyl.axis = sw_base2[i]
+		izax_cyl.axis = izax[i]
+		## wing plate
+		wingtri.v0 = vertex(pos = wbball.pos)
+		wingtri.v1 = vertex(pos = wtball.pos)
+		wingtri.v2 = vertex(pos = teball.pos)
+		wing_rtri.v0 = vertex(pos = wbball.pos)
+		wing_rtri.v1 = vertex(pos = wt_rball.pos)
+		wing_rtri.v2 = vertex(pos = te_rball.pos)
 
-			sleep(dt)
+		i += 1
+		if i >= T : i = 0
+		sleep(dt)
+		
 
 	print("finnish")
 	sys.exit()
