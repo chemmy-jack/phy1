@@ -16,7 +16,6 @@
 		* degree on screen
 		* slider for time
 		* inner coordinate show 
-		* two wings
 		* 3 analysing methods
 			* seniors analyse1
 			* my analyse1
@@ -32,6 +31,7 @@
 				* abdomen
 			* analyse2
 			* information
+				# unit
 				* filming date 
 				* number of butterfly
 				* number of filming

@@ -7,6 +7,7 @@ import sys
 import os
 from math import cos, sin, asin, acos, tan, atan, radians, degrees, sqrt
 import numpy as np
+from statistics import mean
 
 # for analyse
 import matplotlib.pyplot as plt
@@ -340,6 +341,13 @@ def GetExcelDataSheet(database) : # assumes each row have same lenth, input is t
 	return data
 
 def analyse1(o_co) : # give origin coordinate, assume same wb,wt,te,ta lenth 
+	
+	'''
+	for i in o_co :
+		for x in o_co[i] :
+			x[1] *= -1
+			'''
+
 	totalnum = len(o_co["wb"])
 	o_wb = o_co["wb"]
 	o_wt = o_co["wt"]
@@ -349,7 +357,7 @@ def analyse1(o_co) : # give origin coordinate, assume same wb,wt,te,ta lenth
 	# calculate directon方向角 & mean direction
 	direct = []
 	for i in range(totalnum): # directon方向角 & mean direction
-		direct.append( atan( o_wb[i][0]-o_ta[i][0] / o_wb[i][2]-o_ta[i][2] ) )
+		direct.append( degrees(atan( o_wb[i][0]-o_ta[i][0] / o_wb[i][2]-o_ta[i][2])))
 	mean_direct = np.mean(direct) # 平均方向角 計算偏移角用 投影xy平面用
 	print("finnish calculate directon方向角 & mean direction")
 
@@ -455,38 +463,47 @@ def analyse_senior1(origin_co) :
 	flapping_angle = []
 
 	unit_sw_base_vector = []
-	for i in range(totalnum):	#calculate sweeping angle
+	for i in range(totalnum):	
+		#calculate sweeping angle
 		wingplane_normal_vector = np.cross(le_vector[i], hind_te_vector[i]) #翅膀面法向量
 		sw_base_vector = np.cross(wingplane_normal_vector, body_vector[i]) #翅膀面法向量外積身體向量
+		sw_base_vector90 = np.cross(wingplane_normal_vector, sw_base_vector) #翅膀面法向量外積身體向量
+		unit_sw_base_vector90 = sw_base_vector90/LA.norm(sw_base_vector90)
 
 		unit_sw_base_vector.append(sw_base_vector/LA.norm(sw_base_vector)) #unit vector of 翅膀面法向量外積身體向量
 		unit_le = le_vector[i]/LA.norm(le_vector[i])
-		sw_temp = degrees(acos(np.dot(unit_sw_base_vector[i], unit_le)) )-90 #算角度
+#		sw_temp = degrees(acos(np.dot(unit_sw_base_vector[i], unit_le)) )-90 #算角度
+		sw_temp = degrees(acos(np.dot(unit_sw_base_vector90, unit_le)) )-90 #算角度
 		sweeping_angle.append(sw_temp)
 		
 	for i in range(totalnum):	#calculate abdomen angle
 		abdomen_angle.append(degrees(atan(body_vector[i][1] / body_vector[i][0]) ))
 
 	unit_body_right_vec = []
+	reference_vector2 = []
 	reference_vector = []
 	for i in range(totalnum):	#calculate flapping angle
 		body_right_vec = [-body_vector[i][2], 0, -body_vector[i][0]]
 		unit_body_right_vec.append(body_right_vec/LA.norm(body_right_vec)) 
-		flap_referenece_vec = np.cross(unit_sw_base_vector[i], unit_body_right_vec[i])
-		flap_referenece2_vec = np.cross(flap_referenece_vec, unit_body_right_vec[i])
-		flap_referenece2_vec[1] = abs(flap_referenece2_vec[1])
-		unit_flap_reference2_vec =  flap_referenece2_vec/LA.norm(flap_referenece2_vec)
+		flap_reference_vec = np.cross(unit_sw_base_vector[i], unit_body_right_vec[i])
+		flap_reference2_vec = np.cross(flap_reference_vec, unit_body_right_vec[i])
+		flap_reference2_vec[1] = abs(flap_reference2_vec[1])
+		unit_flap_reference2_vec =  flap_reference2_vec/LA.norm(flap_reference2_vec)
 		flap_cos = np.dot(unit_flap_reference2_vec, unit_sw_base_vector[i])
 #		flap_cos = np.dot(unit_sw_base_vector[i], unit_body_right_vec[i])
 		flap_temp = degrees(acos(flap_cos)) - 90
-		reference_vector.append(unit_flap_reference2_vec)
+		reference_vector2.append(unit_flap_reference2_vec)
+		reference_vector.append(flap_reference_vec)
 
 		flapping_angle.append(flap_temp)
 	returndic = {
+		"unit_sw_base_vector":unit_sw_base_vector, 
 		"abdomen_angle":abdomen_angle,
 		"flapping_angle":flapping_angle,
 		"sweeping_angle":sweeping_angle,
-		"reference_vector":reference_vector
+		"reference_vector2":reference_vector2,
+		"reference_vector":reference_vector,
+		"unit_body_right_vec":unit_body_right_vec
 #		"pitching_angle":pitching_angle,
 #		"wingrotate_angle":wingrotate_angle,
 #		"mean_direct":mean_direct,

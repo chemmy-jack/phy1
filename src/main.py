@@ -15,21 +15,21 @@ Choosedb = func.ChooseOneWithNum("json raw top side", "excel raw top & side shee
 
 if Choosedb == "json raw top side" : 
 	databasejs = func.get_Jsonrawdb()
-	choosemotion = func.ChooseOneWithNum( "visualize and analyse")
+	choosemotion = func.ChooseOneWithNum( "visualize and analyse", "visual two")
 elif Choosedb == "excel raw top & side sheets" :
 	spec_data_path = func.tk_GetFilePath()
 	spec_excel_book = xw.Book(spec_data_path)
 	spec_data = func.GetExcelRawTopSide(spec_excel_book)
 	spec_data_Name = spec_excel_book.name
 	print("you chose ",func.bcolors.FAIL, spec_excel_book.name, func.bcolors.ENDC)
-	choosemotion = func.ChooseOneWithNum("write to json", "visualize and analyse")
+	choosemotion = func.ChooseOneWithNum("write to json", "visualize and analyse", "visual two")
 elif Choosedb == "excel data sheet" : 
 	spec_data_path = func.tk_GetFilePath()
 	spec_excel_book = xw.Book(spec_data_path)
 	spec_data = func.GetExcelDataSheet(spec_excel_book)
 	spec_data_Name = spec_excel_book.name
 	print("you chose ",func.bcolors.FAIL, spec_excel_book.name, func.bcolors.ENDC)
-	choosemotion = func.ChooseOneWithNum("write to json", "visualize and analyse")
+	choosemotion = func.ChooseOneWithNum("write to json", "visualize and analyse", "visual two")
 
 # operate with data
 if choosemotion == "write to json" :
@@ -45,4 +45,12 @@ if choosemotion == "visualize and analyse" :
 	func.PrintKeysWithNum(spec_data)
 	o_co = func.cal_origin_coordinate(spec_data)
 	vshowfunc.VpythonShow(o_co, spec_data_Name)
+
+if choosemotion == "visual two" :
+	if Choosedb == "json raw top side" : 
+		spec_data_Name = func.GetSpecKeyByNum(databasejs)
+		spec_data = databasejs[spec_data_Name]
+	func.PrintKeysWithNum(spec_data)
+	o_co = func.cal_origin_coordinate(spec_data)
+	vshowfunc.VpythonShow2(o_co, spec_data_Name)
 	
