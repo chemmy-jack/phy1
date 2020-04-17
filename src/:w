@@ -6,7 +6,6 @@ import numpy as np
 from numpy import linalg as LA
 from math import cos, sin, asin, acos, tan, atan, radians, degrees, sqrt
 from statistics import mean
-keepon = True
 
 def lineFromPoints(P,Q): 
 	a = Q[1] - P[1] 
@@ -26,6 +25,7 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 	return mirrorImage(aa, bb, cc, C[0], C[1])
 
 
+global keepon 
 keepon = False
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
@@ -236,7 +236,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		te.append(o_te[i]-o_wb[i])
 		ta.append(o_ta[i]-o_wb[i])
 	
-	scale = mag(ta[0])/30
+	scale = mag(ta[0])/50
 #	scale = abs(oo_wb[-1][0]-oo_wb[0][0])/100
 	print('scale', scale)
 
@@ -262,10 +262,10 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	
 	## dwt 
 	dwt = []
-	diffn = 2
-	for i in range(diffn) : dwt.append(wt[i+diffn]-wt[i])
+	diffn = 1
+	for i in diffn : dwt.append(wt[i+diffn]-wt[i])
 	for i in range(diffn,T-diffn) : dwt.append(wt[i+diffn]-wt[i-diffn])
-	for i in range(diffn) : dwt.append(wt[i]-wt[i-diffn])
+	for i in diffn : dwt.append(wt[i]-wt[i-diffn])
 	
 	## wing norm and sw base vector 1,2 and sweeping angle
 	wing_norm = [] # 翅膀法向量
@@ -345,62 +345,58 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	# setup widgits
 	def stop_func() :
 		global keepon
-		keepon = not keepon
+		keepon = False
 		print("stop")
 		print(keepon)
 	stop_but = button(bind=stop_func, text="stop all", pos=scene.caption_anchor)
 
+	keepon = True
 	dt = 0.02
 	i = 0
 	# start running visualized graph
-	while True :
-		sleep(dt)
-		if keepon :
-			# 3D vizualize
-			## points
-			wbball.pos = o_wb[i]
-			wtball.pos = o_wt[i]
-			teball.pos = o_te[i]
-			taball.pos = o_ta[i]
-			te_rball.pos = o_te_r[i]
-			wt_rball.pos = o_wt_r[i]
-			## cylenders
-			abd_cyl.pos = wbball.pos
-			abd_cyl.axis = ta[i]
-			wb_wt_cyl.pos = wbball.pos
-			wb_wt_cyl.axis = wt[i]
-			wb_wt_r_cyl.pos = wbball.pos
-			wb_wt_r_cyl.axis = wt_rball.pos - wbball.pos
-			wb_te_cyl.pos = wbball.pos
-			wb_te_cyl.axis = te[i]
-			wb_te_r_cyl.pos = wbball.pos
-			wb_te_r_cyl.axis = te_rball.pos - wbball.pos
-			'''
-			wing_norm_cyl.pos = wtball.pos
-			sw_base1_cyl.pos = wbball.pos
-			sw_base2_cyl.pos = wbball.pos
-			izax_cyl.pos = wbball.pos
-			wing_norm_cyl.axis = wing_norm[i]
-			sw_base1_cyl.axis = sw_base1[i]
-			sw_base2_cyl.axis = sw_base2[i]
-			izax_cyl.axis = izax[i]
-			'''
-			dwt_cyl.pos = wtball.pos
-			dwt_cyl.axis = dwt[i] * 5
-			## wing plate
-			wingtri.v0 = vertex(pos = wbball.pos)
-			wingtri.v1 = vertex(pos = wtball.pos)
-			wingtri.v2 = vertex(pos = teball.pos)
-			wing_rtri.v0 = vertex(pos = wbball.pos)
-			wing_rtri.v1 = vertex(pos = wt_rball.pos)
-			wing_rtri.v2 = vertex(pos = te_rball.pos)
+	while keepon :
+		# 3D vizualize
+		## points
+		wbball.pos = o_wb[i]
+		wtball.pos = o_wt[i]
+		teball.pos = o_te[i]
+		taball.pos = o_ta[i]
+		te_rball.pos = o_te_r[i]
+		wt_rball.pos = o_wt_r[i]
+		## cylenders
+		abd_cyl.pos = wbball.pos
+		abd_cyl.axis = ta[i]
+		wb_wt_cyl.pos = wbball.pos
+		wb_wt_cyl.axis = wt[i]
+		wb_wt_r_cyl.pos = wbball.pos
+		wb_wt_r_cyl.axis = wt_rball.pos - wbball.pos
+		wb_te_cyl.pos = wbball.pos
+		wb_te_cyl.axis = te[i]
+		wb_te_r_cyl.pos = wbball.pos
+		wb_te_r_cyl.axis = te_rball.pos - wbball.pos
+		'''
+		wing_norm_cyl.pos = wtball.pos
+		sw_base1_cyl.pos = wbball.pos
+		sw_base2_cyl.pos = wbball.pos
+		izax_cyl.pos = wbball.pos
+		wing_norm_cyl.axis = wing_norm[i]
+		sw_base1_cyl.axis = sw_base1[i]
+		sw_base2_cyl.axis = sw_base2[i]
+		izax_cyl.axis = izax[i]
+		'''
+		dwt_cyl.pos = wbball.pos
+		dwt_cyl.axis = dwt[i]
+		## wing plate
+		wingtri.v0 = vertex(pos = wbball.pos)
+		wingtri.v1 = vertex(pos = wtball.pos)
+		wingtri.v2 = vertex(pos = teball.pos)
+		wing_rtri.v0 = vertex(pos = wbball.pos)
+		wing_rtri.v1 = vertex(pos = wt_rball.pos)
+		wing_rtri.v2 = vertex(pos = te_rball.pos)
 
-			i += 1
-			if i >= T :
-				i = 0
-				wb_trail.stop()
-			elif i == 1 :
-				wb_trail.start()
+		i += 1
+		if i >= T : i = 0
+		sleep(dt)
 		
 
 	print("finnish")
