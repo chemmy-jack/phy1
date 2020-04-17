@@ -274,7 +274,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	flap_deg_1 = [] # flaping angle 1 (using wt vector)
 	flap_deg_senior1 = [] # flapping angle senior 1 (using sw base 1)
 	for i in range(T) :
-		izax.append( vector(ta[i].z,0,ta[i].x))
+		izax.append( vector(ta[i].z,0,-ta[i].x))
 		ref = wt[i]
 		flap_ref = ref - wt[i].proj(izax[i])
 		flap_deg_1.append(90 - degrees(diff_angle(flap_ref, ref)))
