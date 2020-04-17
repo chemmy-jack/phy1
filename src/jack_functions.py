@@ -80,13 +80,13 @@ def cal_origin_coordinate(spec_data) :
 		o_te = []
 		o_ta = []
 		for i in range(nrows):
-			o_wb.append([-(spec_data["side"]["wing_base"][i][0] + spec_data["top"]["wing_base"][i][0]) / 2, spec_data["side"]["wing_base"][i][1], -spec_data["top"]["wing_base"][i][1]])
-			o_wt.append([-(spec_data["side"]["wing_tip"][i][0] + spec_data["top"]["wing_tip"][i][0]) / 2, spec_data["side"]["wing_tip"][i][1], -spec_data["top"]["wing_tip"][i][1]])
-			o_te.append([-(spec_data["side"]["trailing_edge"][i][0] + spec_data["top"]["trailing_edge"][i][0]) / 2, spec_data["side"]["trailing_edge"][i][1], -spec_data["top"]["trailing_edge"][i][1]])
-			o_ta.append([-(spec_data["side"]["tail"][i][0] + spec_data["top"]["tail"][i][0]) / 2, spec_data["side"]["tail"][i][1], -spec_data["top"]["tail"][i][1]])
+			o_wb.append([-(spec_data["side"]["wing_base"][i][0] + spec_data["top"]["wing_base"][i][0]) / 2, -spec_data["side"]["wing_base"][i][1], -spec_data["top"]["wing_base"][i][1]])
+			o_wt.append([-(spec_data["side"]["wing_tip"][i][0] + spec_data["top"]["wing_tip"][i][0]) / 2, -spec_data["side"]["wing_tip"][i][1], -spec_data["top"]["wing_tip"][i][1]])
+			o_te.append([-(spec_data["side"]["trailing_edge"][i][0] + spec_data["top"]["trailing_edge"][i][0]) / 2, -spec_data["side"]["trailing_edge"][i][1], -spec_data["top"]["trailing_edge"][i][1]])
+			o_ta.append([-(spec_data["side"]["tail"][i][0] + spec_data["top"]["tail"][i][0]) / 2, -spec_data["side"]["tail"][i][1], -spec_data["top"]["tail"][i][1]])
 		return { "wb":o_wb, "wt":o_wt, "te":o_te, "ta":o_ta}
 
-def tk_GetFileName() :
+def tk_GetFilePath() :
 	root = tk.Tk()
 	root.withdraw()
 	FileName = filedialog.askopenfilename()
@@ -100,6 +100,7 @@ def get_Jsonrawdb() :
 def write_Jsondb(data) :
 	with open ("../db/rawtopside.json", "w") as databasetmp:
 		databasetmp.write(js.dumps(data, indent=4))
+	print(bcolors.FAIL, "confirm : json raw database updated", bcolors.ENDC)
 
 def PrintKeysWithNum(data) :
 	n = 1
@@ -430,10 +431,6 @@ def analyse1(o_co) : # give origin coordinate, assume same wb,wt,te,ta lenth
 
 def analyse_senior1(origin_co) :
 	totalnum = len(origin_co["wb"])
-	for i in origin_co :
-		for x in origin_co[i] :
-			x[1] = (x[1]) * (-1)
-	print(type(origin_co["wb"][1][1]))
 	origin_wb = origin_co["wb"]
 	origin_wt = origin_co["wt"]
 	origin_te = origin_co["te"]
@@ -481,8 +478,7 @@ def analyse_senior1(origin_co) :
 		unit_flap_reference2_vec =  flap_referenece2_vec/LA.norm(flap_referenece2_vec)
 		flap_cos = np.dot(unit_flap_reference2_vec, unit_sw_base_vector[i])
 #		flap_cos = np.dot(unit_sw_base_vector[i], unit_body_right_vec[i])
-		flap_temp = degrees(acos(flap_cos) ) 
-		print(LA.norm(unit_sw_base_vector[i]))
+		flap_temp = degrees(acos(flap_cos)) - 90
 		reference_vector.append(unit_flap_reference2_vec)
 
 		flapping_angle.append(flap_temp)

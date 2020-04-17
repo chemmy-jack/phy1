@@ -41,7 +41,8 @@
 		* weight
 		* breed
 	* jack function
-		* 
+		* from raw json export analysede to excel
+			* by file or all at once
 	* write discription to readme
 		* progress
 			* film

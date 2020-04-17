@@ -1,9 +1,23 @@
-
 from vpython import *
 import json as js
 import jack_functions as func
 import sys
 import numpy as np
+from numpy import linalg as LA
+
+def lineFromPoints(P,Q): 
+	a = Q[1] - P[1] 
+	b = P[0] - Q[0]  
+	c = a*(P[0]) + b*(P[1]) 
+	c = -c
+	return a, b, c # ax + by + c = 0
+
+def mirrorImage( a, b, c, x1, y1):
+	temp = -2 * (a * x1 + b * y1 + c) /(a * a + b * b)
+	x = temp * a + x1 
+	y = temp * b + y1
+	return (x, y) 
+
 
 global keepon 
 keepon = False
@@ -15,6 +29,7 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	o_ta = origin_coordinate["ta"]
 
 	scale = abs(o_wb[-1][0]-o_wb[0][0])/100
+	print('scale', scale)
 	T = len(o_wb)
 	print(T)
 	# cenvec = vector((o_wb[-1][0]+o_wb[0][0])/2,-(o_wb[-1][1]+o_wb[0][1])/2,(o_wb[-1][2]+o_wb[0][2])/2)
@@ -26,6 +41,19 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 		o_wt[x] = np.subtract(o_wt[x], cenarray)
 		o_te[x] = np.subtract(o_te[x], cenarray)
 		o_ta[x] = np.subtract(o_ta[x], cenarray)
+	
+	
+	# calculate mirrored wing
+	o_wt_a = []
+	o_te_a = []
+	for x in range(T) :
+		o_wb_tv = np.array([o_wb[x][0], o_wb[x][0)]) # top view coordinate x,y
+		o_ta_tv = np.array([o_ta[x][0], o_ta[x][0)]) # top view coordinate x,y
+		o_te_tv = np.array([o_te[x][0], o_te[x][0)]) # top view coordinate x,y
+		o_wt_tv = np.array([o_wt[x][0], o_wt[x][0)]) # top view coordinate x,y
+#		lentoline_wt = np.cross(o_ta_tv-o_wb_tv,o_wt_tv-o_wb_tv)/np.linalg.norm(o_ta_tv-o_wb_tv)
+#		lentolint_te = np.cross(o_ta_tv-o_wb_tv,o_te_tv-o_wb_tv)/np.linalg.norm(o_ta_tv-o_wb_tv)
+#		body_tb = 
 
 	# setup canvas and axis and center ball
 	scene = canvas(title="show path "+spec_data_name, width = 1400 ,height = 800,center = cenvec, background = color.cyan , userspin = True, opacity = 0.2)
@@ -121,10 +149,10 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 		for i in range(T):
 			if keepon == False : break
 			# 3D vizualize
-			wbball.pos = vector(o_wb[i][0], -o_wb[i][1], o_wb[i][2])
-			wtball.pos = vector(o_wt[i][0], -o_wt[i][1], o_wt[i][2])
-			teball.pos = vector(o_te[i][0], -o_te[i][1], o_te[i][2])
-			taball.pos = vector(o_ta[i][0], -o_ta[i][1], o_ta[i][2])
+			wbball.pos = vector(o_wb[i][0], o_wb[i][1], o_wb[i][2])
+			wtball.pos = vector(o_wt[i][0], o_wt[i][1], o_wt[i][2])
+			teball.pos = vector(o_te[i][0], o_te[i][1], o_te[i][2])
+			taball.pos = vector(o_ta[i][0], o_ta[i][1], o_ta[i][2])
 			abdomen_cyl.pos = wbball.pos
 			abdomen_cyl.axis = taball.pos - wbball.pos
 			wb_wt_cyl.pos = wbball.pos
@@ -135,8 +163,8 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 			wingtri.v1 = vertex(pos = wtball.pos)
 			wingtri.v2 = vertex(pos = teball.pos)
 
-			reference_cyl.pos = vector(o_wb[i][0], -o_wb[i][1], o_wb[i][2])
-			reference_cyl.axis = vector(reference_vector[i][0], -reference_vector[i][1], reference_vector[i][2])
+			reference_cyl.pos = vector(o_wb[i][0], o_wb[i][1], o_wb[i][2])
+			reference_cyl.axis = vector(reference_vector[i][0] * scale , -reference_vector[i][1] * scale , reference_vector[i][2] * scale )
 
 			sleep(dt)
 

@@ -7,7 +7,7 @@ import tkinter as tk
 import jack_functions as func
 
 # read data from excel file
-file_name = func.tk_GetFileName()
+file_name = func.tk_GetFilePath()
 database = xw.Book(file_name)
 data = func.GetExcelRawTopSide(database) 
 
