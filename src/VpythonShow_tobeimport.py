@@ -12,11 +12,15 @@ def lineFromPoints(P,Q):
 	c = -c
 	return a, b, c # ax + by + c = 0
 
-def mirrorImage( a, b, c, x1, y1):
+def mirrorImage( a, b, c, x1, y1): # ax + by + c = 0  
 	temp = -2 * (a * x1 + b * y1 + c) /(a * a + b * b)
 	x = temp * a + x1 
 	y = temp * b + y1
-	return (x, y) 
+	return [x, y] 
+
+def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
+	aa, bb, cc = lineFromPoints(A,B)
+	return mirrorImage(aa, bb, cc, C[0], C[1])
 
 
 global keepon 
@@ -47,13 +51,14 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	o_wt_a = []
 	o_te_a = []
 	for x in range(T) :
-		o_wb_tv = np.array([o_wb[x][0], o_wb[x][0)]) # top view coordinate x,y
-		o_ta_tv = np.array([o_ta[x][0], o_ta[x][0)]) # top view coordinate x,y
-		o_te_tv = np.array([o_te[x][0], o_te[x][0)]) # top view coordinate x,y
-		o_wt_tv = np.array([o_wt[x][0], o_wt[x][0)]) # top view coordinate x,y
-#		lentoline_wt = np.cross(o_ta_tv-o_wb_tv,o_wt_tv-o_wb_tv)/np.linalg.norm(o_ta_tv-o_wb_tv)
-#		lentolint_te = np.cross(o_ta_tv-o_wb_tv,o_te_tv-o_wb_tv)/np.linalg.norm(o_ta_tv-o_wb_tv)
-#		body_tb = 
+		o_wb_tv = np.array([o_wb[x][0], o_wb[x][2]]) # top view coordinate x,y
+		o_ta_tv = np.array([o_ta[x][0], o_ta[x][2]]) # top view coordinate x,y
+		o_te_tv = np.array([o_te[x][0], o_te[x][2]]) # top view coordinate x,y
+		o_wt_tv = np.array([o_wt[x][0], o_wt[x][2]]) # top view coordinate x,y
+		o_wt_tv = (GetMirrorDot(o_wb_tv,o_ta_tv,o_wt_tv))# top view coordinate x,y of wing tip mirrored
+		o_te_tv = (GetMirrorDot(o_wb_tv,o_ta_tv,o_te_tv))# top view coordinate x,y of trainling edge mirrored
+		o_te_a.append([o_te_tv[0], o_te[x][1], o_te_tv[1]])
+		o_wt_a.append([o_wt_tv[0], o_wt[x][1], o_wt_tv[1]])
 
 	# setup canvas and axis and center ball
 	scene = canvas(title="show path "+spec_data_name, width = 1400 ,height = 800,center = cenvec, background = color.cyan , userspin = True, opacity = 0.2)
@@ -72,6 +77,8 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	taball = sphere(canvas = scene, radius = scale, color = color.black)
 	# ta_trail = attach_trail(taball, type = "points", radius = scale)
 	# scene.center=vector((o_wb[-1][0]+o_wb[0][0])/2,(o_wb[-1][1]+o_wb[0][1])/2,(o_wb[-1][2]+o_wb[0][2])/2)
+	wt_aball = sphere(canvas = scene, radius = scale, color = color.green)
+	te_aball = sphere(canvas = scene, radius = scale, color = color.red)
 
 	wingtri = triangle(
 		v0 = vertex(pos = wbball.pos),
@@ -82,6 +89,7 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 	print(cenvec)
 	abdomen_cyl = cylinder(radius=scale/2, color = color.yellow)
 	wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow)
+	wb_wt_a_cyl =  cylinder(radius=scale/2, color = color.yellow)
 	wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow)
 
 	# setup widgits
@@ -153,10 +161,14 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 			wtball.pos = vector(o_wt[i][0], o_wt[i][1], o_wt[i][2])
 			teball.pos = vector(o_te[i][0], o_te[i][1], o_te[i][2])
 			taball.pos = vector(o_ta[i][0], o_ta[i][1], o_ta[i][2])
+			te_aball.pos = vector(o_te_a[i][0], o_te_a[i][1], o_te_a[i][2])
+			wt_aball.pos = vector(o_wt_a[i][0], o_wt_a[i][1], o_wt_a[i][2])
 			abdomen_cyl.pos = wbball.pos
 			abdomen_cyl.axis = taball.pos - wbball.pos
 			wb_wt_cyl.pos = wbball.pos
 			wb_wt_cyl.axis = wtball.pos - wbball.pos
+			wb_wt_a_cyl.pos = wbball.pos
+			wb_wt_a_cyl.axis = wt_aball.pos - wbball.pos
 			wb_te_cyl.pos = wbball.pos
 			wb_te_cyl.axis = teball.pos - wbball.pos
 			wingtri.v0 = vertex(pos = wbball.pos)
@@ -164,7 +176,7 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 			wingtri.v2 = vertex(pos = teball.pos)
 
 			reference_cyl.pos = vector(o_wb[i][0], o_wb[i][1], o_wb[i][2])
-			reference_cyl.axis = vector(reference_vector[i][0] * scale , -reference_vector[i][1] * scale , reference_vector[i][2] * scale )
+			reference_cyl.axis = vector(reference_vector[i][0] * scale*100 , -reference_vector[i][1] * scale*100 , reference_vector[i][2] * scale*100 )
 
 			sleep(dt)
 
