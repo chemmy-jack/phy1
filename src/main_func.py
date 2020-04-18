@@ -214,7 +214,11 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	oo_wt = origin_coordinate["wt"]
 	oo_te = origin_coordinate["te"]
 	oo_ta = origin_coordinate["ta"]
-	T = len(oo_wb)
+	T = 100000000
+	for i in origin_coordinate :
+		origin_coordinate[i] = temp
+		if temp<T :
+			T = temp
 	print(T)
 	cen = vector(0,0,0)
 
@@ -538,11 +542,6 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	print("finnish")
 	sys.exit()
 	print("finally")
-	
-import jack_functions as func 
-import json as js
-import jack_functions as func
-import sys
 
 def Deletejsonraw(data) :
 	spec_data_name = func.GetSpecKeyByNum(data)
