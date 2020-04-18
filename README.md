@@ -1,5 +1,7 @@
 # phy1
 ## this is a repository for not using excel as data base, since it's file size is too large. It's not a good thing to use it as a repo.
+[目前最新的資料整理](https://docs.google.com/spreadsheets/d/1CANEBRG2YRJyrXlpOOC52pnUBJTdqH6G90x_D38qdVU/edit?usp=sharing)
+[目前蝴蝶資料](https://docs.google.com/spreadsheets/d/1zfbFTa0ONDA5KLNcvF6RCnSnSxjnCh9jZJ9CPZcXeJA/edit?usp=sharing)
 
 ## required python extensions :
 	* json

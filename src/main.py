@@ -55,4 +55,4 @@ if choosemotion == "visual two" :
 	mfunc.VpythonShow2(o_co, spec_data_Name)
 	
 if choosemotion ==  "delete a data in json raw" :
-	mfunc.Deletejasonraw(databasejs)
+	mfunc.Deletejsonraw(databasejs)

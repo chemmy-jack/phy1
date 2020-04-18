@@ -607,3 +607,4 @@ def analyse2(o_co) :
 		"shift_angle":shift_angle
 	}
 	return retu
+	'''

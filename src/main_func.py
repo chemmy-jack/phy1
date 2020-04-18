@@ -26,7 +26,7 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 
 
 keepon = True
-show_refvec = True
+show_refvec = False
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
 	o_wb = origin_coordinate["wb"]
@@ -398,6 +398,11 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			show_refvec = True
 	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
 
+	def cleartrail_func() :
+		wb_trail.clear()
+		wb_trail.start()
+	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
+		
 			
 	
 	# print analysed data in page
@@ -413,6 +418,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		ad += '{}; '.format(wrot_deg[i])
 	#	ad += 'aaa'
 	'''
+	ad += ';' + spec_data_name + ', '
+	for i in range(T) : ad += '{}, '.format(i)
 	ad += ';abd_deg, '
 	for i in range(T) : ad += '{}, '.format(abd_deg[i])
 	ad += ';pi1_deg, '
@@ -427,6 +434,10 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	for i in range(T) : ad += '{}, '.format(flap_deg_s1[i])
 	ad += ';wrot_deg, '
 	for i in range(T) : ad += '{}, '.format(wrot_deg[i])
+	ad += ';(sqrt(o_wb[i].x**2+o_wb[i].z**2)), '
+	for i in range(T) : ad += '{}, '.format(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
+	ad += ';o_wb[i].y-o_wb[0].y, '
+	for i in range(T) : ad += '{}, '.format(o_wb[i].y-o_wb[0].y)
 	def win_func(s) :
 		print('check')
 	win = winput(text=ad,bind=win_func)
@@ -528,3 +539,21 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	sys.exit()
 	print("finally")
 	
+import jack_functions as func 
+import json as js
+import jack_functions as func
+import sys
+
+def Deletejsonraw(data) :
+	spec_data_name = func.GetSpecKeyByNum(data)
+
+	print("are u sure you want to delete", func.bcolors.WARNING, spec_data_name,func.bcolors.ENDC, "?(yes to confirm)", end = " ")
+
+	if input() == "yes" :	
+		data.pop(spec_data_name, None)
+		print("new key db keys:")
+		func.PrintKeysWithNum(data)
+		func.write_Jsondb(data)
+		print("db modified")
+	else : print("nothing is changed")
+
