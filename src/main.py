@@ -1,6 +1,6 @@
 import jack_functions as func
 import xlwings as xw
-import main_func as vshowfunc
+import main_func as mfunc
 import re # for splitting mulitply characters
 
 print("this is the scipt to help you analyse flapping wing data of point WingBase, WingTip, TrailingEdge, Tail")
@@ -15,7 +15,7 @@ Choosedb = func.ChooseOneWithNum("json raw top side", "excel raw top & side shee
 
 if Choosedb == "json raw top side" : 
 	databasejs = func.get_Jsonrawdb()
-	choosemotion = func.ChooseOneWithNum( "visualize and analyse", "visual two")
+	choosemotion = func.ChooseOneWithNum( "visualize and analyse", "visual two", "delete a data in json raw")
 elif Choosedb == "excel raw top & side sheets" :
 	spec_data_path = func.tk_GetFilePath()
 	spec_excel_book = xw.Book(spec_data_path)
@@ -44,7 +44,7 @@ if choosemotion == "visualize and analyse" :
 		spec_data = databasejs[spec_data_Name]
 	func.PrintKeysWithNum(spec_data)
 	o_co = func.cal_origin_coordinate(spec_data)
-	vshowfunc.VpythonShow(o_co, spec_data_Name)
+	mfunc.VpythonShow(o_co, spec_data_Name)
 
 if choosemotion == "visual two" :
 	if Choosedb == "json raw top side" : 
@@ -52,5 +52,7 @@ if choosemotion == "visual two" :
 		spec_data = databasejs[spec_data_Name]
 	func.PrintKeysWithNum(spec_data)
 	o_co = func.cal_origin_coordinate(spec_data)
-	vshowfunc.VpythonShow2(o_co, spec_data_Name)
+	mfunc.VpythonShow2(o_co, spec_data_Name)
 	
+if choosemotion ==  "delete a data in json raw" :
+	mfunc.Deletejasonraw(databasejs)

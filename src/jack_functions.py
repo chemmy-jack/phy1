@@ -100,7 +100,8 @@ def get_Jsonrawdb() :
 
 def write_Jsondb(data) :
 	with open ("../db/rawtopside.json", "w") as databasetmp:
-		databasetmp.write(js.dumps(data, indent=4))
+		buff = js.dumps(data, indent=4, sort_keys = True)
+		databasetmp.write(buff)
 	print(bcolors.FAIL, "confirm : json raw database updated", bcolors.ENDC)
 
 def PrintKeysWithNum(data) :
