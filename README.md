@@ -50,4 +50,18 @@
 			* analyse
 				* definition of angles
 		* time table(schedule) of contests
-	* change VpythonShow_tobeimport to main_functions
+## some information for this project
+* 目的：探討蝴蝶獨特的飛行
+	* 目前從拍翼動態來研究
+	* 製作拍翼機使變因可控，再透過改變拍翼機之參數觀察其不同
+	* 正在嘗試以PIV將流場可視化, 從流場的角度探討,
+* progress
+	* butterfly
+		* dynamic motion filming
+		* use imagej(mtrack) manualy get cooradinate data
+		* write python analyse script
+		* copy data to excel and analyse with code
+		* discuss on the analysed data
+	* DIY butterfly ornithopter
+* reference
+
