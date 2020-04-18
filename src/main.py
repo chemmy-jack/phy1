@@ -1,6 +1,6 @@
 import jack_functions as func
 import xlwings as xw
-import VpythonShow_tobeimport as vshowfunc
+import main_func as vshowfunc
 import re # for splitting mulitply characters
 
 print("this is the scipt to help you analyse flapping wing data of point WingBase, WingTip, TrailingEdge, Tail")

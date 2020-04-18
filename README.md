@@ -50,3 +50,4 @@
 			* analyse
 				* definition of angles
 		* time table(schedule) of contests
+	* change VpythonShow_tobeimport to main_functions

@@ -3,7 +3,7 @@ import json as js
 import jack_functions as func
 import sys
 import numpy as np
-import VpythonShow_tobeimport as vshowfunc
+import main_func as vshowfunc
 
 # get data 
 data = func.get_Jsonrawdb()

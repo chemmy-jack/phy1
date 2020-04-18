@@ -6,7 +6,6 @@ import numpy as np
 from numpy import linalg as LA
 from math import cos, sin, asin, acos, tan, atan, radians, degrees, sqrt
 from statistics import mean
-keepon = True
 
 def lineFromPoints(P,Q): 
 	a = Q[1] - P[1] 
@@ -26,7 +25,7 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 	return mirrorImage(aa, bb, cc, C[0], C[1])
 
 
-keepon = False
+keepon = True
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
 	o_wb = origin_coordinate["wb"]
@@ -242,8 +241,10 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	
 	# calculate mirrored wing 
-	o_wt_r = [] # mirrored wing tip
-	o_te_r = [] # mirrored trailing edge
+	o_wt_r = [] # mirrored wing tip origin coordinate
+	o_te_r = [] # mirrored trailing edge origin coordinate
+	wt_r = [] # mirrored wing tip
+	te_r = [] # mirrored trailing edge
 	uyax = vector(0,1,0) # unit vector of y axis
 	for i in range(T) :
 		ta_tv = vector(ta[i].x, 0, ta[i].z)
@@ -266,22 +267,24 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	for i in range(diffn) : dwt.append(wt[i+diffn]-wt[i])
 	for i in range(diffn,T-diffn) : dwt.append(wt[i+diffn]-wt[i-diffn])
 	for i in range(diffn) : dwt.append(wt[i]-wt[i-diffn])
-	
-	## wing norm and sw base vector 1,2 and sweeping angle
+
+	## wing norm and sw base vector 1,2 and sweeping angle and wing rotate angle of analyse 1 
 	wing_norm = [] # 翅膀法向量
 	sw_base1 = [] 
 	sw_base2 = []
 	sw_deg = [] # sweeping angle
+	wrot_deg = [] # wing rotation of analyse 1 according to the pitching axis
 	for i in range(T) :
 		wing_norm.append(cross(wt[i], te[i]))
 		sw_base1.append(cross(wing_norm[i], ta[i]))
 		sw_base2.append(rotate(sw_base1[i], pi/2, axis=wing_norm[i]))
 		sw_deg.append(degrees(diff_angle(sw_base2[i], wt[i])))
+		wrot_deg.append(degrees(diff_angle(dwt[i], wing_norm[i])))
 
 	## flapping angle unit inner z axis
-	izax = []  # unit inner z axis
+	izax = []  # inner z axis
 	flap_deg_1 = [] # flaping angle 1 (using wt vector)
-	flap_deg_senior1 = [] # flapping angle senior 1 (using sw base 1)
+	flap_deg_s1 = [] # flapping angle senior 1 (using sw base 1)
 	for i in range(T) :
 		izax.append( vector(ta[i].z,0,-ta[i].x))
 		ref = wt[i]
@@ -289,8 +292,15 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		flap_deg_1.append(90 - degrees(diff_angle(flap_ref, ref)))
 		ref = sw_base1[i]
 		flap_ref = ref - wt[i].proj(izax[i])
-		flap_deg_senior1.append(90 - degrees(diff_angle(flap_ref, ref)))
+		flap_deg_s1.append(90 - degrees(diff_angle(flap_ref, ref)))
 
+	## pitching angle in analyse 1
+	pi1 = [] # in analyse 1, pitching axis uses the axis of wing flapping 
+	pi1_deg = []
+	for i in range(T) :
+		pi1.append(cross(dwt[i], izax[i]))
+		pi1_deg.append(90-degrees(diff_angle(pi1[i], uyax))) # method should be same as abdomen angles
+	
 	## shift angle
 	direct = []
 	sh_deg = []
@@ -299,6 +309,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	mean_direct = mean(direct)
 	for i in range(T) :
 		sh_deg.append(direct[i]-mean_direct)
+		print(sh_deg[i])
 		
 
 	# setup canvas and axis and center ball
@@ -329,12 +340,13 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		v2 = vertex(pos = te_rball.pos),
 		opacity = 0.5
 	)
-	abd_cyl = cylinder(radius=scale/4, color = color.yellow, opacity = 0.5)
-	wb_wt_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5)
-	wb_wt_r_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5)
-	wb_te_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5)
-	wb_te_r_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5)
-	dwt_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.5)
+	abd_cyl = cylinder(radius=scale/4, color = color.yellow, opacity = 0.5, opacity = 0)
+	wb_wt_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5, opacity = 0)
+	wb_wt_r_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5, opacity = 0)
+	wb_te_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5, opacity = 0)
+	wb_te_r_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.5, opacity = 0)
+	dwt_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.5, opacity = 1)
+	pi1_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.5, opacity = 1)
 	'''
 	wing_norm_cyl =  cylinder(radius=scale/2, color = color.magenta, opacity = 0.5)
 	sw_base1_cyl =  cylinder(radius=scale/2, color = color.purple, opacity = 0.5)
@@ -375,6 +387,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			wb_te_cyl.axis = te[i]
 			wb_te_r_cyl.pos = wbball.pos
 			wb_te_r_cyl.axis = te_rball.pos - wbball.pos
+			pi1_cyl.pos = wbball.pos
+			pi1_cyl.axis = pi1[i]
 			'''
 			wing_norm_cyl.pos = wtball.pos
 			sw_base1_cyl.pos = wbball.pos
