@@ -36,7 +36,7 @@ if choosemotion == "write to json" :
 	databasejs = func.get_Jsonrawdb()
 	databasejs[spec_data_Name] = spec_data
 	func.write_Jsondb(databasejs)
-	choosemotion = "visualize and analyse" 
+	choosemotion = "visual two" 
 
 if choosemotion == "visualize and analyse" :
 	if Choosedb == "json raw top side" : 

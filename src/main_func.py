@@ -216,7 +216,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	oo_ta = origin_coordinate["ta"]
 	T = 100000000
 	for i in origin_coordinate :
-		origin_coordinate[i] = temp
+		temp = len(origin_coordinate[i]) 
 		if temp<T :
 			T = temp
 	print(T)
