@@ -10,13 +10,11 @@
 	* matplotlib
 	* tkinter
 	* gitpython
+
 ## to do list 
-	* optimize analyse 2
-	* optimize vpython show path
-		* pause and start button
+	* read csv file 
 		* store data button
 		* degree on screen
-		* slider for time
 		* inner coordinate show 
 		* 3 analysing methods
 			* seniors analyse1

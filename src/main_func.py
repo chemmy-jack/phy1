@@ -240,7 +240,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		te.append(o_te[i]-o_wb[i])
 		ta.append(o_ta[i]-o_wb[i])
 	
-	scale = mag(ta[0])/15
+	scale = mag(wt[0])/15
 #	scale = abs(oo_wb[-1][0]-oo_wb[0][0])/100
 	print('scale', scale)
 
