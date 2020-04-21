@@ -240,7 +240,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		te.append(o_te[i]-o_wb[i])
 		ta.append(o_ta[i]-o_wb[i])
 	
-	scale = mag(wt[0])/15
+	scale = mag(wt[0])/30
 #	scale = abs(oo_wb[-1][0]-oo_wb[0][0])/100
 	print('scale', scale)
 
@@ -322,9 +322,9 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	# setup canvas and axis and center ball
 	scene = canvas(title="show path "+spec_data_name+", T="+str(T)+", diffn of dwt="+str(diffn), width = 1400 ,height = 750,center = cen, background = color.cyan , userspin = True)
-	xaxis = arrow(canvas = scene, pos = cen, axis = vector(1,0,0),shaftwidth = 0.01 ,color=color.blue, opacity = 0.2)
-	yaxis = arrow(canvas = scene, pos = cen, axis = vector(0,1,0),shaftwidth = 0.01 ,color=color.green, opacity = 0.2)
-	zaxis = arrow(canvas = scene, pos = cen, axis = vector(0,0,1),shaftwidth = 0.01 ,color=color.red, opacity = 0.2)
+	xaxis = arrow(canvas = scene, pos = cen, axis = vector(1,0,0)*scale,shaftwidth = 0.01 ,color=color.blue, opacity = 0.2)
+	yaxis = arrow(canvas = scene, pos = cen, axis = vector(0,1,0)*scale,shaftwidth = 0.01 ,color=color.green, opacity = 0.2)
+	zaxis = arrow(canvas = scene, pos = cen, axis = vector(0,0,1)*scale,shaftwidth = 0.01 ,color=color.red, opacity = 0.2)
 	cen = sphere(canvas = scene, pos = cen, radius = 0.02, opacity = 0.1)
 
 	# setup butterfly
@@ -348,11 +348,11 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		v2 = vertex(pos = te_rball.pos),
 		opacity = 0.5
 	)
-	abd_cyl = cylinder(radius=scale/4, color = color.yellow, opacity = 0.3)
-	wb_wt_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.3)
-	wb_wt_r_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.3)
-	wb_te_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.3)
-	wb_te_r_cyl =  cylinder(radius=scale/4, color = color.yellow, opacity = 0.3)
+	abd_cyl = cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
+	wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
+	wb_wt_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
+	wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
+	wb_te_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
 	dwt_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.3)
 	pi1_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.3)
 	wing_norm_cyl =  cylinder(radius=scale/2, color = color.magenta, opacity = 0.5)
