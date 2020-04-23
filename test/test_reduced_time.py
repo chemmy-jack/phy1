@@ -11,11 +11,14 @@ def tk_getfilepath() :
 
 def calcreduce(array, goal) :
 	lenth = len(array)
+	print('lenth =================',end = '')
+	print(lenth)
 	arraym = []
 	ans = [0] * goal
 	for n in range(lenth) :
 		arraym.append(n*goal/lenth)
 	for n in range(lenth-1) :
+#		print('n : ' + str(n))
 		if isinstance(arraym[n], int) :
 			m = arraym[n]
 			ans[m] = (array[n])
@@ -24,15 +27,14 @@ def calcreduce(array, goal) :
 			big = arraym[n+1]
 			smallv = array[n]
 			bigv = array[n+1]
-			diff = big-small
+			diff = big- small
 			existm = int(big)-int(small)
-			print(existm)
 			for x in range(existm) :
-				m = int(small) + x
+				m = int(small) + x + 1
 				dbig = big - m
 				dsmall = m - small
 				ans[m] = ((smallv*dbig/diff+bigv*dsmall/diff))
-				print(m)
+#				print(str(m) + '========= ans : ===============' + str(ans[m]))
 	return ans
 
 point_number = 50
@@ -47,23 +49,36 @@ count = 0
 for i in db :
 	print(i)
 	print(db[i])
+	print(count)
 	
 	#count each T and calculate mean T
 	T = []
 	name = db[i].name
 	print(name)
-	ncolumn.append(db[i]['a1'].expand("table").columns.count)
-	val_tmp = []
-	for x in range(ncolumn[count]) :
+	ncolumn.append(db[i]['a2'].expand("table").columns.count)
+	print(db[i].range('a1').expand('table').columns)
+	val_tmp = [] # list of value in each element
+	print(ncolumn[count])
+	for x in range(ncolumn[count]) : # finnish val_temp value placing
 		alpha = chr(ord('a')+x)
 		nrows = db[i][alpha +'1'].expand("table").rows.count
 		temp = db[i][:nrows, x].value
 		temp.pop(0) #note : because data start at second
 		val_tmp.append(temp)
 		T.append(nrows-1)#note : because data start at second
-	mT = (st.mean(T)) # meanT appended
+	mT = (st.mean(T)) # meanT calculated
+	val_temp1 = []
+	for i in val_tmp : # calculate reduced list of each element in val_temp
+		print('============================')
+		val_temp1.append(calcreduce(i, point_number))
+	val_temp2 = [] # reduced list
+	for x in range(point_number) : # finnish reduced number
+		temp = []
+		for i in range(ncolumn[count]) :
+			temp.append(val_temp1[i][x])
+		val_temp2.append(st.mean(temp))
 	buf = [name,mT]
-	buf += calcreduce(val_tmp, point_number)
+	buf += val_temp2
 	val.append(buf)
 	count += 1
 

@@ -14,6 +14,10 @@ import matplotlib.pyplot as plt
 from numpy import linalg as LA
 from scipy.ndimage.interpolation import rotate
 
+# for csv
+from os import listdir
+import csv
+
 class bcolors:
 	HEADER = '\033[95m'
 	OKBLUE = '\033[94m'
@@ -41,9 +45,8 @@ def GetDatabasePath() :
 
 database = GetDatabasePath()
 
-
 def cal_origin_coordinate(spec_data) :
-		orn_but = ChooseOneWithNum("ornithopter", "butterfly")
+		orn_but = ChooseOneWithNum(["ornithopter", "butterfly"])
 		if orn_but == "ornithopter" :
 			orn = True
 			nrows = 0
@@ -83,6 +86,12 @@ def tk_GetFilePath() :
 	root.withdraw()
 	FileName = filedialog.askopenfilename()
 	return FileName
+
+def tk_GetFilePath() :
+	root = tk.Tk()
+	root.withdraw()
+	mypath = filedialog.askdirectory()
+	return maypath
 
 def get_Jsonrawdb() :
 	with open (database, "r") as databasetmp:
@@ -127,7 +136,7 @@ def GetSpecKeyByNum(data) :
 			spec_data_name = x
 			return spec_data_name
 	
-def ChooseOneWithNum(*a) : # give me an array of options
+def ChooseOneWithNum(a) : # give me an array of options
 	dic = {}
 	n = 0
 	for x in a :
@@ -333,12 +342,6 @@ def GetExcelDataSheet(database) : # assumes each row have same lenth, input is t
 	return data
 
 def analyse1(o_co) : # give origin coordinate, assume same wb,wt,te,ta lenth 
-	
-	'''
-	for i in o_co :
-		for x in o_co[i] :
-			x[1] *= -1
-			'''
 
 	totalnum = len(o_co["wb"])
 	o_wb = o_co["wb"]
@@ -505,97 +508,288 @@ def analyse_senior1(origin_co) :
 	
 	return returndic
 		
+def GetMtrackCSV(excelfile) :
+	# Choose csv folder 
+	folder_path = GetFolderPath()
+	files = listdir(folder_path)
 
-def analyse_senior2(o_co) :
-	return 0
 
-'''
-def analyse2(o_co) :
-	totalnum = len(o_co["wb"])
-	o_wb = o_co["wb"]
-	o_wt = o_co["wt"]
-	o_te = o_co["te"]
-	o_ta = o_co["ta"]
 
-	# calculate directon方向角 & mean direction
-	direct = []
-	for i in range(totalnum): # directon方向角 & mean direction
-		direct.append( atan( o_wb[i][0]-o_ta[i][0] / o_wb[i][2]-o_ta[i][2] ) )
-	mean_direct = np.mean(direct) # 平均方向角 計算偏移角用 投影xy平面用
-	print("finnish calculate directon方向角 & mean direction")
+	sheettop = excelfile.sheets["raw_data_top"]
+	sheetside = excelfile.sheets["raw_data_side"]
+	datatop = GetMtrackRawDataSheet(sheettop)
+	dataside = GetMtrackRawDataSheet(sheetside)
+	TIDtop = FindArrayInclude(datatop["tid"])
+	TIDside = FindArrayInclude(dataside["tid"])
 
-	# calculate inner coordinate
-	wt = []
-	te = []
-	ta = []
-	for i in range(totalnum): # calculate inner coordinate
-		wt.append(np.subtract(o_wt[i], o_wb[i]))
-		te.append(np.subtract(o_te[i], o_wb[i]))
-		ta.append(np.subtract(o_ta[i], o_wb[i]))
-	print("finnish calculate inner coordinate")
+	# make TID to [x, y]
+	## top
+	totalnum = len(datatop["nr"])
+	tid2co_top = {}
+	for i in range(totalnum) :
+		tid = datatop["tid"][i] 
+		if tid not in tid2co_top :
+			tid2co_top[tid] = []
+		tid2co_top[tid].append(datatop["x_y"][i])
+	## side
+	totalnum = len(dataside["nr"])
+	tid2co_side = {}
+	for i in range(totalnum) :
+		tid = dataside["tid"][i] 
+		if tid not in tid2co_side :
+			tid2co_side[tid] = []
+		tid2co_side[tid].append(dataside["x_y"][i])
 
-	# calculate shift_angle偏移角度
-	shift_angle = [] # 偏移角(print)
-	for i in range(totalnum): # calculate shift_angle偏移角度
-		shift_angle.append(mean_direct-direct[i] ) #print(shift_angle[i])
-	print("...calculate shift_angle偏移角度") 
+	print("\nfind top TID: ", end = "\n")
+	for i in TIDtop :	
+		print(i , ": ", TIDtop[i], end = "\n")
+	print("\nfind side TID: ", end = "\n")
+	for i in TIDside :	
+		print(i, ": ", TIDside[i], end = "\n")
+	
+	# get top 
+	while True :
+		try : 
+			temp = int(input("top wb: "))
+			top_wb = tid2co_top[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top wt: "))
+			top_wt = tid2co_top[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top te: "))
+			top_te = tid2co_top[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top ta: "))
+			top_ta = tid2co_top[temp]
+			break
+		except : print("error: try again")
 
-	# calculate abdomen angle
-	abdomen_angle = [] #腹部角(print)
-	for i in range(totalnum): # calculate abdomen angle
-		abdomen_angle.append(np.degrees(atan(ta[i][1]/np.sqrt(ta[i][0]**2 + ta[i][2]**2))))
-	print("finnish calculating abdomen angle")
 
-	# calculate flapping angle (angle between LEvector unit wingbase z axis vector)
-	flapping_angle = [] #拍撲角(print)
-	for i in range(totalnum): # calculate flapping angle (angle between LEvector unit wingbase z axis vector)
-		temp = [ta[i][2],0,ta[i][0]]
-		flapping_angle.append(np.degrees(acos(np.dot(temp/LA.norm(temp),wt[i]/LA.norm(wt[i])))))
-		if wt[i][1]>0 : flapping_angle[i] *= -1
-		# print(wt[i][1])
-	print("finnish caculate flapping angle")
+	# get side 
+	while True :
+		try : 
+			temp = int(input("side wb: "))
+			side_wb = tid2co_side[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side wt: "))
+			side_wt = tid2co_side[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side te: "))
+			side_te = tid2co_side[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side ta: "))
+			side_ta = tid2co_side[temp]
+			break
+		except : print("error: try again")
 
-	# calculate wing rotate angle
-	wingrotate_angle = [] #翅膀旋轉(print) 
-	## calculate delta ta vector
-	delta_ta = []
-	for i in range(3): ta.append(ta[-1])
-	for i in range(totalnum): # calculate wing rotate angle
-		delta_ta.append(np.subtract(ta[i+2], ta[i-2])/2)
-	print("...finnish calculate delta ta vector")
-	## calcutate normal vector of wing
-	normal_wing = []
-	for i in range(totalnum): # calcutate normal vector of wing  
-		normal_wing.append(np.cross(wt[i],te[i]))
-	print("...finnish calcutate normal vector of wing")
-	## calculate wing rotate angle
-	for i in range(totalnum): ## calculate wing rotate angle
-		wingrotate_angle.append(90-np.degrees(acos(np.dot(normal_wing[i]/LA.norm(normal_wing[i]),delta_ta[i]/LA.norm(delta_ta[i])))))
-	print("finnish caculate wing rotate angle")
-
-	# calculate pitching angle
-	pitching_angle = [] #仰角 flapping axis與horizon之angle (print)
-	for i in range(totalnum): # calculate pitching angle
-		temp = [ta[i][2],0,ta[i][0]]
-		#print(delta_ta[i])
-		unit_delta_ta = delta_ta[i]/LA.norm(delta_ta[i])
-		#print(unit_delta_ta)
-		unit_temp = temp/LA.norm(temp)
-		flapping_axis = np.cross(unit_delta_ta, unit_temp)
-		#print(flapping_axis)
-		temp =  flapping_axis[1]/np.sqrt(flapping_axis[0]**2 + flapping_axis[2]**2) 
-		#print(temp)
-		pitching_angle.append(np.degrees(atan(temp)))
-	print("finnish calculate pitching angle")
-
-	retu = {
-		"abdomen_angle":abdomen_angle,
-		"flapping_angle":flapping_angle,
-		"pitching_angle":pitching_angle,
-		"wingrotate_angle":wingrotate_angle,
-		"mean_direct":mean_direct,
-		"direct":direct,
-		"shift_angle":shift_angle
+	side_dic = {
+		"wing_base":side_wb,
+		"wing_tip" :side_wt,
+		"trailing_edge" :side_te,
+		"tail" :side_ta
 	}
-	return retu
-	'''
+	top_dic = {
+		"wing_base":top_wb,
+		"wing_tip" :top_wt,
+		"trailing_edge" :top_te,
+		"tail" :top_ta
+	}
+	data = {
+		"side":side_dic, 
+		"top":top_dic
+	}
+	return data
+
+def GetMtrackRawCSV(clist) : # x,y 3,4 get TID 1
+	print(clist)
+	nrows = len(clist)
+	Nr = []
+	TID = []
+	PID = []
+	x_y = []
+	for i in clist :
+		Nr.append(i[0])
+		TID.append(i[1])
+		PID.append(i[2])
+		x_y.append([i[3], i[3]])
+	data = {
+		"nr":Nr,
+		"tid":TID,
+		"pid":PID,
+		"x_y":x_y }
+	return data
+
+def GetMtrackRawCSVdic(cdic) : # x,y 3,4 get TID 1
+	nrows = len(cdic)
+	Nr=i['Nr']
+	TID=i['TID']
+	PID=i['PID']
+	x_y = []
+	for i in nrows :
+		for n in nrows :
+			x_y.append(i['x[mm]', 'y[mm]'])
+		x_y=i['']
+	data = {
+		"nr":Nr,
+		"tid":TID,
+		"pid":PID,
+		"x_y":x_y }
+	return data
+
+def GetFolderPath() :
+	root = tk.Tk()
+	root.withdraw()
+	mypath = filedialog.askdirectory()
+	return mypath
+
+def GetCSVRawTopSide() :
+	filepath = GetFolderPath()
+	files = listdir(filepath)
+
+	csvfiles = []
+	for n in files :
+		if ".csv" in n : csvfiles.append(n)
+	for n in csvfiles :
+		print(n)
+	csvfiles.sort()
+
+	# get file name
+	print('top csv is: ')
+	topcsvname = ChooseOneWithNum(csvfiles)
+	print('side csv is: ')
+	sidecsvname = ChooseOneWithNum(csvfiles)
+
+	print(topcsvname)
+
+
+	# get file as list
+	topcsv = []
+	with open(filepath+"/"+topcsvname, newline='') as topfile :
+		topcsvfile = csv.reader(topfile)
+		for i in topcsvfile :
+			topcsv.append(i)
+
+	sidecsv = []
+	with open(filepath+"/"+sidecsvname, newline='') as sidefile :
+		sidecsvfile = csv.reader(sidefile)
+		for i in sidecsvfile :
+			sidecsv.append(i)
+
+	datatop = GetMtrackRawCSV(topcsv)
+	dataside = GetMtrackRawCSV(sidecsv)
+	TIDtop = FindArrayInclude(datatop["tid"])
+	TIDside = FindArrayInclude(dataside["tid"])
+	# make TID to [x, y]
+	## top
+	totalnum = len(datatop["nr"])
+	tid2co_top = {}
+	for i in range(totalnum) :
+		tid = datatop["tid"][i] 
+		if tid not in tid2co_top :
+			tid2co_top[tid] = []
+		tid2co_top[tid].append(datatop["x_y"][i])
+	## side
+	totalnum = len(dataside["nr"])
+	tid2co_side = {}
+	for i in range(totalnum) :
+		tid = dataside["tid"][i] 
+		if tid not in tid2co_side :
+			tid2co_side[tid] = []
+		tid2co_side[tid].append(dataside["x_y"][i])
+
+	print("\nfind top TID: ", end = "\n")
+	for i in TIDtop :	
+		print(i , ": ", TIDtop[i], end = "\n")
+	print("\nfind side TID: ", end = "\n")
+	for i in TIDside :	
+		print(i, ": ", TIDside[i], end = "\n")
+
+	# get top 
+	while True :
+		try : 
+			temp = int(input("top wb: "))
+			top_wb = tid2co_top[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top wt: "))
+			top_wt = tid2co_top[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top te: "))
+			top_te = tid2co_top[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("top ta: "))
+			top_ta = tid2co_top[temp]
+			break
+		except : print("error: try again")
+
+
+	# get side 
+	while True :
+		try : 
+			temp = int(input("side wb: "))
+			side_wb = tid2co_side[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side wt: "))
+			side_wt = tid2co_side[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side te: "))
+			side_te = tid2co_side[temp]
+			break
+		except : print("error: try again")
+	while True :
+		try : 
+			temp = int(input("side ta: "))
+			side_ta = tid2co_side[temp]
+			break
+		except : print("error: try again")
+
+	side_dic = {
+		"wing_base":side_wb,
+		"wing_tip" :side_wt,
+		"trailing_edge" :side_te,
+		"tail" :side_ta
+	}
+	top_dic = {
+		"wing_base":top_wb,
+		"wing_tip" :top_wt,
+		"trailing_edge" :top_te,
+		"tail" :top_ta
+	}
+	data = {
+		"side":side_dic, 
+		"top":top_dic
+	}
+	return data
+
