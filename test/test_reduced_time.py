@@ -19,8 +19,9 @@ def calcreduce(array, goal) :
 		arraym.append(n*goal/lenth)
 	for n in range(lenth-1) :
 #		print('n : ' + str(n))
-		if isinstance(arraym[n], int) :
-			m = arraym[n]
+#		if isinstance(arraym[n], int) :
+		if arraym[n].is_integer() :
+			m = int(arraym[n])
 			ans[m] = (array[n])
 		else :
 			small = arraym[n]
