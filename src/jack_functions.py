@@ -87,7 +87,7 @@ def tk_GetFilePath() :
 	FileName = filedialog.askopenfilename()
 	return FileName
 
-def tk_GetFilePath() :
+def tk_GetFolderPath() :
 	root = tk.Tk()
 	root.withdraw()
 	mypath = filedialog.askdirectory()
@@ -510,7 +510,7 @@ def analyse_senior1(origin_co) :
 		
 def GetMtrackCSV(excelfile) :
 	# Choose csv folder 
-	folder_path = GetFolderPath()
+	folder_path = tk_GetFolderPath()
 	files = listdir(folder_path)
 
 

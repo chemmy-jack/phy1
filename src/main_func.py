@@ -321,34 +321,35 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		
 
 	# setup canvas and axis and center ball
-	scene = canvas(title="show path "+spec_data_name+", T="+str(T)+", diffn of dwt="+str(diffn), width = 1400 ,height = 750,center = cen, background = color.cyan , userspin = True)
+	background_color = vector(0, 92, 179) # '#dbfacf'
+	print('back color', background_color)
+	scene = canvas(title="show path "+spec_data_name+", T="+str(T)+", diffn of dwt="+str(diffn), width = 1400 ,height = 750,center = cen, background = background_color, userspin = True)
 	xaxis = arrow(canvas = scene, pos = cen, axis = vector(1,0,0)*scale,shaftwidth = 0.01 ,color=color.blue, opacity = 0.2)
 	yaxis = arrow(canvas = scene, pos = cen, axis = vector(0,1,0)*scale,shaftwidth = 0.01 ,color=color.green, opacity = 0.2)
 	zaxis = arrow(canvas = scene, pos = cen, axis = vector(0,0,1)*scale,shaftwidth = 0.01 ,color=color.red, opacity = 0.2)
 	cen = sphere(canvas = scene, pos = cen, radius = 0.02, opacity = 0.1)
 
 	# setup butterfly
-	wbball = sphere(canvas = scene, radius = scale, color = color.black)
-	wb_trail = attach_trail(wbball, type = "curve", radius = scale/2) 
-	wtball = sphere(canvas = scene, radius = scale, color = color.green)
-	teball = sphere(canvas = scene, radius = scale, color = color.red)
-	taball = sphere(canvas = scene, radius = scale, color = color.black)
-	wt_rball = sphere(canvas = scene, radius = scale, color = color.green)
-	te_rball = sphere(canvas = scene, radius = scale, color = color.red)
+	wbball = sphere(canvas = scene, radius = scale, color = color.red)
+	wb_trail = attach_trail(wbball, type = "curve", radius = scale/5)
+	wtball = sphere(canvas = scene, radius = scale/2, color = color.red)
+	teball = sphere(canvas = scene, radius = scale/2, color = color.red)
+	taball = sphere(canvas = scene, radius = scale, color = color.red)
+	wt_rball = sphere(canvas = scene, radius = scale/2, color = color.red)
+	te_rball = sphere(canvas = scene, radius = scale/2, color = color.red)
 
+	wing_opacity = 0.75
 	wingtri = triangle(
-		v0 = vertex(pos = wbball.pos),
-		v1 = vertex(pos = wtball.pos),
-		v2 = vertex(pos = teball.pos),
-		opacity = 0.5
+		v0 = vertex(pos = wbball.pos, opacity = wing_opacity),
+		v1 = vertex(pos = wtball.pos, opacity = wing_opacity),
+		v2 = vertex(pos = teball.pos, opacity = wing_opacity)
 	)
 	wing_rtri = triangle(
-		v0 = vertex(pos = wbball.pos),
-		v1 = vertex(pos = wt_rball.pos),
-		v2 = vertex(pos = te_rball.pos),
-		opacity = 0.5
+		v0 = vertex(pos = wbball.pos, opacity = wing_opacity),
+		v1 = vertex(pos = wt_rball.pos, opacity = wing_opacity),
+		v2 = vertex(pos = te_rball.pos, opacity = wing_opacity)
 	)
-	abd_cyl = cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
+	abd_cyl = cylinder(radius=scale, color = color.gray(0.5), opacity = 0.5)
 	wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
 	wb_wt_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
 	wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
@@ -516,12 +517,12 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			pi1_cyl.axis = pi1[ts.value] * 100
 		
 		## wing plate
-		wingtri.v0 = vertex(pos = wbball.pos)
-		wingtri.v1 = vertex(pos = wtball.pos)
-		wingtri.v2 = vertex(pos = teball.pos)
-		wing_rtri.v0 = vertex(pos = wbball.pos)
-		wing_rtri.v1 = vertex(pos = wt_rball.pos)
-		wing_rtri.v2 = vertex(pos = te_rball.pos)
+		wingtri.v0.pos = wbball.pos
+		wingtri.v1.pos = wtball.pos
+		wingtri.v2.pos = teball.pos
+		wing_rtri.v0.pos = wbball.pos
+		wing_rtri.v1.pos = wt_rball.pos
+		wing_rtri.v2.pos = te_rball.pos
 	
 
 	dt = 0.02
