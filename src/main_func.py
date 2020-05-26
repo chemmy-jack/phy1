@@ -26,7 +26,7 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 
 
 keepon = True
-show_refvec = False
+show_refvec = True
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
 	o_wb = origin_coordinate["wb"]
@@ -145,7 +145,7 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 		line1_wingrotate.plot(time, wingrotate_angle[time])
 		line1_directshift.plot(time, shift_angle[time])
 	## analyse_senior1
-	abdomen_angle =	analyse_senior1["abdomen_angle"]
+	abdomen_angle = analyse_senior1["abdomen_angle"]
 	flapping_angle = analyse_senior1["flapping_angle"]
 	sweeping_angle = analyse_senior1["sweeping_angle"]
 	reference_vector = analyse_senior1["reference_vector"]
@@ -281,6 +281,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	sw_base2 = []
 	sw_deg = [] # sweeping angle
 	wrot_deg = [] # wing rotation of analyse 1 according to the pitching axis
+
 	for i in range(T) :
 		wing_norm.append(cross(wt[i], te[i]))
 		sw_base1.append(cross(wing_norm[i], ta[i]))
@@ -318,10 +319,19 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	mean_direct = mean(direct)
 	for i in range(T) :
 		sh_deg.append(direct[i]-mean_direct)
-		
+
+	# unitilize vectors (for better visualization)
+	for i in range(T) :
+		wing_norm[i] = wing_norm[i].norm() * scale * 10
+		sw_base1[i] = sw_base1[i].norm() * scale * 10
+		sw_base2[i] = sw_base2[i].norm() * scale * 10
+		dwt[i] = dwt[i] * scale
+		pi1[i] = pi1[i].norm() * scale * 10
+		izax[i] = izax[i].norm() * scale * 10
 
 	# setup canvas and axis and center ball
-	background_color = vector(0, 92, 179) # '#dbfacf'
+	background_color_raw = vector(83, 252, 171)
+	background_color = background_color_raw/255
 	print('back color', background_color)
 	scene = canvas(title="show path "+spec_data_name+", T="+str(T)+", diffn of dwt="+str(diffn), width = 1400 ,height = 750,center = cen, background = background_color, userspin = True)
 	xaxis = arrow(canvas = scene, pos = cen, axis = vector(1,0,0)*scale,shaftwidth = 0.01 ,color=color.blue, opacity = 0.2)
@@ -349,24 +359,27 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		v1 = vertex(pos = wt_rball.pos, opacity = wing_opacity),
 		v2 = vertex(pos = te_rball.pos, opacity = wing_opacity)
 	)
+	cylrad = scale/2
 	abd_cyl = cylinder(radius=scale, color = color.gray(0.5), opacity = 0.5)
-	wb_wt_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
-	wb_wt_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
-	wb_te_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
-	wb_te_r_cyl =  cylinder(radius=scale/2, color = color.yellow, opacity = 0.3)
-	dwt_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.3)
-	pi1_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.3)
-	wing_norm_cyl =  cylinder(radius=scale/2, color = color.magenta, opacity = 0.5)
-	sw_base1_cyl =  cylinder(radius=scale/2, color = color.purple, opacity = 0.5)
-	sw_base2_cyl =  cylinder(radius=scale/2, color = color.red, opacity = 0.8)
-	izax_cyl =  cylinder(radius=scale/2, color = color.black, opacity = 0.5)
+	wb_wt_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
+	wb_wt_r_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
+	wb_te_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
+	wb_te_r_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
+
+	refcylrad = scale/4
+	refcylopc = 0.3
+	dwt_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
+	pi1_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
+	wing_norm_cyl = cylinder(radius=refcylrad, color = color.magenta, opacity = refcylopc)
+	sw_base1_cyl = cylinder(radius=refcylrad, color = color.purple, opacity = refcylopc)
+	sw_base2_cyl = cylinder(radius=refcylrad, color = color.red, opacity = refcylopc)
+	izax_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
 
 	# setup widgits
 	def stpa_func() :
 		global keepon
 		keepon = not keepon
 		print("stpa")
-		print(keepon)
 	stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
 
 	def switch_fuc() :
@@ -385,21 +398,22 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	toggledata_but = button(bind=toggledata_func, text='toggle data', pos=scene.caption_anchor)
 
 	def refvecshow_func(b) :
+		global show_refvec
 		if not b.checked :
-			dwt_cyl.opacity = 0.0 
-			pi1_cyl.opacity = 0.0 
-			wing_norm_cyl.opacity = 0.0 
-			sw_base1_cyl.opacity = 0.0 
+			dwt_cyl.opacity = 0.0
+			pi1_cyl.opacity = 0.0
+			wing_norm_cyl.opacity = 0.0
+			sw_base1_cyl.opacity = 0.0
 			sw_base2_cyl.opacity = 0.0
-			izax_cyl.opacity = 0.0  
+			izax_cyl.opacity = 0.0
 			show_refvec = False
 		elif b.checked :
-			dwt_cyl.opacity = 0.5 
-			pi1_cyl.opacity = 0.5 
-			wing_norm_cyl.opacity = 0.5 
-			sw_base1_cyl.opacity = 0.5 
-			sw_base2_cyl.opacity = 0.5
-			izax_cyl.opacity = 0.5 
+			dwt_cyl.opacity = refcylopc
+			pi1_cyl.opacity = refcylopc
+			wing_norm_cyl.opacity = refcylopc
+			sw_base1_cyl.opacity = refcylopc
+			sw_base2_cyl.opacity = refcylopc
+			izax_cyl.opacity = refcylopc
 			show_refvec = True
 	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
 
@@ -448,7 +462,6 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	win = winput(text=ad,bind=win_func)
 
 	def timeslider_func(val) :
-		print('ha')
 		wb_trail.stop()
 		update()
 		wb_trail.start()
@@ -481,6 +494,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	
 	#define update
 	def update() :
+		global show_refvec
 		wtime.text = str(ts.value)
 		# 3D vizualize
 		## points
@@ -506,15 +520,15 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			sw_base1_cyl.pos = wbball.pos
 			sw_base2_cyl.pos = wbball.pos
 			izax_cyl.pos = wbball.pos
+			dwt_cyl.pos = wtball.pos
+			pi1_cyl.pos = wbball.pos
+
 			wing_norm_cyl.axis = wing_norm[ts.value]
 			sw_base1_cyl.axis = sw_base1[ts.value]
-			sw_base2_cyl.axis = sw_base2[ts.value] * 100
+			sw_base2_cyl.axis = sw_base2[ts.value]
+			dwt_cyl.axis = dwt[ts.value]
 			izax_cyl.axis = izax[ts.value]
-			
-			dwt_cyl.pos = wtball.pos
-			dwt_cyl.axis = dwt[ts.value] * 5
-			pi1_cyl.pos = wbball.pos
-			pi1_cyl.axis = pi1[ts.value] * 100
+			pi1_cyl.axis = pi1[ts.value]
 		
 		## wing plate
 		wingtri.v0.pos = wbball.pos

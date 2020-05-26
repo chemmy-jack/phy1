@@ -1,4 +1,4 @@
-import xlwings as xw
+# import xlwings as xw # commit out for linux, remember to uncommit when in need
 import json as js
 import tkinter as tk
 from tkinter import filedialog
