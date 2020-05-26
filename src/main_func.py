@@ -27,7 +27,7 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 
 keepon = True
 show_refvec = True
-blaftimg = True
+blaftimg = False
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
 	o_wb = origin_coordinate["wb"]
@@ -331,7 +331,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		izax[i] = izax[i].norm() * scale * 10
 
 	# setup canvas and axis and center ball
-	background_color_raw = vector(83, 252, 171)
+	background_color_raw = vector(255, 253, 191)
 	background_color = background_color_raw/255
 	print('back color', background_color)
 	scene = canvas(title="show path "+spec_data_name+", T="+str(T)+", diffn of dwt="+str(diffn), width = 1400 ,height = 750,center = cen, background = background_color, userspin = True)
@@ -342,12 +342,13 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	# setup butterfly
 	wbball = sphere(canvas = scene, radius = scale, color = color.red)
-	wb_trail = attach_trail(wbball, type = "curve", radius = scale/5)
+	wb_trail = attach_trail(wbball, type = "curve", radius = scale/3, color=color.red)
 	wtball = sphere(canvas = scene, radius = scale/2, color = color.red)
-	teball = sphere(canvas = scene, radius = scale/2, color = color.red)
+	wt_trail = attach_trail(wtball, type = "points", radius = scale/3, color=color.black)
+	teball = sphere(canvas = scene, radius = scale/2, color = color.purple)
 	taball = sphere(canvas = scene, radius = scale, color = color.red)
 	wt_rball = sphere(canvas = scene, radius = scale/2, color = color.red)
-	te_rball = sphere(canvas = scene, radius = scale/2, color = color.red)
+	te_rball = sphere(canvas = scene, radius = scale/2, color = color.purple)
 
 	wing_opacity = 0.75
 	wingtri = triangle(
@@ -362,10 +363,10 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	)
 	cylrad = scale/2
 	abd_cyl = cylinder(radius=scale, color = color.gray(0.5), opacity = 0.5)
-	wb_wt_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
-	wb_wt_r_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
-	wb_te_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
-	wb_te_r_cyl = cylinder(radius=cylrad, color = color.yellow, opacity = 0.3)
+	wb_wt_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
+	wb_wt_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
+	wb_te_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
+	wb_te_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
 
 	refcylrad = scale/4
 	refcylopc = 0.3
@@ -381,7 +382,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		wb_trail.stop()
 		update()
 		wb_trail.start()
-	ts = slider(min = 0, max = T, value = 0, bind = timeslider_func, step = 1, pos=scene.caption_anchor) # time slider
+	ts = slider(min = 0, max = T-1, value = 0, bind = timeslider_func, step = 1, pos=scene.caption_anchor) # time slider
 	wtime = wtext(text="time")
 
 	#define update
@@ -432,9 +433,9 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	
 	# set butterfly clones
 	cloneops = 0.1
-	cloneopsw = 0.5
+	cloneopsw = 0.3
 	clonesw = []
-	clonen = 4
+	clonen = 6
 	clones = []
 #	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
 	for i in range(clonen+1) :
@@ -456,7 +457,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			wb_wt_r_cyl.clone(opacity=cloneops),
 			wb_te_cyl.clone(opacity=cloneops),
 			wb_te_r_cyl.clone(opacity=cloneops),
-			extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
+#			extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
 		])
 		clonesw.append([
 			triangle(
@@ -483,18 +484,39 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		for i in clones :
 			for j in i :
 				j.opacity = goal
-	def aftimg(b) :
+	def aftimgchopsw(goal) :
+		for i in clonesw :
+			for j in i :
+				j.v0.opacity = goal
+				j.v1.opacity = goal
+				j.v2.opacity = goal
+	def aftimg() :
 		global blaftimg
+		b = aftimg_but
 		if not b.checked :
 			blaftimg = False
 			aftimgchops(0)
+			aftimgchopsw(0)
 		if b.checked :
 			blaftimg = True
 			aftimgchops(cloneops)
+			aftimgchopsw(cloneopsw)
 		print("blaftimg")
-	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor)
+	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor, checked=True )
+	aftimg_but.checked = False
+	aftimg()
 
-		
+	def wttrail() :
+		global blaftimg
+		b = wttrail_but
+		if not b.checked :
+			wt_trail.stop()
+			wt_trail.clear()
+		if b.checked :
+			wt_trail.start()
+	wttrail_but = checkbox(bind=wttrail, text="wtip trail", pos=scene.caption_anchor, checked=True )
+
+
 	def switch_fuc() :
 		if graph_analyse.height == 400 :
 			graph_analyse.height = 800
@@ -510,8 +532,9 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		else : wdata.text = ''
 	toggledata_but = button(bind=toggledata_func, text='toggle data', pos=scene.caption_anchor)
 
-	def refvecshow_func(b) :
+	def refvecshow_func() :
 		global show_refvec
+		b = refvecshow_but
 		if not b.checked :
 			dwt_cyl.opacity = 0.0
 			pi1_cyl.opacity = 0.0
@@ -529,8 +552,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			izax_cyl.opacity = refcylopc
 			show_refvec = True
 	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
-
-	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor)
+	refvecshow_but.checked = False
+	refvecshow_func()
 
 
 	def cleartrail_func() :
@@ -584,7 +607,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	graph_analyse = graph(title="analyse", xtitle='time', ytitle='value', fast=False, width=1200, height=800)
 	l_abd_deg = gcurve(graph=graph_analyse, color=color.blue, width=2, markers=True, marker_color=color.blue, label="abd_deg")
 	l_pi1_deg = gcurve(graph=graph_analyse, color=color.green, width=2, markers=True, marker_color=color.green, label="pi1_deg")
-	l_sw_deg = gcurve(graph=graph_analyse, color=color.yellow, width=2, markers=True, marker_color=color.yellow, label="sw_deg")
+	l_sw_deg = gcurve(graph=graph_analyse, color=color.green, width=2, markers=True, marker_color=color.green, label="sw_deg")
 	l_sh_deg = gcurve(graph=graph_analyse, color=color.red, width=2, markers=True, marker_color=color.red, label="sh_deg")
 	l_flap_deg_s1 = gcurve(graph=graph_analyse, color=color.cyan, width=2, markers=True, marker_color=color.cyan, label="flap_deg_s1")
 	l_flap_deg_1 = gcurve(graph=graph_analyse, color=color.purple, width=2, markers=True, marker_color=color.purple, label="flap_deg_1")
@@ -604,6 +627,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 
 	dt = 0.02
+	wb_trail.clear()
 	# start running visualized graph
 	while True :
 		sleep(dt)
