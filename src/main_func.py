@@ -27,6 +27,7 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 
 keepon = True
 show_refvec = True
+blaftimg = True
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
 	o_wb = origin_coordinate["wb"]
@@ -382,6 +383,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		print("stpa")
 	stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
 
+
+		
 	def switch_fuc() :
 		if graph_analyse.height == 400 :
 			graph_analyse.height = 800
@@ -417,13 +420,22 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			show_refvec = True
 	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
 
+	def aftimg(b) :
+		global blaftimg
+		if not b.checked :
+			blaftimg = False
+		if b.checked :
+			blaftimg = True
+		print("blaftimg")
+	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor)
+
+
 	def cleartrail_func() :
 		wb_trail.clear()
 		wb_trail.start()
 	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
-		
-			
-	
+
+
 	# print analysed data in page
 	ad = "" # append data
 	'''
@@ -480,8 +492,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	l_flap_deg_s1 = gcurve(graph=graph_analyse, color=color.cyan, width=2, markers=True, marker_color=color.cyan, label="flap_deg_s1")
 	l_flap_deg_1 = gcurve(graph=graph_analyse, color=color.purple, width=2, markers=True, marker_color=color.purple, label="flap_deg_1")
 	l_wrot_deg = gcurve(graph=graph_analyse, color=color.black, width=2, markers=True, marker_color=color.black, label="wrot_deg")
-	
-	
+
+
 	# plot graph
 	for time in range(T) :
 		l_abd_deg.plot(time, abd_deg[time])
@@ -491,7 +503,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		l_flap_deg_1.plot(time, flap_deg_1[time])
 		l_flap_deg_s1.plot(time, flap_deg_s1[time])
 		l_wrot_deg.plot(time, wrot_deg[time])
-	
+
 	#define update
 	def update() :
 		global show_refvec
@@ -538,6 +550,48 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		wing_rtri.v1.pos = wt_rball.pos
 		wing_rtri.v2.pos = te_rball.pos
 	
+	# set butterfly clones
+	cloneops = 0.1
+	cloneopsw = 0.5
+	clonesw = []
+	clonen = 4
+	clones = []
+	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
+	for i in range(clonen+1) :
+		if i == clonen :
+			spect = T-1
+		else :
+			spect = T//clonen*i
+		ts.value = spect
+		update()
+		clones.append([
+			wbball.clone(opacity=cloneops),
+			wtball.clone(opacity=cloneops),
+			teball.clone(opacity=cloneops),
+			taball.clone(opacity=cloneops),
+			wt_rball.clone(opacity=cloneops),
+			te_rball.clone(opacity=cloneops),
+			abd_cyl.clone(opacity=cloneops),
+			wb_wt_cyl.clone(opacity=cloneops),
+			wb_wt_r_cyl.clone(opacity=cloneops),
+			wb_te_cyl.clone(opacity=cloneops),
+			wb_te_r_cyl.clone(opacity=cloneops)
+		])
+		clonesw.append([
+			triangle(
+				v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
+				v1 = vertex(pos = wtball.pos, opacity = cloneopsw),
+				v2 = vertex(pos = teball.pos, opacity = cloneopsw)
+			),
+			triangle(
+				v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
+				v1 = vertex(pos = wt_rball.pos, opacity = cloneopsw),
+				v2 = vertex(pos = te_rball.pos, opacity = cloneopsw)
+			)
+		])
+
+
+
 
 	dt = 0.02
 	# start running visualized graph

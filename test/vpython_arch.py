@@ -27,8 +27,14 @@ vec2 = arrow(
 
 arch = extrusion(
 	pos = vec(0,0,0),
-	path=[rotate(vec1.axis, angle=theta, axis=vec(0,0,1)) for theta in arange(0,pi/2, 0.01)] ,
+	path=[rotate(vec1.axis, angle=theta, axis=vec(0,0,1)) for theta in arange(0,pi, 0.01)] ,
 	color=color.orange,
+	shape=[ shapes.rectangle(width=1, height=2)]
+)
+archrev = extrusion(
+	pos = vec(0,0,0),
+	path=[rotate(vec1.axis, angle=theta, axis=vec(0,0,1)) for theta in arange(pi,2*pi, 0.01)] ,
+	color=color.purple,
 	shape=[ shapes.rectangle(width=1, height=2)]
 )
 
@@ -40,7 +46,7 @@ cr = shapes.circle(
 	angle2=pi/2
 	)
 
-ar = shapes.arc(radius=20, angle1=0, angle2=pi/2)
+ar = shapes.arc(radius=20, angle1=0, angle2=pi)
 arx = extrusion(
 	pos = vec(0,0,0),
 	path=[vec(0,0,0), vec(2,0,0)] ,
@@ -55,4 +61,15 @@ ball2 = sphere(pos=vec(-10,10,10), radius=3, color=color.yellow)
 cball = compound([ball1,ball2])
 ccall = sphere(pos=cball.pos, radius=3, color=color.purple)
 
+arxclones = []
+n = 5
+for i in range(100) :
+    if i%n == 0 :
+        arxclones.append(None)
 
+
+for i in range(100) :
+    sleep(0.01)
+    arx.pos.x = i
+    if i%n == 0 :
+        arxclones[i//n] = arx.clone(opacity=0.5)
