@@ -376,138 +376,18 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	sw_base2_cyl = cylinder(radius=refcylrad, color = color.red, opacity = refcylopc)
 	izax_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
 
-	# setup widgits
-	def stpa_func() :
-		global keepon
-		keepon = not keepon
-		print("stpa")
-	stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
-
-
-		
-	def switch_fuc() :
-		if graph_analyse.height == 400 :
-			graph_analyse.height = 800
-			scene.height = 750 
-		else :
-			graph_analyse.height = 400
-			scene.height = 400 
-	switch_but = button(bind=switch_fuc, text='switch show', pos=scene.caption_anchor)
-
-	def toggledata_func() : 
-		if wdata.text == '' :
-			wdata.text = ad
-		else : wdata.text = ''
-	toggledata_but = button(bind=toggledata_func, text='toggle data', pos=scene.caption_anchor)
-
-	def refvecshow_func(b) :
-		global show_refvec
-		if not b.checked :
-			dwt_cyl.opacity = 0.0
-			pi1_cyl.opacity = 0.0
-			wing_norm_cyl.opacity = 0.0
-			sw_base1_cyl.opacity = 0.0
-			sw_base2_cyl.opacity = 0.0
-			izax_cyl.opacity = 0.0
-			show_refvec = False
-		elif b.checked :
-			dwt_cyl.opacity = refcylopc
-			pi1_cyl.opacity = refcylopc
-			wing_norm_cyl.opacity = refcylopc
-			sw_base1_cyl.opacity = refcylopc
-			sw_base2_cyl.opacity = refcylopc
-			izax_cyl.opacity = refcylopc
-			show_refvec = True
-	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
-
-	def aftimg(b) :
-		global blaftimg
-		if not b.checked :
-			blaftimg = False
-		if b.checked :
-			blaftimg = True
-		print("blaftimg")
-	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor)
-
-
-	def cleartrail_func() :
-		wb_trail.clear()
-		wb_trail.start()
-	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
-
-
-	# print analysed data in page
-	ad = "" # append data
-	'''
-	for i in range(T) :
-		ad += '{}, '.format(abd_deg[i])
-		ad += '{}, '.format(pi1_deg[i])
-		ad += '{}, '.format(sw_deg[i])
-		ad += '{}, '.format(sh_deg[i])
-		ad += '{}, '.format(flap_deg_1[i])
-		ad += '{}, '.format(flap_deg_s1[i])
-		ad += '{}; '.format(wrot_deg[i])
-	#	ad += 'aaa'
-	'''
-	ad += ';' + spec_data_name + ', '
-	for i in range(T) : ad += '{}, '.format(i)
-	ad += ';abd_deg, '
-	for i in range(T) : ad += '{}, '.format(abd_deg[i])
-	ad += ';pi1_deg, '
-	for i in range(T) : ad += '{}, '.format(pi1_deg[i])
-	ad += ';sw_deg, '
-	for i in range(T) : ad += '{}, '.format(sw_deg[i])
-	ad += ';sh_deg, '
-	for i in range(T) : ad += '{}, '.format(sh_deg[i])
-	ad += ';flap_deg_1, '
-	for i in range(T) : ad += '{}, '.format(flap_deg_1[i])
-	ad += ';flap_deg_s1, '
-	for i in range(T) : ad += '{}, '.format(flap_deg_s1[i])
-	ad += ';wrot_deg, '
-	for i in range(T) : ad += '{}, '.format(wrot_deg[i])
-	ad += ';(sqrt(o_wb[i].x**2+o_wb[i].z**2)), '
-	for i in range(T) : ad += '{}, '.format(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
-	ad += ';o_wb[i].y-o_wb[0].y, '
-	for i in range(T) : ad += '{}, '.format(o_wb[i].y-o_wb[0].y)
-	def win_func(s) :
-		print('check')
-	win = winput(text=ad,bind=win_func)
-
+	# make time slider
 	def timeslider_func(val) :
 		wb_trail.stop()
 		update()
 		wb_trail.start()
 	ts = slider(min = 0, max = T, value = 0, bind = timeslider_func, step = 1, pos=scene.caption_anchor) # time slider
 	wtime = wtext(text="time")
-	
-	scene.append_to_caption('\n')
-	wdata = wtext(text='')
-
-	# setup graph 
-	graph_analyse = graph(title="analyse", xtitle='time', ytitle='value', fast=False, width=1200, height=800)
-	l_abd_deg = gcurve(graph=graph_analyse, color=color.blue, width=2, markers=True, marker_color=color.blue, label="abd_deg")
-	l_pi1_deg = gcurve(graph=graph_analyse, color=color.green, width=2, markers=True, marker_color=color.green, label="pi1_deg")
-	l_sw_deg = gcurve(graph=graph_analyse, color=color.yellow, width=2, markers=True, marker_color=color.yellow, label="sw_deg")
-	l_sh_deg = gcurve(graph=graph_analyse, color=color.red, width=2, markers=True, marker_color=color.red, label="sh_deg")
-	l_flap_deg_s1 = gcurve(graph=graph_analyse, color=color.cyan, width=2, markers=True, marker_color=color.cyan, label="flap_deg_s1")
-	l_flap_deg_1 = gcurve(graph=graph_analyse, color=color.purple, width=2, markers=True, marker_color=color.purple, label="flap_deg_1")
-	l_wrot_deg = gcurve(graph=graph_analyse, color=color.black, width=2, markers=True, marker_color=color.black, label="wrot_deg")
-
-
-	# plot graph
-	for time in range(T) :
-		l_abd_deg.plot(time, abd_deg[time])
-		l_pi1_deg.plot(time, pi1_deg[time])
-		l_sw_deg.plot(time, sw_deg[time])
-		l_sh_deg.plot(time, sh_deg[time])
-		l_flap_deg_1.plot(time, flap_deg_1[time])
-		l_flap_deg_s1.plot(time, flap_deg_s1[time])
-		l_wrot_deg.plot(time, wrot_deg[time])
 
 	#define update
 	def update() :
 		global show_refvec
-		wtime.text = str(ts.value)
+		wtime.text = str("{:04d} secs".format(ts.value))
 		# 3D vizualize
 		## points
 		wbball.pos = o_wb[ts.value]
@@ -556,7 +436,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	clonesw = []
 	clonen = 4
 	clones = []
-	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
+#	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
 	for i in range(clonen+1) :
 		if i == clonen :
 			spect = T-1
@@ -575,7 +455,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			wb_wt_cyl.clone(opacity=cloneops),
 			wb_wt_r_cyl.clone(opacity=cloneops),
 			wb_te_cyl.clone(opacity=cloneops),
-			wb_te_r_cyl.clone(opacity=cloneops)
+			wb_te_r_cyl.clone(opacity=cloneops),
+			extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
 		])
 		clonesw.append([
 			triangle(
@@ -590,6 +471,135 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			)
 		])
 
+
+	# setup widgits
+	def stpa_func() :
+		global keepon
+		keepon = not keepon
+		print("stpa")
+	stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
+
+	def aftimgchops(goal) :
+		for i in clones :
+			for j in i :
+				j.opacity = goal
+	def aftimg(b) :
+		global blaftimg
+		if not b.checked :
+			blaftimg = False
+			aftimgchops(0)
+		if b.checked :
+			blaftimg = True
+			aftimgchops(cloneops)
+		print("blaftimg")
+	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor)
+
+		
+	def switch_fuc() :
+		if graph_analyse.height == 400 :
+			graph_analyse.height = 800
+			scene.height = 750 
+		else :
+			graph_analyse.height = 400
+			scene.height = 400 
+	switch_but = button(bind=switch_fuc, text='switch show', pos=scene.caption_anchor)
+
+	def toggledata_func() : 
+		if wdata.text == '' :
+			wdata.text = ad
+		else : wdata.text = ''
+	toggledata_but = button(bind=toggledata_func, text='toggle data', pos=scene.caption_anchor)
+
+	def refvecshow_func(b) :
+		global show_refvec
+		if not b.checked :
+			dwt_cyl.opacity = 0.0
+			pi1_cyl.opacity = 0.0
+			wing_norm_cyl.opacity = 0.0
+			sw_base1_cyl.opacity = 0.0
+			sw_base2_cyl.opacity = 0.0
+			izax_cyl.opacity = 0.0
+			show_refvec = False
+		elif b.checked :
+			dwt_cyl.opacity = refcylopc
+			pi1_cyl.opacity = refcylopc
+			wing_norm_cyl.opacity = refcylopc
+			sw_base1_cyl.opacity = refcylopc
+			sw_base2_cyl.opacity = refcylopc
+			izax_cyl.opacity = refcylopc
+			show_refvec = True
+	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
+
+	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor)
+
+
+	def cleartrail_func() :
+		wb_trail.clear()
+		wb_trail.start()
+	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
+
+
+	# print analysed data in page
+	ad = "" # append data
+	'''
+	for i in range(T) :
+		ad += '{}, '.format(abd_deg[i])
+		ad += '{}, '.format(pi1_deg[i])
+		ad += '{}, '.format(sw_deg[i])
+		ad += '{}, '.format(sh_deg[i])
+		ad += '{}, '.format(flap_deg_1[i])
+		ad += '{}, '.format(flap_deg_s1[i])
+		ad += '{}; '.format(wrot_deg[i])
+	#	ad += 'aaa'
+	'''
+	ad += ';' + spec_data_name + ', '
+	for i in range(T) : ad += '{}, '.format(i)
+	ad += ';abd_deg, '
+	for i in range(T) : ad += '{}, '.format(abd_deg[i])
+	ad += ';pi1_deg, '
+	for i in range(T) : ad += '{}, '.format(pi1_deg[i])
+	ad += ';sw_deg, '
+	for i in range(T) : ad += '{}, '.format(sw_deg[i])
+	ad += ';sh_deg, '
+	for i in range(T) : ad += '{}, '.format(sh_deg[i])
+	ad += ';flap_deg_1, '
+	for i in range(T) : ad += '{}, '.format(flap_deg_1[i])
+	ad += ';flap_deg_s1, '
+	for i in range(T) : ad += '{}, '.format(flap_deg_s1[i])
+	ad += ';wrot_deg, '
+	for i in range(T) : ad += '{}, '.format(wrot_deg[i])
+	ad += ';(sqrt(o_wb[i].x**2+o_wb[i].z**2)), '
+	for i in range(T) : ad += '{}, '.format(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
+	ad += ';o_wb[i].y-o_wb[0].y, '
+	for i in range(T) : ad += '{}, '.format(o_wb[i].y-o_wb[0].y)
+	def win_func(s) :
+		print('check')
+	win = winput(text=ad,bind=win_func)
+
+	
+	scene.append_to_caption('\n')
+	wdata = wtext(text='')
+
+	# setup graph 
+	graph_analyse = graph(title="analyse", xtitle='time', ytitle='value', fast=False, width=1200, height=800)
+	l_abd_deg = gcurve(graph=graph_analyse, color=color.blue, width=2, markers=True, marker_color=color.blue, label="abd_deg")
+	l_pi1_deg = gcurve(graph=graph_analyse, color=color.green, width=2, markers=True, marker_color=color.green, label="pi1_deg")
+	l_sw_deg = gcurve(graph=graph_analyse, color=color.yellow, width=2, markers=True, marker_color=color.yellow, label="sw_deg")
+	l_sh_deg = gcurve(graph=graph_analyse, color=color.red, width=2, markers=True, marker_color=color.red, label="sh_deg")
+	l_flap_deg_s1 = gcurve(graph=graph_analyse, color=color.cyan, width=2, markers=True, marker_color=color.cyan, label="flap_deg_s1")
+	l_flap_deg_1 = gcurve(graph=graph_analyse, color=color.purple, width=2, markers=True, marker_color=color.purple, label="flap_deg_1")
+	l_wrot_deg = gcurve(graph=graph_analyse, color=color.black, width=2, markers=True, marker_color=color.black, label="wrot_deg")
+
+
+	# plot graph
+	for time in range(T) :
+		l_abd_deg.plot(time, abd_deg[time])
+		l_pi1_deg.plot(time, pi1_deg[time])
+		l_sw_deg.plot(time, sw_deg[time])
+		l_sh_deg.plot(time, sh_deg[time])
+		l_flap_deg_1.plot(time, flap_deg_1[time])
+		l_flap_deg_s1.plot(time, flap_deg_s1[time])
+		l_wrot_deg.plot(time, wrot_deg[time])
 
 
 
