@@ -17,14 +17,14 @@ ax.set_ylabel("flapping degree")
 axcolor = 'lightgoldenrodyellow'
 dt = 0.01
 t = np.arange(0.0, 1.0, dt)
-ABi = 7
-ACi = 16.1
-DGi = 25
-HIi = 22.5
-IJi = 8
-GJi = 25
+ABi = 7 # center of big gear to the bar of the slider
+ACi = 16.1 # center of big gear to center of slider
+CDi = 25 # center of slider to attachment between slider and link
+EGi = 22.5 # the distance between AC line and wing base
+EFi = 8 # lenth between wingbase and the attanchment between link and wing
+DFi = 25 # lenth of link
 omega = ma.radians(360*2) #radian/sec
-mechflapang , mechpitchang= func.SimulateFlapMechFlapAng(t*omega, ABi, ACi, DGi, HIi, IJi, GJi)
+mechflapang , mechpitchang= func.SimulateFlapMechFlapAng(t*omega, ABi, ACi, CDi, EGi, EFi, DFi)
 print("degrees per sec: ", ma.degrees(omega))
 print("dt: ", dt)
 
@@ -37,33 +37,33 @@ ABax = plt.axes([0.25, 0.0, 0.65, 0.03], facecolor=axcolor)
 ABs = Slider(ABax, 'AB lenth', 0, 15, valinit=ABi, valstep=0.01)
 ACax = plt.axes([0.25, 0.05, 0.65, 0.03], facecolor=axcolor)
 ACs = Slider(ACax, 'AC lenth', 0, 20, valinit=ACi, valstep=0.01)
-DGax = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor=axcolor)
-DGs = Slider(DGax, 'DG lenth', 0, 40, valinit=DGi, valstep=0.01)
-HIax = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
-HIs = Slider(HIax, 'HI lenth', 0, 30, valinit=HIi, valstep=0.01) 
-IJax = plt.axes([0.25, 0.20, 0.65, 0.03], facecolor=axcolor)
-IJs = Slider(IJax, 'IJ lenth', 0, 20 ,valinit=IJi, valstep=0.01)
-GJax = plt.axes([0.25, 0.25, 0.65, 0.03], facecolor=axcolor)
-GJs = Slider(GJax, 'GJ lenth', 0, 40 ,valinit=GJi, valstep=0.01)
+CDax = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor=axcolor)
+CDs = Slider(CDax, 'CD lenth', 0, 40, valinit=CDi, valstep=0.01)
+EGax = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
+EGs = Slider(EGax, 'EG lenth', 0, 30, valinit=EGi, valstep=0.01) 
+EFax = plt.axes([0.25, 0.20, 0.65, 0.03], facecolor=axcolor)
+EFs = Slider(EFax, 'EF lenth', 0, 20 ,valinit=EFi, valstep=0.01)
+DFax = plt.axes([0.25, 0.25, 0.65, 0.03], facecolor=axcolor)
+DFs = Slider(DFax, 'DF lenth', 0, 40 ,valinit=DFi, valstep=0.01)
 
 def update(val): 
 	AB = ABs.val
 	AC = ACs.val
-	DG = DGs.val
-	HI = HIs.val
-	IJ = IJs.val
-	GJ = GJs.val
-	mechflapang, mechpitch = func.SimulateFlapMechFlapAng(t*omega, AB, AC, DG, HI, IJ, GJ)
+	CD = CDs.val
+	EG = EGs.val
+	EF = EFs.val
+	DF = DFs.val
+	mechflapang, mechpitch = func.SimulateFlapMechFlapAng(t*omega, AB, AC, CD, EG, EF, DF)
 	linemechflapang.set_ydata(mechflapang)
 	linemechpitchang.set_ydata(mechpitchang)
 	fig.canvas.draw_idle()
 
 ABs.on_changed(update)
 ACs.on_changed(update)
-DGs.on_changed(update)
-HIs.on_changed(update)
-IJs.on_changed(update)
-GJs.on_changed(update)
+CDs.on_changed(update)
+EGs.on_changed(update)
+EFs.on_changed(update)
+DFs.on_changed(update)
 '''
 def reset(event):
 resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
