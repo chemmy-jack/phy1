@@ -19,19 +19,19 @@ check required python package:
 	* statistics
 
 then in command line : 
-` git clone https://github.com/chemmy-jack/phy1.git ` 
-` cd phy1 ` 
-` python3 src/main.py ` 
-type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter> 
+	` git clone https://github.com/chemmy-jack/phy1.git ` 
+	` cd phy1 ` 
+	` python3 src/main.py ` 
+	` type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter> `
 
 
 ## required python extensions :
-	* json
-	* xlwings
-	* vpython
-	* matplotlib
-	* tkinter
-	* gitpython
+* json
+* xlwings
+* vpython
+* matplotlib
+* tkinter
+* gitpython
 
 ## to do list 
 * read csv file 
@@ -53,7 +53,7 @@ type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter>
 			* abdomen
 		* analyse2
 		* information
-			# unit
+			* unit
 			* filming date 
 			* number of butterfly
 			* number of filming
