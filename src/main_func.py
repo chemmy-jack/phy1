@@ -344,7 +344,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	# setup butterfly
 	wbball = sphere(canvas = scene, radius = scale*2, color = color.red)
 #	wb_trail = attach_trail(wbball, type = "points", radius = scale/3, color=color.red, opacity = 0)
-	wtball = sphere(canvas = scene, radius = scale/2, color = color.red)
+	wtball = sphere(canvas = scene, radius = scale/2, color = color.orange)
 #	wt_trail = attach_trail(wtball, type = "points", radius = scale/3, color=color.black)
 	teball = sphere(canvas = scene, radius = scale/2, color = color.purple)
 	taball = sphere(canvas = scene, radius = scale*2, color = color.red)
@@ -364,7 +364,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	)
 	cylrad = scale/2
 	abd_cyl = cylinder(radius=scale*2, color = color.gray(0.5), opacity = 0.5)
-	wb_wt_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
+	wb_wt_cyl = cylinder(radius=cylrad, color = color.blue, opacity = 0.3)
 	wb_wt_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
 	wb_te_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
 	wb_te_r_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
@@ -437,7 +437,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	cloneopsw = 0.3
 	global clonesw
 	clonesw = {}
-	clonen = 15
+	clonen = 10
 	global clones
 	clones = {}
 #	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)

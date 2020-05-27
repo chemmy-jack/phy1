@@ -7,21 +7,22 @@
 
 ## a simple guide
 check required python package:
-	1. xlwings
-	2. vpython
-	3. matplotlib
-	4. tkinter
-	5. gitpython
-	6. json
-	7. sys
-	8. numpy
-	9. math
-	10. statistics
-then in command line :
-` git clone https://github.com/chemmy-jack/phy1.git `
-` cd phy1 `
-` python3 src/main.py `
-type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter>
+	* xlwings
+	* vpython
+	* matplotlib
+	* tkinter
+	* gitpython
+	* json
+	* sys
+	* numpy
+	* math
+	* statistics
+
+then in command line : 
+` git clone https://github.com/chemmy-jack/phy1.git ` 
+` cd phy1 ` 
+` python3 src/main.py ` 
+type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter> 
 
 
 ## required python extensions :
