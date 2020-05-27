@@ -435,10 +435,13 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	# set butterfly clones
 	cloneops = 0.1
 	cloneopsw = 0.3
+	global clonesw
 	clonesw = {}
 	clonen = 15
+	global clones
 	clones = {}
 #	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
+	scene.title += ', clonen= ' + str(clonen)
 
 	# define update after image function
 	def afterimgfunc() :
@@ -509,27 +512,35 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor, checked=True )
 	aftimg_but.checked = False
 	aftimg()
-	'''
 	def aftimgbut() :
 		global clones
+		global clonesw
 		for i in clones :
 			for j in clones[i] :
-				del clones[i][j]
+				j.visible = False
 		for i in clonesw :
 			for j in clonesw[i] :
-				del clonesw[i][j]
-		clonesw = {}
-		clones = {}
+				j.visible = False
 	aftimg_but = button(bind=aftimgbut, text="clear after image", pos=scene.caption_anchor)
+	'''
 
 	def aftimg() :
 		global blaftimg
 		b = aftimg_ch
 		if not b.checked :
-			blaftimg = False
+			for i in clones :
+				for j in clones[i] :
+					j.visible = False
+			for i in clonesw :
+				for j in clonesw[i] :
+					j.visible = False
 		if b.checked :
-			blaftimg = True
-			print('after image', blaftimg)
+			for i in clones :
+				for j in clones[i] :
+					j.visible = True
+			for i in clonesw :
+				for j in clonesw[i] :
+					j.visible = True
 	aftimg_ch = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor, checked=True )
 	'''
 	def wttrail() :
@@ -661,8 +672,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		sleep(dt)
 		if keepon :
 			update()
-			if blaftimg :
-				afterimgfunc()
+#			if blaftimg :
+			afterimgfunc()
 
 			ts.value += 1
 			if ts.value >= T :
