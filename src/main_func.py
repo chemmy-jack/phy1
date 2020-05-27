@@ -27,7 +27,8 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 
 keepon = True
 show_refvec = True
-blaftimg = False
+blaftimg = True
+
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
 	o_wb = origin_coordinate["wb"]
@@ -341,12 +342,12 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	cen = sphere(canvas = scene, pos = cen, radius = 0.02, opacity = 0.1)
 
 	# setup butterfly
-	wbball = sphere(canvas = scene, radius = scale, color = color.red)
-	wb_trail = attach_trail(wbball, type = "curve", radius = scale/3, color=color.red)
+	wbball = sphere(canvas = scene, radius = scale*2, color = color.red)
+#	wb_trail = attach_trail(wbball, type = "points", radius = scale/3, color=color.red, opacity = 0)
 	wtball = sphere(canvas = scene, radius = scale/2, color = color.red)
-	wt_trail = attach_trail(wtball, type = "points", radius = scale/3, color=color.black)
+#	wt_trail = attach_trail(wtball, type = "points", radius = scale/3, color=color.black)
 	teball = sphere(canvas = scene, radius = scale/2, color = color.purple)
-	taball = sphere(canvas = scene, radius = scale, color = color.red)
+	taball = sphere(canvas = scene, radius = scale*2, color = color.red)
 	wt_rball = sphere(canvas = scene, radius = scale/2, color = color.red)
 	te_rball = sphere(canvas = scene, radius = scale/2, color = color.purple)
 
@@ -362,11 +363,11 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		v2 = vertex(pos = te_rball.pos, opacity = wing_opacity)
 	)
 	cylrad = scale/2
-	abd_cyl = cylinder(radius=scale, color = color.gray(0.5), opacity = 0.5)
+	abd_cyl = cylinder(radius=scale*2, color = color.gray(0.5), opacity = 0.5)
 	wb_wt_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
 	wb_wt_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
-	wb_te_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
-	wb_te_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
+	wb_te_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
+	wb_te_r_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
 
 	refcylrad = scale/4
 	refcylopc = 0.3
@@ -379,9 +380,9 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	# make time slider
 	def timeslider_func(val) :
-		wb_trail.stop()
+#		wb_trail.stop()
 		update()
-		wb_trail.start()
+#		wb_trail.start()
 	ts = slider(min = 0, max = T-1, value = 0, bind = timeslider_func, step = 1, pos=scene.caption_anchor) # time slider
 	wtime = wtext(text="time")
 
@@ -434,44 +435,46 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	# set butterfly clones
 	cloneops = 0.1
 	cloneopsw = 0.3
-	clonesw = []
-	clonen = 6
-	clones = []
+	clonesw = {}
+	clonen = 15
+	clones = {}
 #	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
-	for i in range(clonen+1) :
-		if i == clonen :
-			spect = T-1
-		else :
-			spect = T//clonen*i
-		ts.value = spect
-		update()
-		clones.append([
-			wbball.clone(opacity=cloneops),
-			wtball.clone(opacity=cloneops),
-			teball.clone(opacity=cloneops),
-			taball.clone(opacity=cloneops),
-			wt_rball.clone(opacity=cloneops),
-			te_rball.clone(opacity=cloneops),
-			abd_cyl.clone(opacity=cloneops),
-			wb_wt_cyl.clone(opacity=cloneops),
-			wb_wt_r_cyl.clone(opacity=cloneops),
-			wb_te_cyl.clone(opacity=cloneops),
-			wb_te_r_cyl.clone(opacity=cloneops),
-#			extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
-		])
-		clonesw.append([
-			triangle(
-				v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
-				v1 = vertex(pos = wtball.pos, opacity = cloneopsw),
-				v2 = vertex(pos = teball.pos, opacity = cloneopsw)
-			),
-			triangle(
-				v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
-				v1 = vertex(pos = wt_rball.pos, opacity = cloneopsw),
-				v2 = vertex(pos = te_rball.pos, opacity = cloneopsw)
-			)
-		])
 
+	# define update after image function
+	def afterimgfunc() :
+		i = ts.value
+		if i == 0 : bl = 0 
+		else : bl = i%clonen
+		if bl == 0 :
+			if i not in clonesw :
+				clones[i]=([
+					wbball.clone(opacity=cloneops),
+					wtball.clone(opacity=cloneops),
+					teball.clone(opacity=cloneops),
+					taball.clone(opacity=cloneops),
+					wt_rball.clone(opacity=cloneops),
+					te_rball.clone(opacity=cloneops),
+					abd_cyl.clone(opacity=cloneops/2),
+					wb_wt_cyl.clone(opacity=cloneops),
+					wb_wt_r_cyl.clone(opacity=cloneops),
+					wb_te_cyl.clone(opacity=cloneops),
+					wb_te_r_cyl.clone(opacity=cloneops),
+#			extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
+				])
+			if i not in clonesw :
+				clonesw[i]=([
+					triangle(
+						v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
+						v1 = vertex(pos = wtball.pos, opacity = cloneopsw),
+						v2 = vertex(pos = teball.pos, opacity = cloneopsw)
+					),
+					triangle(
+						v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
+						v1 = vertex(pos = wt_rball.pos, opacity = cloneopsw),
+						v2 = vertex(pos = te_rball.pos, opacity = cloneopsw)
+					)
+				])
+		
 
 	# setup widgits
 	def stpa_func() :
@@ -480,6 +483,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		print("stpa")
 	stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
 
+	'''
 	def aftimgchops(goal) :
 		for i in clones :
 			for j in i :
@@ -505,18 +509,40 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	aftimg_but = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor, checked=True )
 	aftimg_but.checked = False
 	aftimg()
+	'''
+	def aftimgbut() :
+		global clones
+		for i in clones :
+			for j in clones[i] :
+				del clones[i][j]
+		for i in clonesw :
+			for j in clonesw[i] :
+				del clonesw[i][j]
+		clonesw = {}
+		clones = {}
+	aftimg_but = button(bind=aftimgbut, text="clear after image", pos=scene.caption_anchor)
 
-	def wttrail() :
+	def aftimg() :
 		global blaftimg
-		b = wttrail_but
+		b = aftimg_ch
+		if not b.checked :
+			blaftimg = False
+		if b.checked :
+			blaftimg = True
+			print('after image', blaftimg)
+	aftimg_ch = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor, checked=True )
+	'''
+	def wttrail() :
+		if not b.checked :
+		if b.checked :
+		global blaftimg b = wttrail_but
 		if not b.checked :
 			wt_trail.stop()
 			wt_trail.clear()
 		if b.checked :
 			wt_trail.start()
 	wttrail_but = checkbox(bind=wttrail, text="wtip trail", pos=scene.caption_anchor, checked=True )
-
-
+	'''
 	def switch_fuc() :
 		if graph_analyse.height == 400 :
 			graph_analyse.height = 800
@@ -551,15 +577,17 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			sw_base2_cyl.opacity = refcylopc
 			izax_cyl.opacity = refcylopc
 			show_refvec = True
+		update()
 	refvecshow_but = checkbox(bind=refvecshow_func, text="show refence vector",checked=True)
 	refvecshow_but.checked = False
 	refvecshow_func()
 
 
-	def cleartrail_func() :
-		wb_trail.clear()
-		wb_trail.start()
-	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
+#	def cleartrail_func() :
+#		wb_trail.clear()
+#		wb_trail.start()
+#		wb_trail.stop()
+#	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
 
 
 	# print analysed data in page
@@ -627,24 +655,21 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 
 	dt = 0.02
-	wb_trail.clear()
+#	wb_trail.clear()
 	# start running visualized graph
 	while True :
 		sleep(dt)
 		if keepon :
 			update()
+			if blaftimg :
+				afterimgfunc()
 
 			ts.value += 1
 			if ts.value >= T :
 				ts.value = 0
-				wb_trail.stop()
-			elif ts.value == 1 :
-				wb_trail.start()
-		
-
-	print("finnish")
-	sys.exit()
-	print("finally")
+#				wb_trail.stop()
+#		elif ts.value == 1 :
+#				wb_trail.start()
 
 def Deletejsonraw(data) :
 	spec_data_name = func.GetSpecKeyByNum(data)

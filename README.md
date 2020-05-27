@@ -1,8 +1,28 @@
 # phy1
-## this is a repository for not using excel as data base, since it's file size is too large. It's not a good thing to use it as a repo.
+## this is a repository for not using excel as data base, since it's file size is too large. It's not a good thing to use it as a repo. 
+[old repository](https://github.com/chemmy-jack/phy)
 [目前最新的資料整理](https://docs.google.com/spreadsheets/d/1CANEBRG2YRJyrXlpOOC52pnUBJTdqH6G90x_D38qdVU/edit?usp=sharing)
 [目前蝴蝶資料](https://docs.google.com/spreadsheets/d/1zfbFTa0ONDA5KLNcvF6RCnSnSxjnCh9jZJ9CPZcXeJA/edit?usp=sharing)
-[目前蝴蝶frone資料](https://docs.google.com/spreadsheets/d/1cpXIM-xyUM_NZUEXTr3m5iaQ-iiMJKjRhuRAytge0l8/edit?usp=sharing)
+[目前蝴蝶front資料](https://docs.google.com/spreadsheets/d/1cpXIM-xyUM_NZUEXTr3m5iaQ-iiMJKjRhuRAytge0l8/edit?usp=sharing)
+
+## a simple guide
+check required python package:
+	1. xlwings
+	2. vpython
+	3. matplotlib
+	4. tkinter
+	5. gitpython
+	6. json
+	7. sys
+	8. numpy
+	9. math
+	10. statistics
+then in command line :
+` git clone https://github.com/chemmy-jack/phy1.git `
+` cd phy1 `
+` python3 src/main.py `
+type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter>
+
 
 ## required python extensions :
 	* json
