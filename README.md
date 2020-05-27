@@ -34,44 +34,45 @@ type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter>
 	* gitpython
 
 ## to do list 
-	* read csv file 
-		* store data button
-		* degree on screen
-		* inner coordinate show 
-		* 3 analysing methods
-			* seniors analyse1
-			* my analyse1
-			* my analyse2
-	* optimize vpython show
-	* analysed json
-		* name ( same as file )
-			* origin coordinate
-			* analyse1
-				* flapping
-				* pitching
-				* rotate
-				* abdomen
-			* analyse2
-			* information
-				# unit
-				* filming date 
-				* number of butterfly
-				* number of filming
-	* information number of butterfly json
-		* span
-		* wing area
-		* weight
-		* breed
-	* jack function
-		* from raw json export analysede to excel
-			* by file or all at once
-	* write discription to readme
-		* progress
-			* film
-			* mark feature points
-			* analyse
-				* definition of angles
-		* time table(schedule) of contests
+* read csv file 
+	* store data button
+	* degree on screen
+	* inner coordinate show 
+	* 3 analysing methods
+		* seniors analyse1
+		* my analyse1
+		* my analyse2
+* optimize vpython show
+* analysed json
+	* name ( same as file )
+		* origin coordinate
+		* analyse1
+			* flapping
+			* pitching
+			* rotate
+			* abdomen
+		* analyse2
+		* information
+			# unit
+			* filming date 
+			* number of butterfly
+			* number of filming
+* information number of butterfly json
+	* span
+	* wing area
+	* weight
+	* breed
+* jack function
+	* from raw json export analysede to excel
+		* by file or all at once
+* write discription to readme
+	* progress
+		* film
+		* mark feature points
+		* analyse
+			* definition of angles
+	* time table(schedule) of contests
+
 ## some information for this project
 * 目的：探討蝴蝶獨特的飛行
 	* 目前從拍翼動態來研究
