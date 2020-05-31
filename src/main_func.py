@@ -28,6 +28,8 @@ def GetMirrorDot(A,B,C) : # C dot mirror refer to AB line, format: list
 keepon = True
 show_refvec = True
 blaftimg = True
+clones = {}
+clonesw = {}
 
 def VpythonShow(origin_coordinate, spec_data_name) :
 	# path showing
@@ -445,6 +447,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	# define update after image function
 	def afterimgfunc() :
+		global clones
+		global clonesw
 		i = ts.value
 		if i == 0 : bl = 0 
 		else : bl = i%clonen
@@ -486,6 +490,22 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		print("stpa")
 	stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
 
+
+	midrange = 20
+	def clearmid_func() :
+		global clones
+		global clonesw
+		for i in clones :
+			if i < (T/2+midrange) and i > (T/2-midrange) :
+				for j in clones[i] :
+					j.visible = False
+		for i in clonesw :
+			if i < (T/2+midrange) and i > (T/2-midrange) :
+				for j in clonesw[i] :
+					j.visible = False
+	clearmid_but = button(bind=clearmid_func, text="clear middle", pos=scene.caption_anchor)
+	scene.title += ', clear middle range: ' + str(midrange)
+
 	'''
 	def aftimgchops(goal) :
 		for i in clones :
@@ -526,6 +546,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 	def aftimg() :
 		global blaftimg
+		global clones
+		global clonesw
 		b = aftimg_ch
 		if not b.checked :
 			for i in clones :
@@ -542,6 +564,17 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 				for j in clonesw[i] :
 					j.visible = True
 	aftimg_ch = checkbox(bind=aftimg, text="after image", pos=scene.caption_anchor, checked=True )
+
+	def aftimgbut() :
+		global blaftimg
+		global clones
+		for i in clones :
+			for j in clones[i] :
+				del j
+		for i in clonesw :
+			for j in clonesw[i] :
+				del j
+	aftimg_but = button(bind=aftimgbut, text="delete after image", pos=scene.caption_anchor, checked=True )
 	'''
 	def wttrail() :
 		if not b.checked :
