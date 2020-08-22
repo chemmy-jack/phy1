@@ -14,14 +14,19 @@ main.py
 	visualization of data in json database
 	export analysed json database in csv form
 '''
+spec_data = func.GetCSVRawTopSide()
+
+
 print("write or read")
 mode = func.ChooseOneWithNum(["write to json database", "read from json database", "deletion"])
 
 if mode == "write to json database" :
-	source = fuc.ChooseOneWithNum(["csv", "xls"])
+	print("what is the source?")
+	source = func.ChooseOneWithNum(["csv", "xls"])
 	if source == "csv" : # get data from csv
-		database = func.GetCSVRawTopSide()
-		# then what ?
+		spec_data = func.GetCSVRawTopSide()
+		spec_data_Name = "test"
+		print("you chose ",func.bcolors.FAIL, spec_data_Name, func.bcolors.ENDC)
 	if source == "xls" :
 		spec_data_path = func.tk_GetFilePath()
 		spec_excel_book = xw.Book(spec_data_path)
@@ -53,8 +58,7 @@ if mode == "read from json database" :
 		exit()
 		# analyse and export to csv code
 
-if mode == "deletion" :
-	# delete a data from json database
+if mode == "deletion" : # delete a data from json database
 	mfunc.Deletejsonraw(databasejs)
 
 '''

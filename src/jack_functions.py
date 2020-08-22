@@ -8,6 +8,9 @@ import os
 from math import cos, sin, asin, acos, tan, atan, radians, degrees, sqrt
 import numpy as np
 from statistics import mean
+import string
+import pprint
+pp = pprint.PrettyPrinter()
 
 # for analyse
 import matplotlib.pyplot as plt
@@ -150,6 +153,7 @@ def ChooseOneWithNum(a) : # give me an array of options
 			m = int(m)
 			if m > 0 and m <= n :
 				print("confirm : you chose ", bcolors.FAIL, str(dic[m]), bcolors.ENDC)
+				print("\n")
 				return dic[m]
 			if m == n+1 :
 				return None
@@ -619,17 +623,17 @@ def GetMtrackCSV(excelfile) :
 	return data
 
 def GetMtrackRawCSV(clist) : # x,y 3,4 get TID 1
-	print(clist)
 	nrows = len(clist)
 	Nr = []
 	TID = []
 	PID = []
 	x_y = []
 	for i in clist :
-		Nr.append(i[0])
-		TID.append(i[1])
-		PID.append(i[2])
-		x_y.append([i[3], i[3]])
+		print(i)
+		Nr.append(int(i[0]))
+		TID.append(int(i[1]))
+		PID.append(int(i[2]))
+		x_y.append([float(i[3]), float(i[4])])
 	data = {
 		"nr":Nr,
 		"tid":TID,
@@ -677,24 +681,18 @@ def GetCSVRawTopSide() :
 	print('side csv is: ')
 	sidecsvname = ChooseOneWithNum(csvfiles)
 
-	print(topcsvname)
-
-
 	# get file as list
-	topcsv = []
-	with open(filepath+"/"+topcsvname, newline='') as topfile :
-		topcsvfile = csv.reader(topfile)
-		for i in topcsvfile :
-			topcsv.append(i)
+	with open(filepath+"/"+topcsvname, "r", encoding="ISO-8859-1") as topfile :
+		# topcsvfile = csv.reader(topfile)
+		topcsv = csv2list(topfile)
 
-	sidecsv = []
-	with open(filepath+"/"+sidecsvname, newline='') as sidefile :
-		sidecsvfile = csv.reader(sidefile)
-		for i in sidecsvfile :
-			sidecsv.append(i)
+	with open(filepath+"/"+sidecsvname, "r", encoding="ISO-8859-1") as sidefile :
+		# sidecsvfile = csv.reader(sidefile)
+		sidecsv = csv2list(sidefile)
 
 	datatop = GetMtrackRawCSV(topcsv)
 	dataside = GetMtrackRawCSV(sidecsv)
+
 	TIDtop = FindArrayInclude(datatop["tid"])
 	TIDside = FindArrayInclude(dataside["tid"])
 	# make TID to [x, y]
@@ -721,6 +719,8 @@ def GetCSVRawTopSide() :
 	print("\nfind side TID: ", end = "\n")
 	for i in TIDside :	
 		print(i, ": ", TIDside[i], end = "\n")
+
+	#exit() ##################
 
 	# get top 
 	while True :
@@ -792,4 +792,14 @@ def GetCSVRawTopSide() :
 		"top":top_dic
 	}
 	return data
+
+def csv2list(c) :
+	temp = list(c.read().split("\n"))
+	clist = []
+	for i in temp :
+		clist.append(list(i.split(",")))
+	clist.pop(0)
+	# if clist[-1] == "" : clist.pop() # there is a blank string appearing at the end of the list
+	clist.pop()
+	return clist
 
