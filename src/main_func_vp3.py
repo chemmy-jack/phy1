@@ -142,9 +142,6 @@ def initialize() :
 	if CurrentData == m.selected :
 		return
 
-	# kill old tracks
-	killaftimg()
-
 	#initial quantities
 	time = 0
 	keepon = False
@@ -168,7 +165,7 @@ def initialize() :
 	if isbutterfly_ch.checked == True :
 		origin_coordinate = cal_origin_coordinate(spec_data, "butterfly")
 	if isbutterfly_ch.checked == False :
-		origin_coordinate = cal_origin_coordinate(spec_data)
+		origin_coordinate = cal_origin_coordinate(spec_data, "ornithopter")
 	oo_wb = origin_coordinate["wb"]
 	oo_wt = origin_coordinate["wt"]
 	oo_te = origin_coordinate["te"]
@@ -230,6 +227,10 @@ def initialize() :
 	wb_wt_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
 	wb_te_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
 	wb_te_r_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
+
+	# kill old tracks
+	killaftimg()
+
 	print("the initialize function have been activated")
 	keepon = True # start the update process
 	
