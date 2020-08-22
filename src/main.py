@@ -2,6 +2,7 @@ import jack_functions as func
 import xlwings as xw
 import main_func as mfunc
 import re # for splitting mulitply characters
+import os
 
 print("this python script can read the raw front and top coordinates to json database, or visualize the coordinate of each data in the json database and export the analysed data in csv form\n")
 
@@ -52,7 +53,7 @@ if mode == "read from json database" :
 		o_co = func.cal_origin_coordinate(spec_data)
 		mfunc.VpythonShow2(o_co, spec_data_Name)
 	if operatejsdb == "visualization" :
-		mfunc.VpythonShow3(databasejs) # not yet coded
+		os.system("python3 main_func_vp3.py") # not yet coded
 	if operatejsdb ==  "analyse and export" : # export as .csv file
 		AnalysedData = mfunc.VpythonAnalyseAll(databasejs) # not yet coded
 		mfunc.ExportAnalysedData2CSV(AnalysedData) # not yet coded

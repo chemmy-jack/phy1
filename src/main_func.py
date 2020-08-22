@@ -740,25 +740,6 @@ def Deletejsonraw(data) :
 		print("db modified")
 	else : print("nothing is changed")
 
-def VpythonAnalyseSpec(spec_data) : # input origin coordinate, return lists of angle and qualities
-	analysed = {}
-	# analyse abdoman angle
-	# analyse blablabla
-	# return as a dict
-	return analysed
-
-def VpythonAnalyseAll(alldata) : # input the whole database json
-	allanalysed = {}
-	# for all data in alldata
-		# call origin coordinate function
-		# call vpythonanalysespec
-	return allanalysed
-
-def ExportAnalysedData2CSV(alldata) : # input the wholeanalzed data, export them in a formatt of csv file
-	exit()
-	# make the temp
-	# open a csv file in db folder
-	# export to the csv file
 
 def VpythonShow3(alldata) : # input the whole database json
 	global keepon
