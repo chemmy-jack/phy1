@@ -129,7 +129,7 @@ def killaftimg() :
 def initialize() :
 	global CurrentData
 	global keepon
-	global o_wb, o_wt, o_te, o_ta, wt, te, ta, o_wt_r, o_te_r, o_ta_r, time, T
+	global o_wb, o_wt, o_te, o_ta, wt, te, ta, o_wt_r, o_te_r, o_ta_r, time, T, keepon
 	# check the slelected 
 	m = DataMenu
 	print(m.selected, m.index)
