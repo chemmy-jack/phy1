@@ -33,6 +33,15 @@ then in command line :
 - tkinter
 - gitpython
 
+# new main structure
+main structure :
+main.py
+	read and save to json database (visualize then save)
+		from csv
+		from xls
+	visualization of data in json database
+	export analysed json database in csv form
+
 ## to do list 
 - read csv file 
 	- store data button
