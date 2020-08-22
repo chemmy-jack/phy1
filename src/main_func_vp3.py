@@ -113,18 +113,21 @@ def afterimgfunc() :
 
 # define initialize
 
-def list2vpvec(array) :
-	return vector(array[0], array[1], array[2])
-
 def killaftimg() :
-	global blaftimg
-	global clones
+	global clones, clonesw
 	for i in clones :
 		for j in clones[i] :
+			j.visible = False
 			del j
 	for i in clonesw :
 		for j in clonesw[i] :
+			j.visible = False
 			del j
+	clones = {}
+	clonesw = {}
+
+def list2vpvec(array) :
+	return vector(array[0], array[1], array[2])
 
 def initialize() :
 	global CurrentData
