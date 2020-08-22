@@ -32,6 +32,7 @@ then in command line :
 - matplotlib
 - tkinter
 - gitpython
+- numpy
 
 # new main structure
 main structure :
@@ -41,6 +42,14 @@ main.py
 		from xls
 	visualization of data in json database
 	export analysed json database in csv form
+
+# new export analyse data include :
+| title | abdomen angle | flapping angle | pitching angle | angle of attack | shift angle | x | y | | |
+|-|-|-|-|-|-|-|-|-|-|
+|1|
+|2|
+|3|
+|...|
 
 ## to do list 
 - read csv file 
