@@ -664,6 +664,13 @@ def GetFolderPath() :
 	mypath = filedialog.askdirectory()
 	return mypath
 
+def FindCommonStringFrom0(a,b) :
+	i = 0
+	string = ""
+	while a[i] == b[i] :
+		string += a[i]
+		i += 1
+
 def GetCSVRawTopSide() :
 	filepath = GetFolderPath()
 	files = listdir(filepath)
@@ -689,6 +696,8 @@ def GetCSVRawTopSide() :
 	with open(filepath+"/"+sidecsvname, "r", encoding="ISO-8859-1") as sidefile :
 		# sidecsvfile = csv.reader(sidefile)
 		sidecsv = csv2list(sidefile)
+	
+	csvname = FindCommonStringFrom0(topcsvname,sidecsvname)
 
 	datatop = GetMtrackRawCSV(topcsv)
 	dataside = GetMtrackRawCSV(sidecsv)
@@ -789,7 +798,8 @@ def GetCSVRawTopSide() :
 	}
 	data = {
 		"side":side_dic, 
-		"top":top_dic
+		"top":top_dic,
+		"name":csvname
 	}
 	return data
 

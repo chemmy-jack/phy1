@@ -27,6 +27,7 @@ if mode == "write to json database" :
 		spec_data = func.GetCSVRawTopSide()
 		spec_data_Name = "test"
 		print("you chose ",func.bcolors.FAIL, spec_data_Name, func.bcolors.ENDC)
+		spec_data_Name = spec_data[name]
 	if source == "xls" :
 		spec_data_path = func.tk_GetFilePath()
 		spec_excel_book = xw.Book(spec_data_path)
@@ -52,11 +53,10 @@ if mode == "read from json database" :
 		o_co = func.cal_origin_coordinate(spec_data)
 		mfunc.VpythonShow2(o_co, spec_data_Name)
 	if operatejsdb == "visualization" :
-		exit()
-		# visualization code
+		mfunc.VpythonShow3(databasejs) # not yet coded
 	if operatejsdb ==  "analyse and export" : # export as .csv file
-		exit()
-		# analyse and export to csv code
+		AnalysedData = mfunc.VpythonAnalyseAll(databasejs) # not yet coded
+		mfunc.ExportAnalysedData2CSV(AnalysedData) # not yet coded
 
 if mode == "deletion" : # delete a data from json database
 	mfunc.Deletejsonraw(databasejs)

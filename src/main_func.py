@@ -626,14 +626,13 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	refvecshow_but.checked = False
 	refvecshow_func()
 
-
-#	def cleartrail_func() :
-#		wb_trail.clear()
-#		wb_trail.start()
-#		wb_trail.stop()
-#	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
-
-
+	'''
+	def cleartrail_func() :
+		wb_trail.clear()
+		wb_trail.start()
+		wb_trail.stop()
+	cleartrail_but = button(bind=cleartrail_func, text='clear wb trail', pos= scene.caption_anchor)
+	'''
 	# print analysed data in page
 	ad = "" # append data
 	'''
@@ -645,7 +644,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		ad += '{}, '.format(flap_deg_1[i])
 		ad += '{}, '.format(flap_deg_s1[i])
 		ad += '{}; '.format(wrot_deg[i])
-	#	ad += 'aaa'
+		ad += 'aaa'
 	'''
 	ad += ';' + spec_data_name + ', '
 	for i in range(T) : ad += '{}, '.format(i)
@@ -671,7 +670,6 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		print('check')
 	win = winput(text=ad,bind=win_func)
 
-	
 	scene.append_to_caption('\n')
 	wdata = wtext(text='')
 
@@ -715,6 +713,8 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 #		elif ts.value == 1 :
 #				wb_trail.start()
 
+
+
 def Deletejsonraw(data) :
 	spec_data_name = func.GetSpecKeyByNum(data)
 
@@ -727,4 +727,19 @@ def Deletejsonraw(data) :
 		func.write_Jsondb(data)
 		print("db modified")
 	else : print("nothing is changed")
+
+def VpythonAnalyseSpec(spec_data) : # input origin coordinate, return a lists of angle and qualities
+
+def VpythonAnalyseAll(alldata) : # input the whole database json
+	allanalysed = {}
+	# for all data in alldata
+	# call origin coordinate function
+	# call vpythonanalysespec
+	return allanalysed
+
+def ExportAnalysedData2CSV(alldata) : # input the whole database json
+
+def VpythonShow3(alldata) : # input the whole database json
+
+
 
