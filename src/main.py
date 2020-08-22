@@ -14,25 +14,24 @@ main.py
 	visualization of data in json database
 	export analysed json database in csv form
 '''
-spec_data = func.GetCSVRawTopSide()
 
 
 print("write or read")
 mode = func.ChooseOneWithNum(["write to json database", "read from json database", "deletion"])
+databasejs = func.get_Jsonrawdb()
 
 if mode == "write to json database" :
 	print("what is the source?")
-	source = func.ChooseOneWithNum(["csv", "xls"])
+	source = func.ChooseOneWithNum(["csv", "xlsx"])
 	if source == "csv" : # get data from csv
 		spec_data = func.GetCSVRawTopSide()
-		spec_data_Name = "test"
-		print("you chose ",func.bcolors.FAIL, spec_data_Name, func.bcolors.ENDC)
 		spec_data_Name = spec_data[name]
-	if source == "xls" :
+		print("you chose ",func.bcolors.FAIL, spec_data_Name, func.bcolors.ENDC)
+	if source == "xlsx" :
 		spec_data_path = func.tk_GetFilePath()
 		spec_excel_book = xw.Book(spec_data_path)
 		spec_data = func.GetExcelRawTopSide(spec_excel_book)
-		spec_data_Name = spec_excel_book.name
+		spec_data_Name = spec_excel_book.name.replace(".xlsx","").replace(" ","_")
 		print("you chose ",func.bcolors.FAIL, spec_excel_book.name, func.bcolors.ENDC)
 	databasejs = func.get_Jsonrawdb()
 	databasejs[spec_data_Name] = spec_data
@@ -44,9 +43,9 @@ if mode == "write to json database" :
 		mfunc.VpythonShow2(o_co, spec_data_Name)
 
 if mode == "read from json database" :
+	print("what do you wana do to the json database?")
 	operatejsdb = func.ChooseOneWithNum(["old vpython visualization", "visualization", "analyse and export"])
 	if operatejsdb == "old vpython visualization" :
-		databasejs = func.get_Jsonrawdb()
 		spec_data_Name = func.GetSpecKeyByNum(databasejs)
 		spec_data = databasejs[spec_data_Name]
 		func.PrintKeysWithNum(spec_data)
