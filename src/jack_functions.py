@@ -44,8 +44,9 @@ def GetDatabasePath() :
 
 database = GetDatabasePath()
 
-def cal_origin_coordinate(spec_data) :
-		orn_but = ChooseOneWithNum(["ornithopter", "butterfly"])
+def cal_origin_coordinate(spec_data, iswhat = "don't know") :
+		if iswhat == "butterfly" or iswhat == "ornithoter" : orn_but = iswhat
+		else : orn_but = ChooseOneWithNum(["ornithopter", "butterfly"])
 		if orn_but == "ornithopter" :
 			orn = True
 			nrows = 0

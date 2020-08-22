@@ -2,7 +2,7 @@ from vpython import *
 from jack_functions import get_Jsonrawdb, cal_origin_coordinate 
 
 
-keepon = True
+keepon = False
 show_refvec = True
 blaftimg = True
 clones = {}
@@ -31,6 +31,7 @@ clonen = 10
 clones = {}
 
 cen = vector(0,0,0)
+isbutterfly = True
 
 # starts here
 
@@ -41,6 +42,22 @@ background_color_raw = vector(255, 253, 191)
 background_color = background_color_raw/255
 print('back color', background_color)
 scene = canvas( width = 1400 ,height = 750,center = cen, background = background_color, userspin = True)
+
+## setup butterfly ball
+wbball = sphere(canvas = scene, radius = scale*2, color = color.red)
+wtball = sphere(canvas = scene, radius = scale/2, color = color.orange)
+teball = sphere(canvas = scene, radius = scale/2, color = color.purple)
+taball = sphere(canvas = scene, radius = scale*2, color = color.red)
+wt_rball = sphere(canvas = scene, radius = scale/2, color = color.red)
+te_rball = sphere(canvas = scene, radius = scale/2, color = color.purple)
+
+## setup butterfly cylinder
+cylrad = scale/2
+abd_cyl = cylinder(radius=scale*2, color = color.gray(0.5), opacity = 0.5)
+wb_wt_cyl = cylinder(radius=cylrad, color = color.blue, opacity = 0.3)
+wb_wt_r_cyl = cylinder(radius=cylrad, color = color.green, opacity = 0.3)
+wb_te_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
+wb_te_r_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
 
 # create butterfly wing
 wing_opacity = 0.75
@@ -56,7 +73,6 @@ wing_rtri = triangle(
 )
 
 
-# define update
 
 ## define update after image (clones)
 def afterimgfunc() :
@@ -112,6 +128,8 @@ def killaftimg() :
 
 def initialize() :
 	global CurrentData
+	global keepon
+	global o_wb, o_wt, o_te, o_ta, wt, te, ta, o_wt_r, o_te_r, o_ta_r, time, T
 	# check the slelected 
 	m = DataMenu
 	print(m.selected, m.index)
@@ -144,7 +162,10 @@ def initialize() :
 
 	# update new capacities
 	spec_data = databasejs[m.selected]
-	origin_coordinate = cal_origin_coordinate(spec_data)
+	if isbutterfly_ch.checked == True :
+		origin_coordinate = cal_origin_coordinate(spec_data, "butterfly")
+	if isbutterfly_ch.checked == False :
+		origin_coordinate = cal_origin_coordinate(spec_data)
 	oo_wb = origin_coordinate["wb"]
 	oo_wt = origin_coordinate["wt"]
 	oo_te = origin_coordinate["te"]
@@ -207,15 +228,75 @@ def initialize() :
 	wb_te_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
 	wb_te_r_cyl = cylinder(radius=cylrad, color = color.purple, opacity = 0.3)
 	print("the initialize function have been activated")
+	keepon = True # start the update process
+	
+
+# define update
+
+def update() :
+	global o_wb, o_wt, o_te, o_ta, wt, te, ta, o_wt_r, o_te_r, o_ta_r, time
+	wtime.text = str("{:04d} secs".format(time))
+	# 3D vizualize
+	## points
+	wbball.pos = o_wb[time]
+	wtball.pos = o_wt[time]
+	teball.pos = o_te[time]
+	taball.pos = o_ta[time]
+	te_rball.pos = o_te_r[time]
+	wt_rball.pos = o_wt_r[time]
+	## cylenders
+	abd_cyl.pos = wbball.pos
+	abd_cyl.axis = ta[time]
+	wb_wt_cyl.pos = wbball.pos
+	wb_wt_cyl.axis = wt[time]
+	wb_wt_r_cyl.pos = wbball.pos
+	wb_wt_r_cyl.axis = wt_rball.pos - wbball.pos
+	wb_te_cyl.pos = wbball.pos
+	wb_te_cyl.axis = te[time]
+	wb_te_r_cyl.pos = wbball.pos
+	wb_te_r_cyl.axis = te_rball.pos - wbball.pos
+	
+	## wing plate
+	wingtri.v0.pos = wbball.pos
+	wingtri.v1.pos = wtball.pos
+	wingtri.v2.pos = teball.pos
+	wing_rtri.v0.pos = wbball.pos
+	wing_rtri.v1.pos = wt_rball.pos
+	wing_rtri.v2.pos = te_rball.pos
 
 # create widgets and define the functions of widgets
 MenuList = ["blank"] + list(databasejs.keys())
 DataMenu = menu(choices = MenuList, bind = initialize, position = scene.title_anchor)
 wtime = wtext(text="time")
 
+def isbutterfly_func() : return
+isbutterfly_ch = checkbox(bind=isbutterfly_func, text="is butterfly", pos = scene.caption_anchor, checked = True)
+
+## the start button
+def stpa_func() :
+	global keepon
+	# keepon = not keepon
+	if DataMenu.selected == "blank" :
+		keepon = False
+		return
+	keepon = True
+	print("stpa", keepon)
+stpa_but = button(bind=stpa_func, text="start/pause", pos=scene.caption_anchor)
+
+
 # while loop starts
 
+dt = 0.02
+# start running visualized graph
 
+while True :
+	sleep(dt)
+	if keepon :
+		update()
+		afterimgfunc()
+		time += 1
+		if time >= T :
+			time = 0
 
 
 
@@ -227,151 +308,6 @@ wtime = wtext(text="time")
 
 
 # below, is the old things
-
-oo_wb = origin_coordinate["wb"]
-oo_wt = origin_coordinate["wt"]
-oo_te = origin_coordinate["te"]
-oo_ta = origin_coordinate["ta"]
-T = 100000000
-for i in origin_coordinate :
-	temp = len(origin_coordinate[i]) 
-	if temp<T :
-		T = temp
-print(T)
-cen = vector(0,0,0)
-
-# get coordinate data
-mid = (list2vpvec(oo_wb[0]) + list2vpvec(oo_wb[-1]))/2 # middle point, use ass offset
-o_wb = []
-o_wt = []
-o_te = []
-o_ta = []
-wt = []
-te = []
-ta = []
-for i in range(T) :
-	o_wb.append(list2vpvec(oo_wb[i])-mid)
-	o_wt.append(list2vpvec(oo_wt[i])-mid)
-	o_te.append(list2vpvec(oo_te[i])-mid)
-	o_ta.append(list2vpvec(oo_ta[i])-mid)
-	wt.append(o_wt[i]-o_wb[i])
-	te.append(o_te[i]-o_wb[i])
-	ta.append(o_ta[i]-o_wb[i])
-
-scale = mag(wt[0])/30
-#	scale = abs(oo_wb[-1][0]-oo_wb[0][0])/100
-print('scale', scale)
-
-
-# calculate mirrored wing 
-o_wt_r = [] # mirrored wing tip origin coordinate
-o_te_r = [] # mirrored trailing edge origin coordinate
-wt_r = [] # mirrored wing tip
-te_r = [] # mirrored trailing edge
-uyax = vector(0,1,0) # unit vector of y axis
-for i in range(T) :
-	ta_tv = vector(ta[i].x, 0, ta[i].z)
-	wt_tv = vector(wt[i].x, 0, wt[i].z)
-	te_tv = vector(te[i].x, 0, te[i].z)
-	o_wt_r.append(o_wt[i]-2*(wt_tv-wt_tv.proj(ta_tv)))
-	o_te_r.append(o_te[i]-2*(te_tv-te_tv.proj(ta_tv)))
-	wt_r.append(o_wt_r[i]-o_wb[i])
-	te_r.append(o_te_r[i]-o_wb[i])
-
-
-# make time slider
-def timeslider_func(val) :
-#		wb_trail.stop()
-	update()
-#		wb_trail.start()
-ts = slider(min = 0, max = T-1, value = 0, bind = timeslider_func, step = 1, pos=scene.caption_anchor) # time slider
-wtime = wtext(text="time")
-
-#define update
-def update() :
-	wtime.text = str("{:04d} secs".format(ts.value))
-	# 3D vizualize
-	## points
-	wbball.pos = o_wb[ts.value]
-	wtball.pos = o_wt[ts.value]
-	teball.pos = o_te[ts.value]
-	taball.pos = o_ta[ts.value]
-	te_rball.pos = o_te_r[ts.value]
-	wt_rball.pos = o_wt_r[ts.value]
-	## cylenders
-	abd_cyl.pos = wbball.pos
-	abd_cyl.axis = ta[ts.value]
-	wb_wt_cyl.pos = wbball.pos
-	wb_wt_cyl.axis = wt[ts.value]
-	wb_wt_r_cyl.pos = wbball.pos
-	wb_wt_r_cyl.axis = wt_rball.pos - wbball.pos
-	wb_te_cyl.pos = wbball.pos
-	wb_te_cyl.axis = te[ts.value]
-	wb_te_r_cyl.pos = wbball.pos
-	wb_te_r_cyl.axis = te_rball.pos - wbball.pos
-	if show_refvec :
-		wing_norm_cyl.pos = wtball.pos
-		sw_base1_cyl.pos = wbball.pos
-		sw_base2_cyl.pos = wbball.pos
-		izax_cyl.pos = wbball.pos
-		dwt_cyl.pos = wtball.pos
-		pi1_cyl.pos = wbball.pos
-
-		wing_norm_cyl.axis = wing_norm[ts.value]
-		sw_base1_cyl.axis = sw_base1[ts.value]
-		sw_base2_cyl.axis = sw_base2[ts.value]
-		dwt_cyl.axis = dwt[ts.value]
-		izax_cyl.axis = izax[ts.value]
-		pi1_cyl.axis = pi1[ts.value]
-	
-	## wing plate
-	wingtri.v0.pos = wbball.pos
-	wingtri.v1.pos = wtball.pos
-	wingtri.v2.pos = teball.pos
-	wing_rtri.v0.pos = wbball.pos
-	wing_rtri.v1.pos = wt_rball.pos
-	wing_rtri.v2.pos = te_rball.pos
-
-#	cloneswt = extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
-scene.title += ', clonen= ' + str(clonen)
-
-# define update after image function
-def afterimgfunc() :
-	global clones
-	global clonesw
-	i = ts.value
-	if i == 0 : bl = 0 
-	else : bl = i%clonen
-	if bl == 0 :
-		if i not in clonesw :
-			clones[i]=([
-				wbball.clone(opacity=cloneops),
-				wtball.clone(opacity=cloneops),
-				teball.clone(opacity=cloneops),
-				taball.clone(opacity=cloneops),
-				wt_rball.clone(opacity=cloneops),
-				te_rball.clone(opacity=cloneops),
-				abd_cyl.clone(opacity=cloneops/2),
-				wb_wt_cyl.clone(opacity=cloneops),
-				wb_wt_r_cyl.clone(opacity=cloneops),
-				wb_te_cyl.clone(opacity=cloneops),
-				wb_te_r_cyl.clone(opacity=cloneops),
-#			extrusion(path=o_wt, shape=shapes.circle(radius=1), color=color.red, opacity=cloneops)
-			])
-		if i not in clonesw :
-			clonesw[i]=([
-				triangle(
-					v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
-					v1 = vertex(pos = wtball.pos, opacity = cloneopsw),
-					v2 = vertex(pos = teball.pos, opacity = cloneopsw)
-				),
-				triangle(
-					v0 = vertex(pos = wbball.pos, opacity = cloneopsw),
-					v1 = vertex(pos = wt_rball.pos, opacity = cloneopsw),
-					v2 = vertex(pos = te_rball.pos, opacity = cloneopsw)
-				)
-			])
-	
 
 # setup widgits
 def stpa_func() :
@@ -446,22 +382,6 @@ toggledata_but = button(bind=toggledata_func, text='toggle data', pos=scene.capt
 
 
 
-dt = 0.02
-#	wb_trail.clear()
-# start running visualized graph
-while True :
-	sleep(dt)
-	if keepon :
-		update()
-#			if blaftimg :
-		afterimgfunc()
-
-		ts.value += 1
-		if ts.value >= T :
-			ts.value = 0
-#				wb_trail.stop()
-#		elif ts.value == 1 :
-#				wb_trail.start()
 
 
 
