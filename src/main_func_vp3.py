@@ -1,5 +1,6 @@
 from vpython import *
 from jack_functions import get_Jsonrawdb, cal_origin_coordinate 
+from statistics import mean
 
 
 keepon = False
@@ -129,6 +130,20 @@ def killaftimg() :
 def list2vpvec(array) :
 	return vector(array[0], array[1], array[2])
 
+def GetMeanList(veclist) :
+	tempx = []
+	tempy = []
+	tempz = []
+	for i in range(T) :
+		tempx.append(veclist[i][0])
+		tempy.append(veclist[i][1])
+		tempz.append(veclist[i][2])
+	tempx = mean(tempx)
+	tempy = mean(tempy)
+	tempz = mean(tempz)
+	mid = [tempx,tempy,tempz]
+	return mid
+
 def initialize() :
 	global CurrentData
 	global keepon
@@ -178,7 +193,7 @@ def initialize() :
 	print('T is:', T) # updata T
 
 	# calculate coordinate offset
-	mid = (list2vpvec(oo_wb[0]) + list2vpvec(oo_wb[-1]))/2 # middle point, use ass offset
+	mid = list2vpvec(GetMeanList(oo_wb))
 	for i in range(T) :
 		o_wb.append(list2vpvec(oo_wb[i])-mid)
 		o_wt.append(list2vpvec(oo_wt[i])-mid)
@@ -233,7 +248,6 @@ def initialize() :
 
 	print("the initialize function have been activated")
 	keepon = True # start the update process
-	
 
 # define update
 

@@ -727,3 +727,212 @@ def Deletejsonraw(data) :
 		print("db modified")
 	else : print("nothing is changed")
 
+
+def VpythonRefVector(origin_coordinate, T) :
+	oo_wb = origin_coordinate["wb"]
+	oo_wt = origin_coordinate["wt"]
+	oo_te = origin_coordinate["te"]
+	oo_ta = origin_coordinate["ta"]
+
+	# get coordinate data
+	mid = (list2vpvec(oo_wb[0]) + list2vpvec(oo_wb[-1]))/2 # middle point, use ass offset
+	o_wb = []
+	o_wt = []
+	o_te = []
+	o_ta = []
+	wt = []
+	te = []
+	ta = []
+	## wt, te, ta
+	for i in range(t) :
+		o_wb.append(list2vpvec(oo_wb[i])-mid)
+		o_wt.append(list2vpvec(oo_wt[i])-mid)
+		o_te.append(list2vpvec(oo_te[i])-mid)
+		o_ta.append(list2vpvec(oo_ta[i])-mid)
+		wt.append(o_wt[i]-o_wb[i])
+		te.append(o_te[i]-o_wb[i])
+		ta.append(o_ta[i]-o_wb[i])
+	dwt = []
+	diffn = 2
+	## dwt
+	for i in range(diffn) : dwt.append(wt[i+diffn]-wt[i])
+	for i in range(diffn,T-diffn) : dwt.append(wt[i+diffn]-wt[i-diffn])
+	for i in range(diffn) : dwt.append(wt[i]-wt[i-diffn])
+	## wing_norm
+	wing_norm = [] # 翅膀法向量
+	for i in range(T) :
+		wing_norm.append(cross(wt[i], te[i]))
+
+	## izax
+	izax = []  # inner z axis
+	for i in range(T) :
+		izax.append( vector(ta[i].z,0,-ta[i].x))
+	
+	## pitch vec
+	pitch = []
+	for i in range(T) :
+		pitch.append(cross(dwt[i], izax[i]))
+
+	# return wt, te, ta,,, wing_norm, dwt, izax
+	
+	refdict = {
+		"wt":wt,
+		"te":te,
+		"ta":ta,
+		"wm":wing_norm,
+		"izax":izax,
+		"pitch":pitch,
+		"o_wb":o_wb,
+		"o_wt":o_wt,
+		"o_te":o_te,
+		"o_ta":o_ta
+	}
+	# o_wb = []
+	return refdict
+
+def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return lists of angle and qualities
+	# calculate T
+	T = 100000000
+	for i in origin_coordinate :
+		temp = len(origin_coordinate[i]) 
+		if temp<T :
+			T = temp
+	print("T is : ", T)
+
+	# get the reference vectors
+	refvecdict = VpythonRefVector(origin_coordinate, T)
+	wt = refvecdict["wt"]
+	te = refvecdict["te"]
+	ta = refvecdict["ta"]
+	wing_norm = refvecdict["wm"]
+	izax = refvecdict["izax"]
+	pitch = refvecdict["pitch"]
+	o_wb = refvecdict["o_wb"]
+	o_wt = refvecdict["o_wt"]
+	o_te = refvecdict["o_te"]
+	o_ta = refvecdict["o_ta"]
+
+	## abdomen angle
+	abd_deg = [] # abdomen angle (degree)
+	for i in range(T) :
+		abd_deg.append(90-degrees(diff_angle(ta[i],uyax)))
+
+	## flapping angle
+	flap_deg = [] # flaping angle 1 (using wt vector)
+	for i in range(T) :
+		flap_deg.append(90 - degrees(diff_angle(flap_ref, ref)))
+
+	## pitching angle
+	pitch_deg = []
+	for i in range(T) :
+		pitch_deg.append(90-degrees(diff_angle(pitch[i], uyax))) # method should be same as abdomen angles
+
+	## angle of attack
+	angatk_deg = [] # wing rotation of analyse 1 according to the pitching axis
+	for i in range(T) :
+		angatk_deg.append(degrees(diff_angle(dwt[i], te[i]-te[i].proj(wt[i])))-90)
+
+	## shift angle
+	direct = []
+	sh_deg = []
+	for i in range(T) :
+		direct.append(degrees(atan(ta[i].z/ta[i].x)))
+	mean_direct = mean(direct)
+	for i in range(T) :
+		sh_deg.append(direct[i]-mean_direct)
+
+	## x,y
+	for i in range(T) : 
+		ix.append(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
+		iy.append(o_wb[i].y-o_wb[0].y)
+
+	# return as a dict
+	#### return:  abdomen angle | flapping angle | pitching angle | angle of attack | shift angle | x | y | | |
+	retdict = {
+		"abdomen angle":abd_deg,
+		"flapping angle":flap_deg,
+		"pitching angle":pitch_deg,
+		"angle of attack":angatk_deg,
+		"shift angle":sh_deg,
+		"x":ix,
+		"y":iy,
+		"vectors":refvecdict
+	}
+
+def VpythonAnalyseAll(alldata) : # input the whole database json
+	allanalysed = {}
+	# for all data in alldata
+		# call origin coordinate function
+		# call vpythonanalysespec
+	return allanalysed
+
+def ExportAnalysedData2CSV(alldata) : # input the wholeanalzed data, eport them in a formatt of csv file
+	# make the temp
+	# open a csv file in db folder
+	# export to the csv file
+
+
+
+#### below is old code
+	## abdomen angle
+	abd_deg = [] # abdomen angle (degree)
+	for i in range(T) :
+		abd_deg.append(90-degrees(diff_angle(ta[i],uyax)))
+	
+
+	## wing norm and sw base vector 1,2 and sweeping angle and wing rotate angle of analyse 1 
+	sw_base1 = [] 
+	sw_base2 = []
+	sw_deg = [] # sweeping angle
+	wrot_deg = [] # wing rotation of analyse 1 according to the pitching axis
+
+	for i in range(T) :
+		wing_norm.append(cross(wt[i], te[i]))
+		sw_base1.append(cross(wing_norm[i], ta[i]))
+		sw_base2.append(rotate(sw_base1[i], pi/2, axis=wing_norm[i]))
+		sw_deg.append(90-degrees(diff_angle(sw_base2[i], wt[i])))
+		wrot_deg.append(degrees(diff_angle(dwt[i], te[i]-te[i].proj(wt[i])))-90)
+
+	## flapping angle unit inner z axis
+	flap_deg_1 = [] # flaping angle 1 (using wt vector)
+	flap_deg_s1 = [] # flapping angle senior 1 (using sw base 1)
+	for i in range(T) :
+		izax.append( vector(ta[i].z,0,-ta[i].x))
+		ref = wt[i]
+		flap_ref = ref - ref.proj(izax[i])
+		o_wb.append(list2vpvec(oo_wb[i])-mid)
+		o_wt.append(list2vpvec(oo_wt[i])-mid)
+		o_te.append(list2vpvec(oo_te[i])-mid)
+		o_ta.append(list2vpvec(oo_ta[i])-mid)
+		flap_ref.y = abs(flap_ref.y)
+		flap_deg_1.append(90 - degrees(diff_angle(flap_ref, ref)))
+		ref = sw_base1[i]
+		flap_ref = ref - ref.proj(izax[i])
+		flap_ref.y = abs(flap_ref.y)
+		flap_deg_s1.append(degrees(diff_angle(flap_ref, ref))-90)
+
+	## pitching angle in analyse 1
+	pi1 = [] # in analyse 1, pitching axis uses the axis of wing flapping 
+	pi1_deg = []
+	for i in range(T) :
+		pi1.append(cross(dwt[i], izax[i]))
+		pi1_deg.append(90-degrees(diff_angle(pi1[i], uyax))) # method should be same as abdomen angles
+	
+	## shift angle
+	direct = []
+	sh_deg = []
+	for i in range(T) :
+		direct.append(degrees(atan(ta[i].z/ta[i].x)))
+	mean_direct = mean(direct)
+	for i in range(T) :
+		sh_deg.append(direct[i]-mean_direct)
+
+	# unitilize vectors (for better visualization)
+	for i in range(T) :
+		wing_norm[i] = wing_norm[i].norm() * scale * 10
+		sw_base1[i] = sw_base1[i].norm() * scale * 10
+		sw_base2[i] = sw_base2[i].norm() * scale * 10
+		dwt[i] = dwt[i] * scale
+		pi1[i] = pi1[i].norm() * scale * 10
+		izax[i] = izax[i].norm() * scale * 10
+
