@@ -19,7 +19,9 @@ main.py
 
 print("write or read")
 mode = func.ChooseOneWithNum(["write to json database", "read from json database", "deletion"])
-databasejs = func.get_Jsonrawdb()
+iswhat = "don't know"
+iswhat = func.ChooseOneWithNum(["butterfly", "ornithopter"])
+databasejs = func.get_Jsonrawdb(iswhat)
 
 if mode == "write to json database" :
 	print("what is the source?")
@@ -40,7 +42,7 @@ if mode == "write to json database" :
 	print("visualize?")
 	if input() == "n" : exit()
 	else :
-		o_co = func.cal_origin_coordinate(spec_data)
+		o_co = func.cal_origin_coordinate(spec_data, iswhat)
 		mfunc.VpythonShow2(o_co, spec_data_Name)
 
 if mode == "read from json database" :
@@ -50,66 +52,16 @@ if mode == "read from json database" :
 		spec_data_Name = func.GetSpecKeyByNum(databasejs)
 		spec_data = databasejs[spec_data_Name]
 		func.PrintKeysWithNum(spec_data)
-		o_co = func.cal_origin_coordinate(spec_data)
+		o_co = func.cal_origin_coordinate(spec_data, iswhat)
 		mfunc.VpythonShow2(o_co, spec_data_Name)
 	if operatejsdb == "visualization" :
-		os.system("python3 main_func_vp3.py") # not yet coded
+		# mypath = os.path.dirname(path.realpath(__file__))
+		# root = func.get_git_root(mypath)
+		root = ""
+		os.system("python3 "+root+"src/main_func_vp3.py") # not yet coded
 	if operatejsdb ==  "analyse and export" : # export as .csv file
-		AnalysedData = mfunc.VpythonAnalyseAll(databasejs) # not yet coded
-		mfunc.ExportAnalysedData2CSV(AnalysedData) # not yet coded
+		AnalysedData = mfunc.VpythonAnalyseAll(databasejs, iswhat) # not yet coded
+		mfunc.ExportAnalysedData2CSV(AnalysedData, iswhat) # not yet coded
 
 if mode == "deletion" : # delete a data from json database
 	mfunc.Deletejsonraw(databasejs)
-
-'''
-print("where to get data?")
-Choosedb = func.ChooseOneWithNum(["json raw top side", "excel raw top & side sheets", "excel data sheet", "csv data"]) 
-
-if Choosedb == "json raw top side" : 
-	databasejs = func.get_Jsonrawdb()
-	choosemotion = func.ChooseOneWithNum([ "visualize and analyse", "visual two", "delete a data in json raw"])
-elif Choosedb == "excel raw top & side sheets" :
-	spec_data_path = func.tk_GetFilePath()
-	spec_excel_book = xw.Book(spec_data_path)
-	spec_data = func.GetExcelRawTopSide(spec_excel_book)
-	spec_data_Name = spec_excel_book.name
-	print("you chose ",func.bcolors.FAIL, spec_excel_book.name, func.bcolors.ENDC)
-	choosemotion = func.ChooseOneWithNum(["write to json", "visualize and analyse", "visual two"])
-elif Choosedb == "excel data sheet" : 
-	spec_data_path = func.tk_GetFilePath()
-	spec_excel_book = xw.Book(spec_data_path)
-	spec_data = func.GetExcelDataSheet(spec_excel_book)
-	spec_data_Name = spec_excel_book.name
-	print("you chose ",func.bcolors.FAIL, spec_excel_book.name, func.bcolors.ENDC)
-	choosemotion = func.ChooseOneWithNum(["write to json", "visualize and analyse", "visual two"])
-elif Choosedb == "csv data" : 
-	database = func.GetCSVRawTopSide()
-	choosemotion = func.ChooseOneWithNum(["write to json", "visualize and analyse", "visual two"])
-	spec_data_Name = input('file name: ')
-
-# operate with data
-if choosemotion == "write to json" :
-	databasejs = func.get_Jsonrawdb()
-	databasejs[spec_data_Name] = spec_data
-	func.write_Jsondb(databasejs)
-	choosemotion = "visual two" 
-
-if choosemotion == "visualize and analyse" :
-	if Choosedb == "json raw top side" : 
-		spec_data_Name = func.GetSpecKeyByNum(databasejs)
-		spec_data = databasejs[spec_data_Name]
-	func.PrintKeysWithNum(spec_data)
-	o_co = func.cal_origin_coordinate(spec_data)
-	mfunc.VpythonShow(o_co, spec_data_Name)
-
-if choosemotion == "visual two" :
-	if Choosedb == "json raw top side" : 
-		spec_data_Name = func.GetSpecKeyByNum(databasejs)
-		spec_data = databasejs[spec_data_Name]
-	func.PrintKeysWithNum(spec_data)
-	o_co = func.cal_origin_coordinate(spec_data)
-	mfunc.VpythonShow2(o_co, spec_data_Name)
-	
-if choosemotion ==  "delete a data in json raw" :
-	mfunc.Deletejsonraw(databasejs)
-'''

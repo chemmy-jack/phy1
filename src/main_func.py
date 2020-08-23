@@ -541,7 +541,7 @@ def VpythonRefVector(origin_coordinate, T) : # all return in vector class
 	# o_wb = []
 	return refdict
 
-def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return lists of angle and qualities
+def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin coordinate, return lists of angle and qualities
 	# calculate T
 	T = 100000000
 	for i in origin_coordinate :
@@ -614,19 +614,28 @@ def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return li
 		"shift angle":sh_deg,
 		"x":ix,
 		"y":iy,
-		"vectors":refvecdict,
 		"T":T
 	}
+	if ynvec == "need vec" :
+		retdict["vectors"] = refvecdict
+	# elif ynvec == "no nedd vec" :
 	return retdict
 
-def VpythonAnalyseAll(alldata) : # input the whole database json
+def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole database json
 	allanalysed = {}
 	# for all data in alldata
 		# call origin coordinate function
 		# call vpythonanalysespec
+	for dataname in alldata :
+		print("calc of :", dataname, iswhat)
+		origin_coordinate = func.cal_origin_coordinate(alldata[dataname], iswhat)
+		allanalysed[dataname] = VpythonAnalyseSpec(origin_coordinate, "no need vec")
 	return allanalysed
 
-def ExportAnalysedData2CSV(alldata) : # input the wholeanalzed data, eport them in a formatt of csv file
+def ExportAnalysedData2CSV(alldata, iswhat = "don't know") : # input the wholeanalzed data, export them in a formatt of csv file
+	temp = VpythonAnalyseAll(alldata, iswhat = "don't know")
+	print(temp.keys())
+	return
 	# make the temp
 	# open a csv file in db folder
 	# export to the csv file

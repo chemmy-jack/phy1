@@ -37,12 +37,52 @@ def get_git_root(path):
 	print(git_root)
 	return(git_root)
 
-def GetDatabasePath() :
+def GetDatabasePath(iswhat = "don't know") :
 	mypath = path.dirname(path.realpath(__file__))
-	toreturn = str(get_git_root(mypath))+ "/db/rawtopside.json" # this is asuming this scipt is under git repo and databasejson is under gitroot/db/rawtopside.json
+	if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
+	elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
+	elif iswhat == "don't know" : 
+		print("require butterfly or ornithopter")
+		exit()
+	else : exit()
+	toreturn = str(get_git_root(mypath))+ dbname # this is asuming this scipt is under git repo and databasejson is under gitroot/db/rawtopside.json
 	return toreturn
 
-database = GetDatabasePath()
+def get_Jsonrawdb(iswhat = "don't know") :
+	if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
+	elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
+	elif iswhat == "don't know" : 
+		iswhat = ChooseOneWithNum(["butterfly", "ornithopter"])
+	else : exit()
+	with open (GetDatabasePath(iswhat), "r") as databasetmp:
+		data = loads(databasetmp.read())
+	return data
+
+def write_Jsondb(data, iswhat = "don't know") :
+	if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
+	elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
+	elif iswhat == "don't know" : 
+		print("require butterfly or ornithopter")
+		exit()
+	else : exit()
+	with open (dbname, "w") as databasetmp:
+		buff = dumps(data, indent=4, sort_keys = True)
+		databasetmp.write(buff)
+	print(bcolors.FAIL, "confirm : json raw database updated", bcolors.ENDC)
+
+
+
+def tk_GetFilePath() :
+	root = tk.gTk()
+	root.withdraw()
+	FileName = filedialog.askopenfilename()
+	return FileName
+
+def tk_GetFolderPath() :
+	root = tk.gTk()
+	root.withdraw()
+	mypath = filedialog.askdirectory()
+	return maypath
 
 def cal_origin_coordinate(spec_data, iswhat = "don't know") :
 		if iswhat == "butterfly" or iswhat == "ornithoter" : orn_but = iswhat
@@ -80,29 +120,6 @@ def cal_origin_coordinate(spec_data, iswhat = "don't know") :
 			o_ta.append([-(spec_data["side"]["tail"][i][0] + spec_data["top"]["tail"][i][0]) / 2, -spec_data["side"]["tail"][i][1], -spec_data["top"]["tail"][i][1]])
 			o_wb.append([-(spec_data["side"]["wing_base"][i][0] + spec_data["top"]["wing_base"][i][0]) / 2, -spec_data["side"]["wing_base"][i][1], -spec_data["top"]["wing_base"][i][1]])
 		return { "wb":o_wb, "wt":o_wt, "te":o_te, "ta":o_ta}
-
-def tk_GetFilePath() :
-	root = tk.gTk()
-	root.withdraw()
-	FileName = filedialog.askopenfilename()
-	return FileName
-
-def tk_GetFolderPath() :
-	root = tk.gTk()
-	root.withdraw()
-	mypath = filedialog.askdirectory()
-	return maypath
-
-def get_Jsonrawdb() :
-	with open (database, "r") as databasetmp:
-		data = loads(databasetmp.read())
-	return data
-
-def write_Jsondb(data) :
-	with open ("../db/rawtopside.json", "w") as databasetmp:
-		buff = dumps(data, indent=4, sort_keys = True)
-		databasetmp.write(buff)
-	print(bcolors.FAIL, "confirm : json raw database updated", bcolors.ENDC)
 
 def PrintKeysWithNum(data) :
 	n = 1
@@ -342,173 +359,6 @@ def GetExcelDataSheet(database) : # assumes each row have same lenth, input is t
 	}
 	return data
 
-def analyse1(o_co) : # give origin coordinate, assume same wb,wt,te,ta lenth 
-
-	totalnum = len(o_co["wb"])
-	o_wb = o_co["wb"]
-	o_wt = o_co["wt"]
-	o_te = o_co["te"]
-	o_ta = o_co["ta"]
-
-	# calculate directon方向角 & mean direction
-	direct = []
-	for i in range(totalnum): # directon方向角 & mean direction
-		direct.append( degrees(atan( o_wb[i][0]-o_ta[i][0] / o_wb[i][2]-o_ta[i][2])))
-	mean_direct = mean(direct) # 平均方向角 計算偏移角用 投影xy平面用
-	print("finnish calculate directon方向角 & mean direction")
-
-	# calculate inner coordinate
-	wt = []
-	te = []
-	ta = []
-	for i in range(totalnum): # calculate inner coordinate
-		wt.append(subtract(o_wt[i], o_wb[i]))
-		te.append(subtract(o_te[i], o_wb[i]))
-		ta.append(subtract(o_ta[i], o_wb[i]))
-	print("finnish calculate inner coordinate")
-
-	# calculate shift_angle偏移角度
-	shift_angle = [] # 偏移角(print)
-	for i in range(totalnum): # calculate shift_angle偏移角度
-		shift_angle.append(mean_direct-direct[i] ) #print(shift_angle[i])
-	print("...calculate shift_angle偏移角度") 
-
-	# calculate abdomen angle
-	abdomen_angle = [] #腹部角(print)
-	for i in range(totalnum): # calculate abdomen angle
-		abdomen_angle.append(degrees(atan(ta[i][1]/sqrt(ta[i][0]**2 + ta[i][2]**2))))
-	print("finnish calculating abdomen angle")
-	# calculate flapping angle (angle between LEvector unit wingbase z axis vector)
-	flapping_angle = [] #拍撲角(print)
-	for i in range(totalnum): # calculate flapping angle (angle between LEvector unit wingbase z axis vector)
-		temp = [ta[i][2],0,ta[i][0]]
-		flapping_angle.append(degrees(acos(dot(temp/LA.norm(temp),wt[i]/LA.norm(wt[i])))))
-		if wt[i][1]>0 : flapping_angle[i] *= -1
-		# print(wt[i][1])
-	print("finnish caculate flapping angle")
-
-	# calculate wing rotate angle
-	wingrotate_angle = [] #翅膀旋轉(print) 
-	## calculate delta ta vector
-	delta_ta = []
-	for i in range(3): ta.append(ta[-1])
-	for i in range(totalnum): # calculate wing rotate angle
-		delta_ta.append(subtract(ta[i+2], ta[i-2])/2)
-	print("...finnish calculate delta ta vector")
-	## calcutate normal vector of wing
-	normal_wing = []
-	for i in range(totalnum): # calcutate normal vector of wing  
-		normal_wing.append(cross(wt[i],te[i]))
-	print("...finnish calcutate normal vector of wing")
-	## calculate wing rotate angle
-	for i in range(totalnum): ## calculate wing rotate angle
-		wingrotate_angle.append(90-degrees(acos(dot(normal_wing[i]/LA.norm(normal_wing[i]),delta_ta[i]/LA.norm(delta_ta[i])))))
-	print("finnish caculate wing rotate angle")
-
-	# calculate pitching angle
-	pitching_angle = [] #仰角 flapping axis與horizon之angle (print)
-	for i in range(totalnum): # calculate pitching angle
-		temp = [ta[i][2],0,ta[i][0]]
-		#print(delta_ta[i])
-		unit_delta_ta = delta_ta[i]/LA.norm(delta_ta[i])
-		#print(unit_delta_ta)
-		unit_temp = temp/LA.norm(temp)
-		flapping_axis = cross(unit_delta_ta, unit_temp)
-		# print(flapping_axis)
-		temp = sqrt(flapping_axis[0]**2 + flapping_axis[2]**2)
-		if temp == 0 : temp = 0
-		else : pitch =  flapping_axis[1]/temp 
-		# print(temp)
-		pitching_angle.append(degrees(atan(pitch)))
-	print("finnish calculate pitching angle")
-
-	retu = {
-		"abdomen_angle":abdomen_angle,
-		"flapping_angle":flapping_angle,
-		"pitching_angle":pitching_angle,
-		"wingrotate_angle":wingrotate_angle,
-		"mean_direct":mean_direct,
-		"direct":direct,
-		"shift_angle":shift_angle
-	}
-	return retu
-
-def analyse_senior1(origin_co) :
-	totalnum = len(origin_co["wb"])
-	origin_wb = origin_co["wb"]
-	origin_wt = origin_co["wt"]
-	origin_te = origin_co["te"]
-	origin_ta = origin_co["ta"]
-	# calculate inner coordinate
-	wt = []
-	te = []
-	ta = []
-	for i in range(totalnum): # calculate inner coordinate
-		wt.append(subtract(origin_wt[i], origin_wb[i]))
-		te.append(subtract(origin_te[i], origin_wb[i]))
-		ta.append(subtract(origin_ta[i], origin_wb[i]))
-	print("finnish calculate inner coordinate")
-
-	body_vector = ta #body vector
-	le_vector = wt  #vector wing-base to wing-tip 
-	hind_te_vector = te  #vector trailing edge to wing-base
-	
-
-	sweeping_angle = []
-	abdomen_angle = []
-	flapping_angle = []
-
-	unit_sw_base_vector = []
-	for i in range(totalnum):	
-		#calculate sweeping angle
-		wingplane_normal_vector = cross(le_vector[i], hind_te_vector[i]) #翅膀面法向量
-		sw_base_vector = cross(wingplane_normal_vector, body_vector[i]) #翅膀面法向量外積身體向量
-		sw_base_vector90 = cross(wingplane_normal_vector, sw_base_vector) #翅膀面法向量外積身體向量
-		unit_sw_base_vector90 = sw_base_vector90/LA.norm(sw_base_vector90)
-
-		unit_sw_base_vector.append(sw_base_vector/LA.norm(sw_base_vector)) #unit vector of 翅膀面法向量外積身體向量
-		unit_le = le_vector[i]/LA.norm(le_vector[i])
-#		sw_temp = degrees(acos(dot(unit_sw_base_vector[i], unit_le)) )-90 #算角度
-		sw_temp = degrees(acos(dot(unit_sw_base_vector90, unit_le)) )-90 #算角度
-		sweeping_angle.append(sw_temp)
-		
-	for i in range(totalnum):	#calculate abdomen angle
-		abdomen_angle.append(degrees(atan(body_vector[i][1] / body_vector[i][0]) ))
-
-	unit_body_right_vec = []
-	reference_vector2 = []
-	reference_vector = []
-	for i in range(totalnum):	#calculate flapping angle
-		body_right_vec = [-body_vector[i][2], 0, -body_vector[i][0]]
-		unit_body_right_vec.append(body_right_vec/LA.norm(body_right_vec)) 
-		flap_reference_vec = cross(unit_sw_base_vector[i], unit_body_right_vec[i])
-		flap_reference2_vec = cross(flap_reference_vec, unit_body_right_vec[i])
-		flap_reference2_vec[1] = abs(flap_reference2_vec[1])
-		unit_flap_reference2_vec =  flap_reference2_vec/LA.norm(flap_reference2_vec)
-		flap_cos = dot(unit_flap_reference2_vec, unit_sw_base_vector[i])
-#		flap_cos = dot(unit_sw_base_vector[i], unit_body_right_vec[i])
-		flap_temp = degrees(acos(flap_cos)) - 90
-		reference_vector2.append(unit_flap_reference2_vec)
-		reference_vector.append(flap_reference_vec)
-
-		flapping_angle.append(flap_temp)
-	returndic = {
-		"unit_sw_base_vector":unit_sw_base_vector, 
-		"abdomen_angle":abdomen_angle,
-		"flapping_angle":flapping_angle,
-		"sweeping_angle":sweeping_angle,
-		"reference_vector2":reference_vector2,
-		"reference_vector":reference_vector,
-		"unit_body_right_vec":unit_body_right_vec
-#		"pitching_angle":pitching_angle,
-#		"wingrotate_angle":wingrotate_angle,
-#		"mean_direct":mean_direct,
-#		"direct":direct,
-#		"shift_angle":shift_angle
-	}
-	
-	return returndic
-		
 def GetMtrackCSV(excelfile) :
 	# Choose csv folder 
 	folder_path = tk_GetFolderPath()

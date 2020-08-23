@@ -4,6 +4,10 @@
 [目前最新的資料整理](https://docs.google.com/spreadsheets/d/1CANEBRG2YRJyrXlpOOC52pnUBJTdqH6G90x_D38qdVU/edit?usp=sharing)
 [目前蝴蝶資料](https://docs.google.com/spreadsheets/d/1zfbFTa0ONDA5KLNcvF6RCnSnSxjnCh9jZJ9CPZcXeJA/edit?usp=sharing)
 [目前蝴蝶front資料](https://docs.google.com/spreadsheets/d/1cpXIM-xyUM_NZUEXTr3m5iaQ-iiMJKjRhuRAytge0l8/edit?usp=sharing)
+[我的雲端硬碟公開在github之資料夾](https://drive.google.com/drive/folders/17HDjfx5OjlZcMptYHOPJgpGvJKZ_gNSd?usp=sharing)
+
+## reminder for myself
+- butterfly and ornithopter database should be seperated
 
 ## a simple guide
 check required python package:
@@ -80,9 +84,6 @@ main.py
 	- wing area
 	- weight
 	- breed
-- jack function
-	- from raw json export analysede to excel
-		- by file or all at once
 - write discription to readme
 	- progress
 		- film
