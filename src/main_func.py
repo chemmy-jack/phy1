@@ -206,7 +206,6 @@ def VpythonShow(origin_coordinate, spec_data_name) :
 			sleep(dt)
 
 	print("finnish")
-	sys.exit()
 	print("finally")
 
 def list2vpvec(array) :
@@ -217,37 +216,39 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	oo_wt = origin_coordinate["wt"]
 	oo_te = origin_coordinate["te"]
 	oo_ta = origin_coordinate["ta"]
-	T = 100000000
-	for i in origin_coordinate :
-		temp = len(origin_coordinate[i]) 
-		if temp<T :
-			T = temp
-	print(T)
 	cen = vector(0,0,0)
 
+	# call get data function
+	vadata = VpythonAnalyseSpec(origin_coordinate) # vector and analyse data
+	vecdata = vadata["vectors"]
+
+	T = vadata["T"]
+	diffn = vecdata["diffn"]
+	print(T)
 	# get coordinate data
 	mid = (list2vpvec(oo_wb[0]) + list2vpvec(oo_wb[-1]))/2 # middle point, use ass offset
-	o_wb = []
-	o_wt = []
-	o_te = []
-	o_ta = []
-	wt = []
-	te = []
-	ta = []
-	for i in range(T) :
-		o_wb.append(list2vpvec(oo_wb[i])-mid)
-		o_wt.append(list2vpvec(oo_wt[i])-mid)
-		o_te.append(list2vpvec(oo_te[i])-mid)
-		o_ta.append(list2vpvec(oo_ta[i])-mid)
-		wt.append(o_wt[i]-o_wb[i])
-		te.append(o_te[i]-o_wb[i])
-		ta.append(o_ta[i]-o_wb[i])
-	
+	o_wb = vecdata["o_wb"]
+	o_wt = vecdata["o_wt"]
+	o_te = vecdata["o_te"]
+	o_ta = vecdata["o_ta"]
+	wt = vecdata["wt"]
+	te = vecdata["te"]
+	ta = vecdata["ta"]
+	dwt = vecdata["dwt"]
+	wing_norm = vecdata["wm"] # 翅膀法向量
+	izax = vecdata["izax"]  # inner z axis
+	pi1 = vecdata["pitch"] # in analyse 1, pitching axis uses the axis of wing flapping 
+	# analysed
+	abd_deg = vadata["abdomen angle"] # abdomen angle (degree)
+	angatk_deg = vadata["angle of attack"]
+	flap_deg_1 = vadata["flapping angle"] # flaping angle 1 (using wt vector)
+	pi1_deg = vadata["pitching angle"]
+	## shift angle
+	sh_deg = vadata["shift angle"]
+
 	scale = mag(wt[0])/30
-#	scale = abs(oo_wb[-1][0]-oo_wb[0][0])/100
 	print('scale', scale)
 
-	
 	# calculate mirrored wing 
 	o_wt_r = [] # mirrored wing tip origin coordinate
 	o_te_r = [] # mirrored trailing edge origin coordinate
@@ -264,70 +265,9 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		te_r.append(o_te_r[i]-o_wb[i])
 		
 
-	# analyse with vpython
-
-	## abdomen angle
-	abd_deg = [] # abdomen angle (degree)
-	for i in range(T) :
-		abd_deg.append(90-degrees(diff_angle(ta[i],uyax)))
-	
-	## dwt 
-	dwt = []
-	diffn = 2
-	for i in range(diffn) : dwt.append(wt[i+diffn]-wt[i])
-	for i in range(diffn,T-diffn) : dwt.append(wt[i+diffn]-wt[i-diffn])
-	for i in range(diffn) : dwt.append(wt[i]-wt[i-diffn])
-
-	## wing norm and sw base vector 1,2 and sweeping angle and wing rotate angle of analyse 1 
-	wing_norm = [] # 翅膀法向量
-	sw_base1 = [] 
-	sw_base2 = []
-	sw_deg = [] # sweeping angle
-	wrot_deg = [] # wing rotation of analyse 1 according to the pitching axis
-
-	for i in range(T) :
-		wing_norm.append(cross(wt[i], te[i]))
-		sw_base1.append(cross(wing_norm[i], ta[i]))
-		sw_base2.append(rotate(sw_base1[i], pi/2, axis=wing_norm[i]))
-		sw_deg.append(90-degrees(diff_angle(sw_base2[i], wt[i])))
-		wrot_deg.append(degrees(diff_angle(dwt[i], te[i]-te[i].proj(wt[i])))-90)
-
-	## flapping angle unit inner z axis
-	izax = []  # inner z axis
-	flap_deg_1 = [] # flaping angle 1 (using wt vector)
-	flap_deg_s1 = [] # flapping angle senior 1 (using sw base 1)
-	for i in range(T) :
-		izax.append( vector(ta[i].z,0,-ta[i].x))
-		ref = wt[i]
-		flap_ref = ref - ref.proj(izax[i])
-		flap_ref.y = abs(flap_ref.y)
-		flap_deg_1.append(90 - degrees(diff_angle(flap_ref, ref)))
-		ref = sw_base1[i]
-		flap_ref = ref - ref.proj(izax[i])
-		flap_ref.y = abs(flap_ref.y)
-		flap_deg_s1.append(degrees(diff_angle(flap_ref, ref))-90)
-
-	## pitching angle in analyse 1
-	pi1 = [] # in analyse 1, pitching axis uses the axis of wing flapping 
-	pi1_deg = []
-	for i in range(T) :
-		pi1.append(cross(dwt[i], izax[i]))
-		pi1_deg.append(90-degrees(diff_angle(pi1[i], uyax))) # method should be same as abdomen angles
-	
-	## shift angle
-	direct = []
-	sh_deg = []
-	for i in range(T) :
-		direct.append(degrees(atan(ta[i].z/ta[i].x)))
-	mean_direct = mean(direct)
-	for i in range(T) :
-		sh_deg.append(direct[i]-mean_direct)
-
 	# unitilize vectors (for better visualization)
 	for i in range(T) :
 		wing_norm[i] = wing_norm[i].norm() * scale * 10
-		sw_base1[i] = sw_base1[i].norm() * scale * 10
-		sw_base2[i] = sw_base2[i].norm() * scale * 10
 		dwt[i] = dwt[i] * scale
 		pi1[i] = pi1[i].norm() * scale * 10
 		izax[i] = izax[i].norm() * scale * 10
@@ -375,8 +315,6 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	dwt_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
 	pi1_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
 	wing_norm_cyl = cylinder(radius=refcylrad, color = color.magenta, opacity = refcylopc)
-	sw_base1_cyl = cylinder(radius=refcylrad, color = color.purple, opacity = refcylopc)
-	sw_base2_cyl = cylinder(radius=refcylrad, color = color.red, opacity = refcylopc)
 	izax_cyl = cylinder(radius=refcylrad, color = color.black, opacity = refcylopc)
 
 	# make time slider
@@ -412,15 +350,11 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		wb_te_r_cyl.axis = te_rball.pos - wbball.pos
 		if show_refvec :
 			wing_norm_cyl.pos = wtball.pos
-			sw_base1_cyl.pos = wbball.pos
-			sw_base2_cyl.pos = wbball.pos
 			izax_cyl.pos = wbball.pos
 			dwt_cyl.pos = wtball.pos
 			pi1_cyl.pos = wbball.pos
 
 			wing_norm_cyl.axis = wing_norm[ts.value]
-			sw_base1_cyl.axis = sw_base1[ts.value]
-			sw_base2_cyl.axis = sw_base2[ts.value]
 			dwt_cyl.axis = dwt[ts.value]
 			izax_cyl.axis = izax[ts.value]
 			pi1_cyl.axis = pi1[ts.value]
@@ -608,16 +542,12 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 			dwt_cyl.opacity = 0.0
 			pi1_cyl.opacity = 0.0
 			wing_norm_cyl.opacity = 0.0
-			sw_base1_cyl.opacity = 0.0
-			sw_base2_cyl.opacity = 0.0
 			izax_cyl.opacity = 0.0
 			show_refvec = False
 		elif b.checked :
 			dwt_cyl.opacity = refcylopc
 			pi1_cyl.opacity = refcylopc
 			wing_norm_cyl.opacity = refcylopc
-			sw_base1_cyl.opacity = refcylopc
-			sw_base2_cyl.opacity = refcylopc
 			izax_cyl.opacity = refcylopc
 			show_refvec = True
 		update()
@@ -645,6 +575,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 		ad += '{}; '.format(wrot_deg[i])
 		ad += 'aaa'
 	'''
+	'''
 	ad += ';' + spec_data_name + ', '
 	for i in range(T) : ad += '{}, '.format(i)
 	ad += ';abd_deg, '
@@ -668,6 +599,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	def win_func(s) :
 		print('check')
 	win = winput(text=ad,bind=win_func)
+	'''
 
 	scene.append_to_caption('\n')
 	wdata = wtext(text='')
@@ -676,22 +608,18 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 	graph_analyse = graph(title="analyse", xtitle='time', ytitle='value', fast=False, width=1200, height=800)
 	l_abd_deg = gcurve(graph=graph_analyse, color=color.blue, width=2, markers=True, marker_color=color.blue, label="abd_deg")
 	l_pi1_deg = gcurve(graph=graph_analyse, color=color.green, width=2, markers=True, marker_color=color.green, label="pi1_deg")
-	l_sw_deg = gcurve(graph=graph_analyse, color=color.green, width=2, markers=True, marker_color=color.green, label="sw_deg")
 	l_sh_deg = gcurve(graph=graph_analyse, color=color.red, width=2, markers=True, marker_color=color.red, label="sh_deg")
-	l_flap_deg_s1 = gcurve(graph=graph_analyse, color=color.cyan, width=2, markers=True, marker_color=color.cyan, label="flap_deg_s1")
 	l_flap_deg_1 = gcurve(graph=graph_analyse, color=color.purple, width=2, markers=True, marker_color=color.purple, label="flap_deg_1")
-	l_wrot_deg = gcurve(graph=graph_analyse, color=color.black, width=2, markers=True, marker_color=color.black, label="wrot_deg")
+	l_angatk_deg = gcurve(graph=graph_analyse, color=color.yellow, width=2, markers=True, marker_color=color.yellow, label="angatk_deg")
 
 
 	# plot graph
 	for time in range(T) :
 		l_abd_deg.plot(time, abd_deg[time])
 		l_pi1_deg.plot(time, pi1_deg[time])
-		l_sw_deg.plot(time, sw_deg[time])
 		l_sh_deg.plot(time, sh_deg[time])
+		l_angatk_deg.plot(time, angatk_deg[time])
 		l_flap_deg_1.plot(time, flap_deg_1[time])
-		l_flap_deg_s1.plot(time, flap_deg_s1[time])
-		l_wrot_deg.plot(time, wrot_deg[time])
 
 
 
@@ -728,7 +656,7 @@ def Deletejsonraw(data) :
 	else : print("nothing is changed")
 
 
-def VpythonRefVector(origin_coordinate, T) :
+def VpythonRefVector(origin_coordinate, T) : # all return in vector class
 	oo_wb = origin_coordinate["wb"]
 	oo_wt = origin_coordinate["wt"]
 	oo_te = origin_coordinate["te"]
@@ -743,8 +671,10 @@ def VpythonRefVector(origin_coordinate, T) :
 	wt = []
 	te = []
 	ta = []
-	## wt, te, ta
-	for i in range(t) :
+	dwt = []
+	diffn = 2
+	## wt, te, ta, dwt
+	for i in range(T) :
 		o_wb.append(list2vpvec(oo_wb[i])-mid)
 		o_wt.append(list2vpvec(oo_wt[i])-mid)
 		o_te.append(list2vpvec(oo_te[i])-mid)
@@ -752,8 +682,6 @@ def VpythonRefVector(origin_coordinate, T) :
 		wt.append(o_wt[i]-o_wb[i])
 		te.append(o_te[i]-o_wb[i])
 		ta.append(o_ta[i]-o_wb[i])
-	dwt = []
-	diffn = 2
 	## dwt
 	for i in range(diffn) : dwt.append(wt[i+diffn]-wt[i])
 	for i in range(diffn,T-diffn) : dwt.append(wt[i+diffn]-wt[i-diffn])
@@ -785,7 +713,9 @@ def VpythonRefVector(origin_coordinate, T) :
 		"o_wb":o_wb,
 		"o_wt":o_wt,
 		"o_te":o_te,
-		"o_ta":o_ta
+		"o_ta":o_ta,
+		"dwt":dwt,
+		"diffn":diffn
 	}
 	# o_wb = []
 	return refdict
@@ -811,6 +741,8 @@ def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return li
 	o_wt = refvecdict["o_wt"]
 	o_te = refvecdict["o_te"]
 	o_ta = refvecdict["o_ta"]
+	dwt = refvecdict["dwt"]
+	uyax = vector(0,1,0) # unit vector of y axis
 
 	## abdomen angle
 	abd_deg = [] # abdomen angle (degree)
@@ -820,6 +752,9 @@ def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return li
 	## flapping angle
 	flap_deg = [] # flaping angle 1 (using wt vector)
 	for i in range(T) :
+		ref = wt[i]
+		flap_ref = ref - ref.proj(izax[i])
+		flap_ref.y = abs(flap_ref.y)
 		flap_deg.append(90 - degrees(diff_angle(flap_ref, ref)))
 
 	## pitching angle
@@ -842,6 +777,8 @@ def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return li
 		sh_deg.append(direct[i]-mean_direct)
 
 	## x,y
+	ix = [] # inner x
+	iy = [] # inner y
 	for i in range(T) : 
 		ix.append(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
 		iy.append(o_wb[i].y-o_wb[0].y)
@@ -856,8 +793,10 @@ def VpythonAnalyseSpec(origin_coordinate) : # input origin coordinate, return li
 		"shift angle":sh_deg,
 		"x":ix,
 		"y":iy,
-		"vectors":refvecdict
+		"vectors":refvecdict,
+		"T":T
 	}
+	return retdict
 
 def VpythonAnalyseAll(alldata) : # input the whole database json
 	allanalysed = {}
@@ -872,8 +811,8 @@ def ExportAnalysedData2CSV(alldata) : # input the wholeanalzed data, eport them 
 	# export to the csv file
 
 
-
 #### below is old code
+	'''
 	## abdomen angle
 	abd_deg = [] # abdomen angle (degree)
 	for i in range(T) :
@@ -900,10 +839,6 @@ def ExportAnalysedData2CSV(alldata) : # input the wholeanalzed data, eport them 
 		izax.append( vector(ta[i].z,0,-ta[i].x))
 		ref = wt[i]
 		flap_ref = ref - ref.proj(izax[i])
-		o_wb.append(list2vpvec(oo_wb[i])-mid)
-		o_wt.append(list2vpvec(oo_wt[i])-mid)
-		o_te.append(list2vpvec(oo_te[i])-mid)
-		o_ta.append(list2vpvec(oo_ta[i])-mid)
 		flap_ref.y = abs(flap_ref.y)
 		flap_deg_1.append(90 - degrees(diff_angle(flap_ref, ref)))
 		ref = sw_base1[i]
@@ -935,4 +870,4 @@ def ExportAnalysedData2CSV(alldata) : # input the wholeanalzed data, eport them 
 		dwt[i] = dwt[i] * scale
 		pi1[i] = pi1[i].norm() * scale * 10
 		izax[i] = izax[i].norm() * scale * 10
-
+'''
