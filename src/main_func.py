@@ -635,10 +635,52 @@ def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole databa
 		print("analysed ", dataname)
 	return allanalysed
 
-def ExportAnalysedData2CSV(analysedall, iswhat = "don't know") : # input the wholeanalzed data, export them in a formatt of csv file
-	print("here should be the exporting code")
-	print(analysedall.keys())
-	print(analysedall[list(analysedall.keys())[0]].keys())
+def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole analzed data, export them in a formatt of csv file
+	print("under here the exporting process should be running...")
+	width = 10 # the number of column per data
+	DataList = list(andb.keys())
+	print("these are the 'analsyedall' keys:", DataList)
+	print("these are the keys in first data", andb[DataList[0]].keys())
+	print("the width is :", width)
+	#### to see details of what under parameters mean, search the record on the exp notebook of 20202/8/24
+	Tlist = []
+	extitle = []
+	bigT = 0
+	allcolumns = 0
+	excsv = ""
+	coma = ","
+	nextrow = "\n"
+	datlen = 0
+	gap = []
+
+	datlen = len(DataList)
+	for i in range(datlen) :
+		nowdatname = DataList[i]
+		nowdat = andb[nowdatname]
+		Tlist.append(nowdat["T"])
+		extitle.append(list(nowdat.keys()))
+		gap.append(width - len(extitle[i]) -1)
+	print("Tlist", Tlist)
+
+	allcolumns = width * datlen
+	print("all columns:", allcolumns)
+	
+	bigT = max(Tlist)
+	print("row lenth", bigT)
+
+	for i in range(datlen) :
+		title = DataList[i]
+		excsv += title + coma
+		for j in range(len(extitle[i])) :
+			excsv += extitle[i][j] + coma
+		for k in range(gap[i]) :
+			excsv += coma
+		
+	for t in range(bigT) :
+		excsv += ""
+	
+	print("export csv: ", excsv)
+	
 	print("all is well")
 	return
 	# make the temp
