@@ -622,6 +622,7 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	return retdict
 
 def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole database json
+	print("vpython analyse all is running...")
 	allanalysed = {}
 	# for all data in alldata
 		# call origin coordinate function
@@ -630,11 +631,15 @@ def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole databa
 		print("calc of :", dataname, iswhat)
 		origin_coordinate = func.cal_origin_coordinate(alldata[dataname], iswhat)
 		allanalysed[dataname] = VpythonAnalyseSpec(origin_coordinate, "no need vec")
+		# allanalysed[dataname] = origin_coordinate
+		print("analysed ", dataname)
 	return allanalysed
 
-def ExportAnalysedData2CSV(alldata, iswhat = "don't know") : # input the wholeanalzed data, export them in a formatt of csv file
-	temp = VpythonAnalyseAll(alldata, iswhat = "don't know")
-	print(temp.keys())
+def ExportAnalysedData2CSV(analysedall, iswhat = "don't know") : # input the wholeanalzed data, export them in a formatt of csv file
+	print("here should be the exporting code")
+	print(analysedall.keys())
+	print(analysedall[list(analysedall.keys())[0]].keys())
+	print("all is well")
 	return
 	# make the temp
 	# open a csv file in db folder
