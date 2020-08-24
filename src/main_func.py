@@ -657,9 +657,10 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	for i in range(datlen) :
 		nowdatname = DataList[i]
 		nowdat = andb[nowdatname]
-		Tlist.append(nowdat["T"])
+		Tlist.append(nowdat.pop("T", None))
 		extitle.append(list(nowdat.keys()))
 		gap.append(width - len(extitle[i]) -1)
+		
 	print("Tlist", Tlist)
 
 	allcolumns = width * datlen
@@ -676,12 +677,24 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 		for k in range(gap[i]) :
 			excsv += coma
 		
+	excsv += nextrow
+
 	for t in range(bigT) :
-		excsv += ""
-	
-	print("export csv: ", excsv)
-	
+		for i in range(datlen) :
+			if t >= Tlist[i] :
+				for col in range(width) :
+					excsv += coma
+				break
+			time = str(t)
+			excsv += time + coma
+			for j in range(len(extitle[i])) :
+				excsv += str(andb[DataList[i]][extitle[i][j]][t]) + coma
+			for k in range(gap[i]) :
+				excsv += coma
+		excsv += nextrow
+
 	func.writecsv(excsv)
+	# print(excsv)
 	print("all is well")
 	return
 	# make the temp
