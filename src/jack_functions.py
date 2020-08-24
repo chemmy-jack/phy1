@@ -49,23 +49,26 @@ def GetDatabasePath(iswhat = "don't know") :
 	return toreturn
 
 def get_Jsonrawdb(iswhat = "don't know") :
-	if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
-	elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
-	elif iswhat == "don't know" : 
+	# if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
+	# elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
+	# elif iswhat == "don't know" : 
+	# 	iswhat = ChooseOneWithNum(["butterfly", "ornithopter"])
+	# else : exit()
+	if iswhat == "don't know" :
 		iswhat = ChooseOneWithNum(["butterfly", "ornithopter"])
-	else : exit()
+
 	with open (GetDatabasePath(iswhat), "r") as databasetmp:
 		data = loads(databasetmp.read())
 	return data
 
 def write_Jsondb(data, iswhat = "don't know") :
-	if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
-	elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
-	elif iswhat == "don't know" : 
-		print("require butterfly or ornithopter")
-		exit()
-	else : exit()
-	with open (dbname, "w") as databasetmp:
+	# if iswhat == "butterfly" : dbname = "/db/rawtopside.json" 
+	# elif iswhat == "ornithopter" : dbname = "/db/rawtopside_orn.json" 
+	# elif iswhat == "don't know" : 
+	# 	print("require butterfly or ornithopter")
+	# 	exit()
+	# else : exit()
+	with open (GetDatabasePath(iswhat), "w") as databasetmp:
 		buff = dumps(data, indent=4, sort_keys = True)
 		databasetmp.write(buff)
 	print(bcolors.FAIL, "confirm : json raw database updated", bcolors.ENDC)
@@ -73,13 +76,13 @@ def write_Jsondb(data, iswhat = "don't know") :
 
 
 def tk_GetFilePath() :
-	root = tk.gTk()
+	root = tk.Tk()
 	root.withdraw()
 	FileName = filedialog.askopenfilename()
 	return FileName
 
 def tk_GetFolderPath() :
-	root = tk.gTk()
+	root = tk.Tk()
 	root.withdraw()
 	mypath = filedialog.askdirectory()
 	return maypath
@@ -506,7 +509,7 @@ def GetMtrackRawCSVdic(cdic) : # x,y 3,4 get TID 1
 	return data
 
 def GetFolderPath() :
-	root = gTk()
+	root = tk.Tk()
 	root.withdraw()
 	mypath = filedialog.askdirectory()
 	return mypath
@@ -659,4 +662,18 @@ def csv2list(c) :
 	# if clist[-1] == "" : clist.pop() # there is a blank string appearing at the end of the list
 	clist.pop()
 	return clist
+
+def writecsv(exportcsv) :
+	# print('wellwellwell')
+	# mypath = path.dirname(path.realpath(__file__))
+	# print("mypath: ", mypath)
+	# csvname = "/db/exportcsv.csv"
+	# path = str(get_git_root(mypath)) + csvname
+	csvname = "/exportcsv.csv"
+	path = GetFolderPath() + csvname
+	print("csv path:", path)
+
+	with open (path, "w") as csvfile:
+		csvfile.write(exportcsv)
+	return True
 

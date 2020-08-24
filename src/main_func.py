@@ -681,6 +681,7 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	
 	print("export csv: ", excsv)
 	
+	func.writecsv(excsv)
 	print("all is well")
 	return
 	# make the temp
