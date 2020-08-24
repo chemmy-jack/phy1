@@ -1,7 +1,6 @@
 from vpython import *
 import json as js
 import jack_functions as func
-import sys
 import numpy as np
 from numpy import linalg as LA
 from math import cos, sin, asin, acos, tan, atan, radians, degrees, sqrt

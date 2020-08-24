@@ -8,25 +8,24 @@
 
 ## reminder for myself
 - butterfly and ornithopter database should be seperated
+`pipenv install vpython xlwings matplotlib numpy tkinter gitpython json math statistics`
 
 ## a simple guide
 check required python package:
-	- xlwings
-	- vpython
-	- matplotlib
-	- tkinter
-	- gitpython
-	- json
-	- sys
-	- numpy
-	- math
-	- statistics
+- xlwings
+- vpython
+- matplotlib
+- tkinter
+- gitpython
+- json
+- numpy
+- math
+- statistics
 
 then in command line : 
 	` git clone https://github.com/chemmy-jack/phy1.git ` 
 	` cd phy1 ` 
-	` python3 src/main.py ` 
-	` type 1 <Enter> 2 <Enter> 2~14 <Enter> 2 <Enter> `
+	
 
 
 ## required python extensions :
