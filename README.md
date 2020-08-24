@@ -8,24 +8,28 @@
 
 ## reminder for myself
 - butterfly and ornithopter database should be seperated
-`pipenv install vpython xlwings matplotlib numpy tkinter gitpython json math statistics`
+`pipenv install vpython xlwings matplotlib numpy gitpython json5 statistics`
+`pipenv install -r requirements.txt`
 
 ## a simple guide
+use python3 !
 check required python package:
 - xlwings
 - vpython
 - matplotlib
-- tkinter
-- gitpython
-- json
+- Gitpython
 - numpy
-- math
 - statistics
+- json5
+- math(default in python)
+- tkinter (in ubuntu: apt-get install python3-tk)
 
 then in command line : 
-	` git clone https://github.com/chemmy-jack/phy1.git ` 
-	` cd phy1 ` 
-	
+(get tkinter)
+` git clone https://github.com/chemmy-jack/phy1.git `
+` cd phy1 ` 
+` pipenv shell `
+` python main.py `
 
 
 ## required python extensions :
