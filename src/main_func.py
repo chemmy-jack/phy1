@@ -684,13 +684,13 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 			if t >= Tlist[i] :
 				for col in range(width) :
 					excsv += coma
-				break
-			time = str(t)
-			excsv += time + coma
-			for j in range(len(extitle[i])) :
-				excsv += str(andb[DataList[i]][extitle[i][j]][t]) + coma
-			for k in range(gap[i]) :
-				excsv += coma
+			else :
+				time = str(t)
+				excsv += time + coma
+				for j in range(len(extitle[i])) :
+					excsv += str(andb[DataList[i]][extitle[i][j]][t]) + coma
+				for k in range(gap[i]) :
+					excsv += coma
 		excsv += nextrow
 
 	func.writecsv(excsv)
