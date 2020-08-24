@@ -588,13 +588,26 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 		angatk_deg.append(degrees(diff_angle(dwt[i], te[i]-te[i].proj(wt[i])))-90)
 
 	## shift angle
+		### calc mean path vec
+		path2dvecx = []
+		path2dvecz = []
+		diff = 4
+		for i in range(T-4) :
+			temp = o_wb[i+4] - o_wb[i]
+			path2dvecx.append(temp.x)
+			path2dvecz.append(temp.z)
+		meanpathvec = vector(mean(path2dvecx),0,mean(path2dvecz))
 	direct = []
 	sh_deg = []
 	for i in range(T) :
-		direct.append(degrees(atan(ta[i].z/ta[i].x)))
-	mean_direct = mean(direct)
+	    temp = ta[i]
+	    temp.y = 0
+	    direct.append(temp)
+	    # direct.append(degrees(atan(ta[i].z/ta[i].x)))
+	# mean_direct = mean(direct)
 	for i in range(T) :
-		sh_deg.append(direct[i]-mean_direct)
+	    # sh_deg.append(direct[i]-mean_direct)
+	    sh_deg.append(degrees(diff_angle(direct[i],meanpathvec)))
 
 	## x,y
 	ix = [] # inner x
@@ -623,9 +636,6 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole database json
 	print("vpython analyse all is running...")
 	allanalysed = {}
-	# for all data in alldata
-		# call origin coordinate function
-		# call vpythonanalysespec
 	for dataname in alldata :
 		print("calc of :", dataname, iswhat)
 		origin_coordinate = func.cal_origin_coordinate(alldata[dataname], iswhat)
@@ -696,8 +706,5 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	# print(excsv)
 	print("all is well")
 	return
-	# make the temp
-	# open a csv file in db folder
-	# export to the csv file
 
 
