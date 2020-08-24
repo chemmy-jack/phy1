@@ -3,6 +3,7 @@ import xlwings as xw
 import main_func as mfunc
 import re # for splitting mulitply characters
 import os
+from os import path
 
 print("this python script can read the raw front and top coordinates to json database, or visualize the coordinate of each data in the json database and export the analysed data in csv form\n")
 
@@ -57,11 +58,11 @@ if mode == "read from json database" :
 	if operatejsdb == "visualization" :
 		# mypath = os.path.dirname(path.realpath(__file__))
 		# root = func.get_git_root(mypath)
-		root = ""
-		os.system("python3 "+root+"src/main_func_vp3.py") # not yet coded
+		root = func.get_git_root(path.dirname(path.realpath(__file__)))
+		os.system("python3 "+root+"/src/main_func_vp3.py")
 	if operatejsdb ==  "analyse and export" : # export as .csv file
-		AnalysedData = mfunc.VpythonAnalyseAll(databasejs, iswhat) # not yet coded
-		mfunc.ExportAnalysedData2CSV(AnalysedData, iswhat) # not yet coded
+		AnalysedData = mfunc.VpythonAnalyseAll(databasejs, iswhat)
+		mfunc.ExportAnalysedData2CSV(AnalysedData, iswhat)
 
 if mode == "deletion" : # delete a data from json database
 	mfunc.Deletejsonraw(databasejs)
