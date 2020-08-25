@@ -588,26 +588,27 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 		angatk_deg.append(degrees(diff_angle(dwt[i], te[i]-te[i].proj(wt[i])))-90)
 
 	## shift angle
-		### calc mean path vec
-		path2dvecx = []
-		path2dvecz = []
-		diff = 4
-		for i in range(T-4) :
-			temp = o_wb[i+4] - o_wb[i]
-			path2dvecx.append(temp.x)
-			path2dvecz.append(temp.z)
-		meanpathvec = vector(mean(path2dvecx),0,mean(path2dvecz))
+	### calc mean path vec
+	path2dvecx = []
+	path2dvecz = []
+	diff = 4
+	for i in range(T-4) :
+	    temp = o_wb[i+4] - o_wb[i]
+	    path2dvecx.append(temp.x)
+	    path2dvecz.append(temp.z)
+	meanpathvec = vector(sum(path2dvecx),0,sum(path2dvecz)).rotate(angle=pi/2,axis=vector(0,1,0))
 	direct = []
 	sh_deg = []
 	for i in range(T) :
-	    temp = ta[i]
-	    temp.y = 0
+	    # temp = ta[i]
+	    # temp.y = 0
+	    temp = vector(ta[i].x,0,ta[i].z)
 	    direct.append(temp)
 	    # direct.append(degrees(atan(ta[i].z/ta[i].x)))
 	# mean_direct = mean(direct)
 	for i in range(T) :
 	    # sh_deg.append(direct[i]-mean_direct)
-	    sh_deg.append(degrees(diff_angle(direct[i],meanpathvec)))
+	    sh_deg.append(90-degrees(diff_angle(direct[i],meanpathvec)))
 
 	## x,y
 	ix = [] # inner x
