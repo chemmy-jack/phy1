@@ -29,7 +29,8 @@ if mode == "write to json database" :
 	source = func.ChooseOneWithNum(["csv", "xlsx"])
 	if source == "csv" : # get data from csv
 		spec_data = func.GetCSVRawTopSide()
-		spec_data_Name = spec_data[name]
+		spec_data_Name = spec_data.pop("name")
+		print("name is :", func.FormatdbName(spec_data_Name))
 		print("you chose ",func.bcolors.FAIL, spec_data_Name, func.bcolors.ENDC)
 	if source == "xlsx" :
 		spec_data_path = func.tk_GetFilePath()
@@ -39,8 +40,8 @@ if mode == "write to json database" :
 		print("you chose ",func.bcolors.FAIL, spec_excel_book.name, func.bcolors.ENDC)
 	databasejs = func.get_Jsonrawdb()
 	databasejs[spec_data_Name] = spec_data
-	func.write_Jsondb(databasejs)
-	print("visualize?")
+	func.write_Jsondb(databasejs,iswhat)
+	print("visualize?(type 'n' for no")
 	if input() == "n" : exit()
 	else :
 		o_co = func.cal_origin_coordinate(spec_data, iswhat)
@@ -65,4 +66,4 @@ if mode == "read from json database" :
 		mfunc.ExportAnalysedData2CSV(AnalysedData, iswhat)
 
 if mode == "deletion" : # delete a data from json database
-	mfunc.Deletejsonraw(databasejs)
+	mfunc.Deletejsonraw(databasejs, iswhat)

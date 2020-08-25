@@ -6,6 +6,7 @@ import sys
 from math import cos, sin, asin, acos, tan, atan, radians, degrees, sqrt
 from numpy import dot, cross, subtract, linalg, add, mean 
 import pprint
+from copy import copy
 pp = pprint.PrettyPrinter()
 
 # for analyse
@@ -89,12 +90,12 @@ def tk_GetFolderPath() :
 	return maypath
 
 def cal_origin_coordinate(spec_data, iswhat = "don't know") :
-		if iswhat == "butterfly" or iswhat == "ornithoter" : orn_but = iswhat
-		else : orn_but = ChooseOneWithNum(["ornithopter", "butterfly"])
+		if iswhat == "butterfly" or iswhat == "ornithopter" : orn_but = iswhat
+		else : orn_but = ChooseOneWithNum(["butterfly", "ornithopter"])
 		if orn_but == "ornithopter" :
 			orn = True
 			nrows = 0
-		else :
+		elif orn_but == "butterfly" :
 			orn = False
 			nrows = 10000000
 		for x in spec_data :
@@ -111,18 +112,44 @@ def cal_origin_coordinate(spec_data, iswhat = "don't know") :
 		print(nrows)
 			
 
-				# if len(y) != nrows :return print("error: row lenth not the same")
+		wbs = spec_data["side"]["wing_base"]
+		wts = spec_data["side"]["wing_tip"]
+		tes = spec_data["side"]["trailing_edge"]
+		tas = spec_data["side"]["tail"]
+		wbt = spec_data["top"]["wing_base"]
+		wtt = spec_data["top"]["wing_tip"]
+		tet = spec_data["top"]["trailing_edge"]
+		tat = spec_data["top"]["tail"]
+
+		# wbso = copy(wbs[0])
+		# wtso = copy(wts[0])
+		# teso = copy(tes[0])
+		# taso = copy(tas[0])
+		# wbto = copy(wbt[0])
+		# wtto = copy(wtt[0])
+		# teto = copy(tet[0])
+		# tato = copy(tat[0])
+
+		# for i in wbs : i = subtract(i, wbso)
+		# for i in wts : i = subtract(i, wtso)
+		# for i in tes : i = subtract(i, teso)
+		# for i in tas : i = subtract(i, taso)
+		# for i in wbt : i = subtract(i, wbto)
+		# for i in wtt : i = subtract(i, wtto)
+		# for i in tet : i = subtract(i, teto)
+		# for i in tat : i = subtract(i, tato)
+
+		# if len(y) != nrows :return print("error: row lenth not the same")
 		o_wb = []
 		o_wt = []
 		o_te = []
 		o_ta = []
 		for i in range(nrows):
-			o_wt.append([-(spec_data["side"]["wing_tip"][i][0] + spec_data["top"]["wing_tip"][i][0]) / 2, -spec_data["side"]["wing_tip"][i][1], -spec_data["top"]["wing_tip"][i][1]])
-			o_te.append([-(spec_data["side"]["trailing_edge"][i][0] + spec_data["top"]["trailing_edge"][i][0]) / 2, -spec_data["side"]["trailing_edge"][i][1], -spec_data["top"]["trailing_edge"][i][1]])
-			if orn :
-				i = 0
-			o_ta.append([-(spec_data["side"]["tail"][i][0] + spec_data["top"]["tail"][i][0]) / 2, -spec_data["side"]["tail"][i][1], -spec_data["top"]["tail"][i][1]])
-			o_wb.append([-(spec_data["side"]["wing_base"][i][0] + spec_data["top"]["wing_base"][i][0]) / 2, -spec_data["side"]["wing_base"][i][1], -spec_data["top"]["wing_base"][i][1]])
+		    o_wt.append([-(wts[i][0] + wtt[i][0]) / 2, -wts[i][1], -wtt[i][1]])
+		    o_te.append([-(tes[i][0] + tet[i][0]) / 2, -tes[i][1], -tet[i][1]])
+		    if orn : i = 0
+		    o_ta.append([-(tas[i][0] + tat[i][0]) / 2, -tas[i][1], -tat[i][1]])
+		    o_wb.append([-(wbs[i][0] + wbt[i][0]) / 2, -wbs[i][1], -wbt[i][1]])
 		return { "wb":o_wb, "wt":o_wt, "te":o_te, "ta":o_ta}
 
 def PrintKeysWithNum(data) :
@@ -368,8 +395,6 @@ def GetMtrackCSV(excelfile) :
 	folder_path = tk_GetFolderPath()
 	files = listdir(folder_path)
 
-
-
 	sheettop = excelfile.sheets["raw_data_top"]
 	sheetside = excelfile.sheets["raw_data_side"]
 	datatop = GetMtrackRawDataSheet(sheettop)
@@ -521,6 +546,7 @@ def FindCommonStringFrom0(a,b) :
 	while a[i] == b[i] :
 		string += a[i]
 		i += 1
+	return string
 
 def GetCSVRawTopSide() :
 	filepath = GetFolderPath()
@@ -680,3 +706,12 @@ def writecsv(exportcsv) :
 		csvfile.write(exportcsv)
 	return True
 
+def FormatdbName(name, whatis = "don't know") :
+    print("this is the origin name:", name)
+    name.replace(" ", "_")
+    name.replace(".csv", "")
+    name.replace(".xlsx", "")
+    name.replace(".xls", "")
+    while name[-1] == "_" : name == name[:-1]
+    print("this is the formatted name:", name)
+    return name

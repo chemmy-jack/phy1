@@ -1,5 +1,5 @@
 from vpython import *
-from jack_functions import get_Jsonrawdb, cal_origin_coordinate 
+from jack_functions import get_Jsonrawdb, cal_origin_coordinate, ChooseOneWithNum
 from statistics import mean
 
 
@@ -22,7 +22,9 @@ T = 0
 time = 0
 origin_coordinate = {}
 spec_data_name = ''
-databasejs = get_Jsonrawdb()
+print("because this is a different scipt, you have to choose the database you want again. The previous choise is abondoned")
+iswhat = ChooseOneWithNum(["butterfly", "ornithopter"])
+databasejs = get_Jsonrawdb(iswhat)
 scale = 1
 # set butterfly clones
 cloneops = 0.1
@@ -32,7 +34,6 @@ clonen = 10
 clones = {}
 
 cen = vector(0,0,0)
-isbutterfly = True
 
 # starts here
 
@@ -147,7 +148,7 @@ def GetMeanList(veclist) :
 def initialize() :
 	global CurrentData
 	global keepon
-	global o_wb, o_wt, o_te, o_ta, wt, te, ta, o_wt_r, o_te_r, o_ta_r, time, T, keepon
+	global o_wb, o_wt, o_te, o_ta, wt, te, ta, o_wt_r, o_te_r, o_ta_r, time, T, keepon, iswhat
 	# check the slelected 
 	m = DataMenu
 	print(m.selected, m.index)
@@ -177,10 +178,7 @@ def initialize() :
 
 	# update new capacities
 	spec_data = databasejs[m.selected]
-	if isbutterfly_ch.checked == True :
-		origin_coordinate = cal_origin_coordinate(spec_data, "butterfly")
-	if isbutterfly_ch.checked == False :
-		origin_coordinate = cal_origin_coordinate(spec_data, "ornithopter")
+	origin_coordinate = cal_origin_coordinate(spec_data, iswhat)
 	oo_wb = origin_coordinate["wb"]
 	oo_wt = origin_coordinate["wt"]
 	oo_te = origin_coordinate["te"]
@@ -287,8 +285,6 @@ MenuList = ["blank"] + list(databasejs.keys())
 DataMenu = menu(choices = MenuList, bind = initialize, position = scene.title_anchor)
 wtime = wtext(text="time")
 
-def isbutterfly_func() : return
-isbutterfly_ch = checkbox(bind=isbutterfly_func, text="is butterfly", pos = scene.caption_anchor, checked = True)
 
 ## the start button
 def stpa_func() :

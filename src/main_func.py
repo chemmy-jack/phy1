@@ -462,7 +462,7 @@ def VpythonShow2(origin_coordinate, spec_data_name) :
 
 
 
-def Deletejsonraw(data) :
+def Deletejsonraw(data, iswhat = "don't know") :
 	spec_data_name = func.GetSpecKeyByNum(data)
 
 	print("are u sure you want to delete", func.bcolors.WARNING, spec_data_name,func.bcolors.ENDC, "?(yes to confirm)", end = " ")
@@ -471,7 +471,7 @@ def Deletejsonraw(data) :
 		data.pop(spec_data_name, None)
 		print("new key db keys:")
 		func.PrintKeysWithNum(data)
-		func.write_Jsondb(data)
+		func.write_Jsondb(data, iswhat)
 		print("db modified")
 	else : print("nothing is changed")
 
