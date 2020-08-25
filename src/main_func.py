@@ -613,8 +613,22 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	ix = [] # inner x
 	iy = [] # inner y
 	for i in range(T) : 
-		ix.append(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
-		iy.append(o_wb[i].y-o_wb[0].y)
+	    ix.append(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
+	    iy.append(o_wb[i].y-o_wb[0].y)
+	
+	## vx,vy
+	vx = []
+	vy = []
+	difvn = 2
+	dt = 0.001
+	for i in range(T-difvn) :
+	    vx.append((ix[i+difvn]-ix[i])/(dt*difvn))
+	    vy.append((iy[i+difvn]-iy[i])/(dt*difvn))
+	vx.insert(0,vx[0])
+	vy.insert(0,vy[0])
+	vx.append(vx[-1])
+	vy.append(vy[-1])
+
 
 	# return as a dict
 	#### return:  abdomen angle | flapping angle | pitching angle | angle of attack | shift angle | x | y | | |
@@ -626,6 +640,8 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 		"shift angle":sh_deg,
 		"x":ix,
 		"y":iy,
+		"vx":vx,
+		"vy":vy,
 		"T":T
 	}
 	if ynvec == "need vec" :
@@ -646,7 +662,7 @@ def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole databa
 
 def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole analzed data, export them in a formatt of csv file
 	print("under here the exporting process should be running...")
-	width = 10 # the number of column per data
+	width = 12 # the number of column per data
 	DataList = list(andb.keys())
 	print("these are the 'analsyedall' keys:", DataList)
 	print("these are the keys in first data", andb[DataList[0]].keys())

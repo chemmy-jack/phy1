@@ -16,6 +16,7 @@ from scipy.ndimage.interpolation import rotate
 # for csv
 from os import listdir, path
 import csv
+from datetime import datetime
 
 class bcolors:
 	HEADER = '\033[95m'
@@ -669,11 +670,13 @@ def writecsv(exportcsv) :
 	# print("mypath: ", mypath)
 	# csvname = "/db/exportcsv.csv"
 	# path = str(get_git_root(mypath)) + csvname
-	csvname = "/exportcsv.csv"
+	now = datetime.now()
+	dt_string = now.strftime("%d/%m/%Y_%H:%M:%S")
+	csvname = "/exportcsv_"+dt_string+".csv"
 	path = GetFolderPath() + csvname
 	print("csv path:", path)
 
-	with open (path, "w") as csvfile:
+	with open (path, "w+") as csvfile:
 		csvfile.write(exportcsv)
 	return True
 
