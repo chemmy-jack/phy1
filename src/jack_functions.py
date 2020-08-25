@@ -686,8 +686,8 @@ def csv2list(c) :
 	for i in temp :
 		clist.append(list(i.split(",")))
 	clist.pop(0)
-	# if clist[-1] == "" : clist.pop() # there is a blank string appearing at the end of the list
-	clist.pop()
+	if clist[-1] == "" : clist.pop() # there is a blank string appearing at the end of the list
+	# clist.pop()
 	return clist
 
 def writecsv(exportcsv) :
@@ -712,6 +712,6 @@ def FormatdbName(name, whatis = "don't know") :
     name.replace(".csv", "")
     name.replace(".xlsx", "")
     name.replace(".xls", "")
-    while name[-1] == "_" : name == name[:-1]
+    if name[-1] == "_" : name == name[:-1]
     print("this is the formatted name:", name)
     return name
