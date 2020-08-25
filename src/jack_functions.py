@@ -671,7 +671,7 @@ def writecsv(exportcsv) :
 	# csvname = "/db/exportcsv.csv"
 	# path = str(get_git_root(mypath)) + csvname
 	now = datetime.now()
-	dt_string = now.strftime("%d-%m-%Y_%H:%M:%S")
+	dt_string = now.strftime("%Y-%m-%d_%H'%M'%S")
 	csvname = "/exportcsv_"+dt_string+".csv"
 	path = GetFolderPath() + csvname
 	print("csv path:", path)
