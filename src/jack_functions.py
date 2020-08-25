@@ -690,7 +690,7 @@ def csv2list(c) :
 	# clist.pop()
 	return clist
 
-def writecsv(exportcsv) :
+def writecsv1(exportcsv, folderpath) :
 	# print('wellwellwell')
 	# mypath = path.dirname(path.realpath(__file__))
 	# print("mypath: ", mypath)
@@ -698,13 +698,23 @@ def writecsv(exportcsv) :
 	# path = str(get_git_root(mypath)) + csvname
 	now = datetime.now()
 	dt_string = now.strftime("%Y-%m-%d_%H'%M'%S")
-	csvname = "/exportcsv_"+dt_string+".csv"
-	path = GetFolderPath() + csvname
+	csvname = "/exportcsv1_"+dt_string+".csv"
+	path = folderpath + csvname
 	print("csv path:", path)
 
 	with open (path, "w+") as csvfile:
 		csvfile.write(exportcsv)
 	return True
+
+def writecsv2(exportcsv, folderpath) :
+    print("")
+    now = datetime.now()
+    dt_string = now.strftime("%Y-%m-%d_%H'%M'%S")
+    csvname = "/exportcsv1_"+dt_string+".csv"
+    path = GetFolderPath() + csvname
+    with open (path, "w+") as csvfile:
+	csvfile.write(exportcsv)
+    return True
 
 def FormatdbName(name, whatis = "don't know") :
     print("this is the origin name:", name)

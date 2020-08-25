@@ -630,6 +630,15 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	vx.append(vx[-1])
 	vy.append(vy[-1])
 
+        ## span, bdlen, omega, abd_amp (abdomen amplitude), wtpl(wing tip path lenth)
+	span = []
+	bslen = []
+	omega = []
+	abd_amp = 0
+	wtpl = 0
+	########## code missing
+	
+
 
 	# return as a dict
 	#### return:  abdomen angle | flapping angle | pitching angle | angle of attack | shift angle | x | y | | |
@@ -643,7 +652,12 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 		"y":iy,
 		"vx":vx,
 		"vy":vy,
-		"T":T
+		"T":T,
+		"span":span,
+		"body lenth":bdlen,
+		"omega":omega,
+		"wing tip path lenth":wtpl,
+		"abdomen aplitude":abd_amp
 	}
 	if ynvec == "need vec" :
 		retdict["vectors"] = refvecdict
@@ -663,7 +677,7 @@ def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole databa
 
 def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole analzed data, export them in a formatt of csv file
 	print("under here the exporting process should be running...")
-	width = 12 # the number of column per data
+	width = 14 # the number of column per data
 	DataList = list(andb.keys())
 	print("these are the 'analsyedall' keys:", DataList)
 	print("these are the keys in first data", andb[DataList[0]].keys())
@@ -678,6 +692,9 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	nextrow = "\n"
 	datlen = 0
 	gap = []
+
+	wtpl = nowdat.pop("wing tip path lenth")
+	abd_amp = nowdat.pop("abdomen aplitude")
 
 	datlen = len(DataList)
 	for i in range(datlen) :
@@ -719,7 +736,15 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 					excsv += coma
 		excsv += nextrow
 
-	func.writecsv(excsv)
+	# the excsv2
+	excsv2 = ""
+	# wtpl, abd_amp, T, mean span, mean omega, mean body lenth
+	########## code missing
+
+
+	folderpath = GetFolderPath()
+	func.writecsv1(excsv, folderpath)
+	func.writecsv2(excsv2, folderpath)
 	# print(excsv)
 	print("all is well")
 	return
