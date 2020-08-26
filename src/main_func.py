@@ -703,6 +703,7 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	mean_span = []
 	mean_omega = []
 	mean_bdlen = []
+	mean_shift = []
 
 
 	datlen = len(DataList)
@@ -716,6 +717,7 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 		mean_span.append(mean(nowdat["span"]))
 		mean_omega.append(mean([abs(ele) for ele in nowdat["omega"]]))
 		mean_bdlen.append(mean(nowdat["body lenth"]))
+		mean_shift.append(mean(nowdat["shift angle"]))
 		
 	print("Tlist", Tlist)
 
@@ -753,13 +755,15 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	excsv2 = ""
 	# T, mean span, mean omega, mean body lenth, abd_amp (abdomen amplitude)
 	########## code missing
-	excsv2 += "data name,mspan,mbody lenth,momega,abdomen amplitude,T" + nextrow
+	excsv2 += ",data name,mean span,mean body lenth,momega,abdomen amplitude,mean shift angle,T" + nextrow
 	for i in range(datlen) :
+	    excsv2 += str(i+1) +coma
 	    excsv2 += DataList[i] + coma
 	    excsv2 += str(mean_span[i]) + coma
 	    excsv2 += str(mean_bdlen[i]) + coma
 	    excsv2 += str(mean_omega[i]) + coma
 	    excsv2 += str(abd_amp_list[i]) + coma
+	    excsv2 += str(mean_shift[i]) + coma
 	    excsv2 += str(Tlist[i]) +coma
 	    excsv2 += nextrow
 
