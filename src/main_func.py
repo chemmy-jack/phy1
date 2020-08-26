@@ -649,8 +649,8 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	# return as a dict
 	#### return:  abdomen angle | flapping angle | pitching angle | angle of attack | shift angle | x | y | | |
 	retdict = {
-		"abdomen angle":abd_deg,
 		"flapping angle":flap_deg,
+		"abdomen angle":abd_deg,
 		"pitching angle":pitch_deg,
 		"angle of attack":angatk_deg,
 		"shift angle":sh_deg,
@@ -658,11 +658,11 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 		"y":iy,
 		"vx":vx,
 		"vy":vy,
-		"T":T, # csv2
-		"span":span,
-		"body lenth":bdlen,
 		"omega":omega,
 		"wing tip path lenth":wtpl,
+		"span":span, # csv2 mean and SD
+		"body lenth":bdlen,# csv2 mean and SD
+		"T":T, # csv2
 		"abdomen aplitude":abd_amp # csv2
 	}
 	if ynvec == "need vec" :
