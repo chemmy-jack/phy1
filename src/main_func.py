@@ -683,7 +683,7 @@ def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole databa
 
 def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole analzed data, export them in a formatt of csv file
 	print("under here the exporting process should be running...")
-	width = 14 # the number of column per data
+	width = 16 # the number of column per data
 	DataList = list(andb.keys())
 	print("these are the 'analsyedall' keys:", DataList)
 	print("these are the keys in first data", andb[DataList[0]].keys())

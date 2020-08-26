@@ -722,6 +722,7 @@ def FormatdbName(name, whatis = "don't know") :
     name.replace(".csv", "")
     name.replace(".xlsx", "")
     name.replace(".xls", "")
-    if name[-1] == "_" : name == name[:-1]
+    while name[-1] == "_" :
+        name == name[:-1]
     print("this is the formatted name:", name)
     return name
