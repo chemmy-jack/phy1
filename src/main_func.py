@@ -683,7 +683,7 @@ def VpythonAnalyseAll(alldata, iswhat = "don't know") : # input the whole databa
 
 def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole analzed data, export them in a formatt of csv file
 	print("under here the exporting process should be running...")
-	width = 16 # the number of column per data
+	width = 14 # the number of column per data
 	DataList = list(andb.keys())
 	print("these are the 'analsyedall' keys:", DataList)
 	print("these are the keys in first data", andb[DataList[0]].keys())
@@ -709,14 +709,13 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	stdev_bdlen = []
 	max_shift = []
 
+
 	datlen = len(DataList)
 	for i in range(datlen) :
 	    nowdatname = DataList[i]
 	    nowdat = andb[nowdatname]
 	    Tlist.append(nowdat.pop("T", None))
 	    abd_amp_list.append(nowdat.pop("abdomen aplitude", None))
-	    extitle.append(list(nowdat.keys()))
-	    gap.append(width - len(extitle[i]) -1)
 	    mean_span.append(mean(nowdat["span"]))
 	    mean_omega.append(mean([abs(ele) for ele in nowdat["omega"]]))
 	    mean_bdlen.append(mean(nowdat["body lenth"]))
@@ -725,6 +724,11 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	    stdev_span.append(stdev(nowdat["span"]))
 	    stdev_bdlen.append(stdev(nowdat["body lenth"]))
 	    max_shift.append(max([abs(ele) for ele in nowdat["omega"]]))
+	    nowdat.pop("body lenth", None)
+	    nowdat.pop("span", None)
+	    extitle.append(list(nowdat.keys()))
+	    gap.append(width - len(extitle[i]) -1)
+
 	print("Tlist", Tlist)
 
 	allcolumns = width * datlen
