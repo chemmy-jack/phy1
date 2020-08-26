@@ -505,6 +505,7 @@ def GetMtrackRawCSV(clist) : # x,y 3,4 get TID 1
 	PID = []
 	x_y = []
 	for i in clist :
+		if i == [""] : break
 		print(i)
 		Nr.append(int(i[0]))
 		TID.append(int(i[1]))
