@@ -703,19 +703,19 @@ def writecsv1(exportcsv, folderpath) :
 	print("csv path:", path)
 
 	with open (path, "w+") as csvfile:
-		csvfile.write(exportcsv)
+	    csvfile.write(exportcsv)
 	return True
 
 def writecsv2(exportcsv, folderpath) :
-    print("")
-    now = datetime.now()
-    dt_string = now.strftime("%Y-%m-%d_%H'%M'%S")
-    csvname = "/exportcsv1_"+dt_string+".csv"
-    path = GetFolderPath() + csvname
-    with open (path, "w+") as csvfile:
-	csvfile.write(exportcsv)
-    return True
-
+	print("hey yo, i'm writing the csv data to csv2")
+	now = datetime.now()
+	dt_string = now.strftime("%Y-%m-%d_%H'%M'%S")
+	csvname = "/exportcsv2_"+dt_string+".csv"
+	path = folderpath + csvname
+	with open (path, "w+") as csvfile:
+	    csvfile.write(exportcsv)
+	return True
+	
 def FormatdbName(name, whatis = "don't know") :
     print("this is the origin name:", name)
     name.replace(" ", "_")

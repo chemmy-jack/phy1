@@ -617,26 +617,32 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	    ix.append(sqrt((o_wb[i].x-o_wb[0].x)**2+(o_wb[i].z-o_wb[0].z)**2))
 	    iy.append(o_wb[i].y-o_wb[0].y)
 	
-	## vx,vy
+	## vx,vy, omega
 	vx = []
 	vy = []
+	omega = []
 	difvn = 2
 	dt = 0.001
 	for i in range(T-difvn) :
 	    vx.append((ix[i+difvn]-ix[i])/(dt*difvn))
 	    vy.append((iy[i+difvn]-iy[i])/(dt*difvn))
-	vx.insert(0,vx[0])
-	vy.insert(0,vy[0])
-	vx.append(vx[-1])
-	vy.append(vy[-1])
+	    omega.append((flap_deg[i+difvn]-flap_deg[i])/(dt*difvn))
+	for i in (vx, vy, omega) :
+	    i.insert(0,i[0])
+	    i.append(i[-1])
 
-        ## span, bdlen, omega, abd_amp (abdomen amplitude), wtpl(wing tip path lenth)
+        ## span, bdlen, wtpl(wing tip path lenth), abdomen amplitude
 	span = []
-	bslen = []
-	omega = []
-	abd_amp = 0
-	wtpl = 0
+	bdlen = []
 	########## code missing
+	for i in range(T) :
+	    span.append(mag(wt[i]))
+	    bdlen.append(mag(ta[i]))
+	wtpl = [0]
+	for i in range(T-1) :
+	    thislen = mag(o_wt[i+1]-o_wt[i])
+	    wtpl.append(wtpl[-1]+thislen)
+	abd_amp = max(abd_deg) - min(abd_deg)
 	
 
 
@@ -652,12 +658,12 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 		"y":iy,
 		"vx":vx,
 		"vy":vy,
-		"T":T,
+		"T":T, # csv2
 		"span":span,
 		"body lenth":bdlen,
 		"omega":omega,
 		"wing tip path lenth":wtpl,
-		"abdomen aplitude":abd_amp
+		"abdomen aplitude":abd_amp # csv2
 	}
 	if ynvec == "need vec" :
 		retdict["vectors"] = refvecdict
@@ -684,6 +690,7 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	print("the width is :", width)
 	#### to see details of what under parameters mean, search the record on the exp notebook of 20202/8/24
 	Tlist = []
+	abd_amp_list =[]
 	extitle = []
 	bigT = 0
 	allcolumns = 0
@@ -693,16 +700,22 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 	datlen = 0
 	gap = []
 
-	wtpl = nowdat.pop("wing tip path lenth")
-	abd_amp = nowdat.pop("abdomen aplitude")
+	mean_span = []
+	mean_omega = []
+	mean_bdlen = []
+
 
 	datlen = len(DataList)
 	for i in range(datlen) :
 		nowdatname = DataList[i]
 		nowdat = andb[nowdatname]
 		Tlist.append(nowdat.pop("T", None))
+		abd_amp_list.append(nowdat.pop("abdomen aplitude", None))
 		extitle.append(list(nowdat.keys()))
 		gap.append(width - len(extitle[i]) -1)
+		mean_span.append(mean(nowdat["span"]))
+		mean_omega.append(mean(nowdat["omega"]))
+		mean_bdlen.append(mean(nowdat["body lenth"]))
 		
 	print("Tlist", Tlist)
 
@@ -738,11 +751,20 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 
 	# the excsv2
 	excsv2 = ""
-	# wtpl, abd_amp, T, mean span, mean omega, mean body lenth
+	# T, mean span, mean omega, mean body lenth, abd_amp (abdomen amplitude)
 	########## code missing
+	excsv2 += "data name,mspan,mbody lenth,momega,abdomen amplitude,T" + nextrow
+	for i in range(datlen) :
+	    excsv2 += DataList[i] + coma
+	    excsv2 += str(mean_span[i]) + coma
+	    excsv2 += str(mean_bdlen[i]) + coma
+	    excsv2 += str(mean_omega[i]) + coma
+	    excsv2 += str(abd_amp_list[i]) + coma
+	    excsv2 += str(Tlist[i]) +coma
+	    excsv2 += nextrow
 
 
-	folderpath = GetFolderPath()
+	folderpath = func.GetFolderPath()
 	func.writecsv1(excsv, folderpath)
 	func.writecsv2(excsv2, folderpath)
 	# print(excsv)
