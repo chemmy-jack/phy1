@@ -714,7 +714,7 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 		extitle.append(list(nowdat.keys()))
 		gap.append(width - len(extitle[i]) -1)
 		mean_span.append(mean(nowdat["span"]))
-		mean_omega.append(mean(nowdat["omega"]))
+		mean_omega.append(mean([abs(ele) for ele in nowdat["omega"]]))
 		mean_bdlen.append(mean(nowdat["body lenth"]))
 		
 	print("Tlist", Tlist)
