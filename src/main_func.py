@@ -492,6 +492,7 @@ def VpythonRefVector(origin_coordinate, T) : # all return in vector class
 	te = []
 	ta = []
 	dwt = []
+	o_dwt = []
 	diffn = 2
 	## wt, te, ta, dwt
 	for i in range(T) :
@@ -502,10 +503,16 @@ def VpythonRefVector(origin_coordinate, T) : # all return in vector class
 		wt.append(o_wt[i]-o_wb[i])
 		te.append(o_te[i]-o_wb[i])
 		ta.append(o_ta[i]-o_wb[i])
-	## dwt
-	for i in range(diffn) : dwt.append(wt[i+diffn]-wt[i])
-	for i in range(diffn,T-diffn) : dwt.append(wt[i+diffn]-wt[i-diffn])
-	for i in range(diffn) : dwt.append(wt[i]-wt[i-diffn])
+	## dwt, o_dwt
+	for i in range(diffn) :
+	    dwt.append(wt[i+diffn]-wt[i])
+	    o_dwt.append(o_wt[i+diffn]-o_wt[i])
+	for i in range(diffn,T-diffn) :
+	    dwt.append(wt[i+diffn]-wt[i-diffn])
+	    o_dwt.append(o_wt[i+diffn]-o_wt[i-diffn])
+	for i in range(diffn) :
+	    dwt.append(wt[i]-wt[i-diffn])
+	    o_dwt.append(o_wt[i]-o_wt[i-diffn])
 	## wing_norm
 	wing_norm = [] # 翅膀法向量
 	for i in range(T) :
@@ -535,7 +542,8 @@ def VpythonRefVector(origin_coordinate, T) : # all return in vector class
 		"o_te":o_te,
 		"o_ta":o_ta,
 		"dwt":dwt,
-		"diffn":diffn
+		"diffn":diffn,
+		"o_dwt":o_dwt,
 	}
 	# o_wb = []
 	return refdict
@@ -561,6 +569,7 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	o_wt = refvecdict["o_wt"]
 	o_te = refvecdict["o_te"]
 	o_ta = refvecdict["o_ta"]
+	o_dwt = refvecdict["o_dwt"]
 	dwt = refvecdict["dwt"]
 	uyax = vector(0,1,0) # unit vector of y axis
 
@@ -585,7 +594,7 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	## angle of attack
 	angatk_deg = [] # wing rotation of analyse 1 according to the pitching axis
 	for i in range(T) :
-		angatk_deg.append(degrees(diff_angle(dwt[i], te[i]-te[i].proj(wt[i])))-90)
+		angatk_deg.append(degrees(diff_angle(o_dwt[i], te[i]-te[i].proj(o_wt[i])))-90)
 
 	## shift angle
 	### calc mean path vec
@@ -649,10 +658,10 @@ def VpythonAnalyseSpec(origin_coordinate, ynvec = "need vec") : # input origin c
 	# return as a dict
 	#### return:  abdomen angle | flapping angle | pitching angle | angle of attack | shift angle | x | y | | |
 	retdict = {
-		"flapping angle":flap_deg,
-		"abdomen angle":abd_deg,
 		"pitching angle":pitch_deg,
 		"angle of attack":angatk_deg,
+		"abdomen angle":abd_deg,
+		"flapping angle":flap_deg,
 		"shift angle":sh_deg,
 		"x":ix,
 		"y":iy,
@@ -723,7 +732,7 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 
 	    stdev_span.append(stdev(nowdat["span"]))
 	    stdev_bdlen.append(stdev(nowdat["body lenth"]))
-	    max_shift.append(max([abs(ele) for ele in nowdat["omega"]]))
+	    max_shift.append(max([abs(ele) for ele in nowdat["shift angle"]]))
 	    nowdat.pop("body lenth", None)
 	    nowdat.pop("span", None)
 	    extitle.append(list(nowdat.keys()))
@@ -754,7 +763,8 @@ def ExportAnalysedData2CSV(andb, iswhat = "don't know") : # input the whole anal
 					excsv += coma
 			else :
 				time = str(t)
-				excsv += time + coma
+				# excsv += time + coma
+				excsv += coma
 				for j in range(len(extitle[i])) :
 					excsv += str(andb[DataList[i]][extitle[i][j]][t]) + coma
 				for k in range(gap[i]) :
